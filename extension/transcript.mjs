@@ -18,6 +18,7 @@
  * @property {string} id
  * @property {string} userEventId
  * @property {string | null} assistantEventId
+ * @property {string | null} toEventId
  * @property {string} userContent
  * @property {string} assistantContent
  * @property {"completed" | "incomplete"} status
@@ -35,6 +36,7 @@ export function groupTurns(events, { isProcessing = false } = {}) {
     /** @type {TurnNode | undefined} */
     let currentTurn;
     let turnEnded = false;
+    let turnAborted = false;
 
     for (const event of events) {
         if (
@@ -57,11 +59,16 @@ export function groupTurns(events, { isProcessing = false } = {}) {
                 );
             }
 
+            if (currentTurn) {
+                currentTurn.toEventId = event.id;
+            }
+
             /** @type {TurnNode} */
             const turn = {
                 id: event.id,
                 userEventId: event.id,
                 assistantEventId: null,
+                toEventId: null,
                 userContent: event.data.content,
                 assistantContent: "",
                 status: "incomplete",
@@ -70,6 +77,7 @@ export function groupTurns(events, { isProcessing = false } = {}) {
             currentTurn = turn;
             turns.push(turn);
             turnEnded = false;
+            turnAborted = false;
             continue;
         }
 
@@ -86,11 +94,14 @@ export function groupTurns(events, { isProcessing = false } = {}) {
         ) {
             currentTurn.assistantEventId = event.id;
             currentTurn.assistantContent = event.data.content;
+        } else if (event.type === "abort") {
+            turnAborted = true;
+            currentTurn.status = "incomplete";
         } else if (event.type === "assistant.turn_end") {
             turnEnded = true;
         }
 
-        if (turnEnded && currentTurn.assistantEventId) {
+        if (turnEnded && currentTurn.assistantEventId && !turnAborted) {
             currentTurn.status = "completed";
         }
     }

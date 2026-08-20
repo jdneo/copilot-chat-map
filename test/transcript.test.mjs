@@ -32,6 +32,7 @@ test("groups a completed user and Copilot exchange into one Turn Node", () => {
             id: "11111111-1111-4111-8111-111111111111",
             userEventId: "11111111-1111-4111-8111-111111111111",
             assistantEventId: "33333333-3333-4333-8333-333333333333",
+            toEventId: null,
             userContent: "请解释这个错误",
             assistantContent: "这是类型不匹配。",
             status: "completed",
@@ -117,6 +118,7 @@ test("marks a turn without a final Copilot response as incomplete", () => {
             id: "11111111-1111-4111-8111-111111111111",
             userEventId: "11111111-1111-4111-8111-111111111111",
             assistantEventId: null,
+            toEventId: null,
             userContent: "Run the check",
             assistantContent: "",
             status: "incomplete",
@@ -175,6 +177,73 @@ test("keeps the latest Turn Node incomplete while the session is processing", ()
     ];
 
     const [turn] = groupTurns(events, { isProcessing: true });
+
+    assert.equal(turn.status, "incomplete");
+});
+
+test("uses the next visible user event as the exclusive fork boundary", () => {
+    const events = [
+        {
+            id: "11111111-1111-4111-8111-111111111111",
+            type: "user.message",
+            data: { content: "First", source: "user" },
+        },
+        {
+            id: "22222222-2222-4222-8222-222222222222",
+            type: "assistant.message",
+            data: { content: "First response" },
+        },
+        {
+            id: "33333333-3333-4333-8333-333333333333",
+            type: "assistant.turn_end",
+            data: { turnId: "turn-1" },
+        },
+        {
+            id: "44444444-4444-4444-8444-444444444444",
+            type: "user.message",
+            data: { content: "Injected", source: "skill-context" },
+        },
+        {
+            id: "55555555-5555-4555-8555-555555555555",
+            type: "user.message",
+            data: { content: "Second", source: "user" },
+        },
+    ];
+
+    const turns = groupTurns(events);
+
+    assert.equal(
+        turns[0].toEventId,
+        "55555555-5555-4555-8555-555555555555",
+    );
+    assert.equal(turns[1].toEventId, null);
+});
+
+test("keeps an aborted turn unavailable as a Fork Checkpoint", () => {
+    const events = [
+        {
+            id: "11111111-1111-4111-8111-111111111111",
+            type: "user.message",
+            data: { content: "Stop if this takes too long", source: "user" },
+        },
+        {
+            id: "22222222-2222-4222-8222-222222222222",
+            type: "assistant.message",
+            data: { content: "Partial final-looking response" },
+        },
+        {
+            id: "33333333-3333-4333-8333-333333333333",
+            type: "abort",
+            data: { reason: "user_initiated" },
+        },
+        {
+            id: "44444444-4444-4444-8444-444444444444",
+            type: "assistant.turn_end",
+            data: { turnId: "turn-1" },
+        },
+    ];
+
+    const [turn] = groupTurns(events);
 
     assert.equal(turn.status, "incomplete");
 });

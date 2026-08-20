@@ -53,6 +53,16 @@ export function renderHtml() {
     }
     #status { color: var(--text-color-muted, #8b949e); }
     main { padding: 24px; }
+    #notice {
+      max-width: 680px;
+      margin: 0 auto 20px;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color-default, #30363d);
+      border-radius: 8px;
+      background: var(--background-color-muted, #161b22);
+    }
+    #notice.error { border-color: var(--danger-color-emphasis, #f85149); }
+    #notice strong { display: block; margin-bottom: 4px; }
     .state {
       max-width: 680px;
       margin: 48px auto;
@@ -73,7 +83,15 @@ export function renderHtml() {
       border-radius: 10px;
       background: var(--background-color-muted, #161b22);
     }
-    .turn.completed { border-color: var(--true-color-green, #3fb950); }
+    .turn.completed {
+      border-color: var(--true-color-green, #3fb950);
+      cursor: pointer;
+    }
+    .turn.completed:hover { border-color: var(--true-color-blue, #58a6ff); }
+    .turn.completed.selected {
+      border-color: var(--true-color-blue, #58a6ff);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--true-color-blue, #58a6ff) 35%, transparent);
+    }
     .turn.incomplete {
       border-color: var(--border-color-default, #30363d);
       border-style: dashed;
@@ -127,6 +145,17 @@ export function renderHtml() {
       border: 0;
       border-top: 1px solid var(--border-color-default, #30363d);
     }
+    .branch-button {
+      position: absolute;
+      top: 50%;
+      left: calc(100% + 10px);
+      width: max-content;
+      transform: translateY(-50%);
+      border-radius: 999px;
+      background: var(--true-color-blue, #1f6feb);
+      color: #fff;
+    }
+    .turn:not(.selected) > .branch-button { display: none; }
     .empty { color: var(--text-color-muted, #8b949e); font-style: italic; }
   </style>
 </head>
@@ -138,12 +167,19 @@ export function renderHtml() {
     </div>
     <button id="refresh" type="button">Refresh</button>
   </header>
+  <aside id="notice" role="status" hidden></aside>
   <main id="content" aria-live="polite"></main>
   <script>
     const content = document.querySelector("#content");
     const refreshButton = document.querySelector("#refresh");
     const status = document.querySelector("#status");
+    const notice = document.querySelector("#notice");
     const token = new URLSearchParams(window.location.search).get("token") || "";
+    const operationIdsByTurn = new Map();
+    const blockedTurns = new Set();
+    let currentState;
+    let forkPending = false;
+    let availabilityError = "";
 
     function element(tag, className, text) {
       const node = document.createElement(tag);
@@ -159,7 +195,128 @@ export function renderHtml() {
       return section;
     }
 
+    function showNotice(title, message, isError) {
+      notice.className = isError ? "error" : "";
+      notice.replaceChildren(
+        element("strong", "", title),
+        element("span", "", message),
+      );
+      notice.hidden = false;
+    }
+
+    function selectTurn(article) {
+      document.querySelector(".turn.selected")?.classList.remove("selected");
+      document.querySelectorAll(".turn").forEach((turn) => {
+        turn.setAttribute("aria-selected", "false");
+      });
+      article.classList.add("selected");
+      article.setAttribute("aria-selected", "true");
+    }
+
+    function updateBranchControls() {
+      document.querySelectorAll(".branch-button").forEach((button) => {
+        button.disabled =
+          !currentState?.canFork ||
+          forkPending ||
+          blockedTurns.has(button.dataset.turnId);
+      });
+    }
+
+    function renderForkAvailability() {
+      status.hidden = !availabilityError && currentState?.canFork !== false;
+      status.textContent = availabilityError ||
+        (currentState?.canFork === false
+          ? "Branching is disabled while the agent is working."
+          : "");
+      updateBranchControls();
+    }
+
+    async function refreshForkAvailability() {
+      try {
+        const response = await fetch("/api/state?token=" + encodeURIComponent(token), {
+          cache: "no-store",
+        });
+        if (!response.ok) {
+          throw new Error("Activity request failed with status " + response.status);
+        }
+        const state = await response.json();
+        if (
+          state.kind === "ready" &&
+          currentState?.kind === "ready" &&
+          state.session.id === currentState.session.id
+        ) {
+          availabilityError = "";
+          currentState.canFork = state.canFork;
+          renderForkAvailability();
+        }
+      } catch (error) {
+        availabilityError =
+          error instanceof Error
+            ? "Could not check agent activity: " + error.message
+            : "Could not check agent activity.";
+        if (currentState?.kind === "ready") currentState.canFork = false;
+        renderForkAvailability();
+      }
+    }
+
+    async function createBranch(turn) {
+      if (forkPending || blockedTurns.has(turn.id) || !currentState?.canFork) return;
+      forkPending = true;
+      const operationId = operationIdsByTurn.get(turn.id) || crypto.randomUUID();
+      operationIdsByTurn.set(turn.id, operationId);
+      updateBranchControls();
+      showNotice("Creating branch", "Creating a child session at this checkpoint...", false);
+
+      try {
+        const response = await fetch("/api/fork?token=" + encodeURIComponent(token), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            operationId,
+            sessionId: currentState.session.id,
+            turnId: turn.id,
+          }),
+        });
+        const result = await response.json();
+        if (result.kind === "created") {
+          blockedTurns.add(turn.id);
+          showNotice("Branch created", "Opening " + result.name + "...", false);
+          setTimeout(() => {
+            blockedTurns.delete(turn.id);
+            operationIdsByTurn.delete(turn.id);
+            updateBranchControls();
+          }, 10000);
+        } else if (result.kind === "lineage_failed") {
+          blockedTurns.add(turn.id);
+          showNotice("Branch created without lineage", result.message, true);
+        } else if (result.kind === "navigation_failed") {
+          blockedTurns.add(turn.id);
+          showNotice(
+            "Branch ready",
+            result.message ||
+              ("Child session " + result.childSessionId + " is ready. Open it manually from the session list."),
+            true,
+          );
+        } else {
+          operationIdsByTurn.delete(turn.id);
+          showNotice("Could not create branch", result.message || "The fork request failed.", true);
+          await refreshForkAvailability();
+        }
+      } catch (error) {
+        showNotice(
+          "Could not create branch",
+          error instanceof Error ? error.message : "Unknown fork error.",
+          true,
+        );
+      } finally {
+        forkPending = false;
+        updateBranchControls();
+      }
+    }
+
     function renderReady(state) {
+      currentState = state;
+      availabilityError = "";
       const lane = element("section", "lane");
 
       if (state.turns.length === 0) {
@@ -170,6 +327,7 @@ export function renderHtml() {
         const completed = turn.status === "completed";
         const article = element("article", "turn " + turn.status);
         article.setAttribute("aria-label", completed ? "Completed turn" : "Incomplete turn");
+        article.setAttribute("aria-selected", "false");
         article.title = completed ? "Completed" : "Incomplete";
         const body = element("div", "turn-body collapsed");
         body.append(renderMessage("You", turn.userContent, "user"));
@@ -180,7 +338,8 @@ export function renderHtml() {
         toggle.type = "button";
         toggle.hidden = true;
         toggle.setAttribute("aria-expanded", "false");
-        toggle.addEventListener("click", () => {
+        toggle.addEventListener("click", (event) => {
+          event.stopPropagation();
           const expanded = !body.classList.toggle("collapsed");
           toggle.textContent = expanded ? "Show less" : "Show more";
           toggle.setAttribute("aria-expanded", String(expanded));
@@ -190,11 +349,23 @@ export function renderHtml() {
           toggle.hidden = body.scrollHeight <= body.clientHeight + 1;
         });
 
+        if (completed) {
+          const branchButton = element("button", "branch-button", "+ New branch");
+          branchButton.type = "button";
+          branchButton.dataset.turnId = turn.id;
+          branchButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            createBranch(turn);
+          });
+          article.append(branchButton);
+          article.addEventListener("click", () => selectTurn(article));
+        }
+
         lane.append(article);
       });
 
       content.replaceChildren(lane);
-      status.hidden = true;
+      renderForkAvailability();
     }
 
     function renderState(state) {
@@ -206,6 +377,7 @@ export function renderHtml() {
       panel.append(element("h2", "", state.kind === "unsupported" ? "Unavailable" : "Could not load map"));
       panel.append(element("p", "", state.message));
       content.replaceChildren(panel);
+      currentState = undefined;
       status.hidden = false;
       status.textContent = state.kind === "unsupported" ? "Unsupported session" : "Load error";
     }
@@ -226,6 +398,7 @@ export function renderHtml() {
     }
 
     refreshButton.addEventListener("click", refresh);
+    setInterval(refreshForkAvailability, 2500);
     refresh();
   </script>
 </body>

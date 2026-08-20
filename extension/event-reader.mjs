@@ -6,6 +6,12 @@ import path from "node:path";
 const SESSION_ID_PATTERN =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+export function isValidLocalSessionId(sessionId) {
+    return (
+        typeof sessionId === "string" && SESSION_ID_PATTERN.test(sessionId)
+    );
+}
+
 /**
  * @typedef {{
  *   platform?: NodeJS.Platform,
@@ -75,7 +81,7 @@ export function resolveEventLogPath(
         homedir = os.homedir(),
     } = {},
 ) {
-    if (!SESSION_ID_PATTERN.test(sessionId)) {
+    if (!isValidLocalSessionId(sessionId)) {
         throw new TypeError(`Invalid local Copilot session ID: ${sessionId}`);
     }
 

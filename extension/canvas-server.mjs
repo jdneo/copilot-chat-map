@@ -12,12 +12,16 @@ const CONTENT_SECURITY_POLICY = [
     "base-uri 'none'",
     "form-action 'none'",
 ].join("; ");
+const MAX_REQUEST_BODY_BYTES = 4_096;
 
 /**
- * @param {() => Promise<object>} loadSnapshot
+ * @param {{
+ *   loadSnapshot: () => Promise<object>,
+ *   forkFromTurn: (request: object) => Promise<object>
+ * }} handlers
  * @returns {Promise<{ server: import("node:http").Server, url: string }>}
  */
-export async function startCanvasServer(loadSnapshot) {
+export async function startCanvasServer({ loadSnapshot, forkFromTurn }) {
     const token = randomBytes(32).toString("hex");
     const server = createServer(async (request, response) => {
         setSecurityHeaders(response);
@@ -46,14 +50,32 @@ export async function startCanvasServer(loadSnapshot) {
                 return;
             }
 
+            if (request.method === "POST" && url.pathname === "/api/fork") {
+                if (
+                    !request.headers["content-type"]
+                        ?.toLowerCase()
+                        .startsWith("application/json")
+                ) {
+                    sendJson(response, 415, {
+                        kind: "error",
+                        message: "Fork requests must use application/json.",
+                    });
+                    return;
+                }
+                const result = await forkFromTurn(await readJsonBody(request));
+                sendJson(response, statusForForkResult(result), result);
+                return;
+            }
+
             sendText(response, 404, "Not found");
         } catch (error) {
             const message =
                 error instanceof Error ? error.message : "Unknown server error";
-            response.writeHead(500, {
-                "Content-Type": "application/json; charset=utf-8",
-            });
-            response.end(JSON.stringify({ kind: "error", message }));
+            const statusCode =
+                error instanceof SyntaxError || error instanceof TypeError
+                    ? 400
+                    : 500;
+            sendJson(response, statusCode, { kind: "error", message });
         }
     });
 
@@ -108,4 +130,43 @@ function sendText(response, statusCode, text) {
         "Content-Type": "text/plain; charset=utf-8",
     });
     response.end(text);
+}
+
+function sendJson(response, statusCode, value) {
+    response.writeHead(statusCode, {
+        "Content-Type": "application/json; charset=utf-8",
+    });
+    response.end(JSON.stringify(value));
+}
+
+async function readJsonBody(request) {
+    let size = 0;
+    let body = "";
+    request.setEncoding("utf8");
+    for await (const chunk of request) {
+        size += Buffer.byteLength(chunk);
+        if (size > MAX_REQUEST_BODY_BYTES) {
+            throw new TypeError(
+                `Fork request exceeds ${MAX_REQUEST_BODY_BYTES} bytes.`,
+            );
+        }
+        body += chunk;
+    }
+    if (!body) throw new TypeError("Fork request body is required.");
+    return JSON.parse(body);
+}
+
+function statusForForkResult(result) {
+    switch (result?.kind) {
+        case "created":
+            return 201;
+        case "fork_failed":
+            return 409;
+        case "navigation_failed":
+            return 502;
+        case "lineage_failed":
+            return 500;
+        default:
+            throw new TypeError("Fork service returned an unknown result.");
+    }
 }

@@ -1,4 +1,5 @@
 import { readSessionEvents } from "./event-reader.mjs";
+import { canForkSession } from "./runtime.mjs";
 import { groupTurns } from "./transcript.mjs";
 
 /** @typedef {import("@github/copilot-sdk").CopilotSession} JoinedSession */
@@ -8,6 +9,7 @@ import { groupTurns } from "./transcript.mjs";
  *   id: string,
  *   userEventId: string,
  *   assistantEventId: string | null,
+ *   toEventId: string | null,
  *   userContent: string,
  *   assistantContent: string,
  *   status: "completed" | "incomplete",
@@ -18,7 +20,7 @@ import { groupTurns } from "./transcript.mjs";
 /**
  * @typedef {{
  *   kind: "ready",
- *   readOnly: true,
+ *   canFork: boolean,
  *   session: { id: string, title: string },
  *   turns: TurnNode[],
  *   updatedAt: string
@@ -50,6 +52,10 @@ const REQUIRED_CAPABILITIES = [
     [
         "commands.enqueue",
         (session) => typeof session.rpc.commands?.enqueue === "function",
+    ],
+    [
+        "sessions.fork",
+        (session) => canForkSession(session),
     ],
 ];
 
@@ -97,7 +103,7 @@ export async function loadCurrentSessionMap(session) {
         });
         return {
             kind: "ready",
-            readOnly: true,
+            canFork: !activity.processing,
             session: {
                 id: session.sessionId,
                 title:
