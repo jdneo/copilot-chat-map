@@ -17,11 +17,16 @@ const MAX_REQUEST_BODY_BYTES = 4_096;
 /**
  * @param {{
  *   loadSnapshot: () => Promise<object>,
- *   forkFromTurn: (request: object) => Promise<object>
+ *   forkFromTurn: (request: object) => Promise<object>,
+ *   openSession: (request: object) => Promise<object>
  * }} handlers
  * @returns {Promise<{ server: import("node:http").Server, url: string }>}
  */
-export async function startCanvasServer({ loadSnapshot, forkFromTurn }) {
+export async function startCanvasServer({
+    loadSnapshot,
+    forkFromTurn,
+    openSession,
+}) {
     const token = randomBytes(32).toString("hex");
     const server = createServer(async (request, response) => {
         setSecurityHeaders(response);
@@ -62,8 +67,32 @@ export async function startCanvasServer({ loadSnapshot, forkFromTurn }) {
                     });
                     return;
                 }
-                const result = await forkFromTurn(await readJsonBody(request));
+                const result = await forkFromTurn(
+                    await readJsonBody(request, "Fork"),
+                );
                 sendJson(response, statusForForkResult(result), result);
+                return;
+            }
+
+            if (
+                request.method === "POST" &&
+                url.pathname === "/api/open-session"
+            ) {
+                if (
+                    !request.headers["content-type"]
+                        ?.toLowerCase()
+                        .startsWith("application/json")
+                ) {
+                    sendJson(response, 415, {
+                        kind: "error",
+                        message: "Open Chat requests must use application/json.",
+                    });
+                    return;
+                }
+                const result = await openSession(
+                    await readJsonBody(request, "Open Chat"),
+                );
+                sendJson(response, statusForOpenResult(result), result);
                 return;
             }
 
@@ -139,7 +168,7 @@ function sendJson(response, statusCode, value) {
     response.end(JSON.stringify(value));
 }
 
-async function readJsonBody(request) {
+async function readJsonBody(request, operationName) {
     let size = 0;
     let body = "";
     request.setEncoding("utf8");
@@ -147,12 +176,14 @@ async function readJsonBody(request) {
         size += Buffer.byteLength(chunk);
         if (size > MAX_REQUEST_BODY_BYTES) {
             throw new TypeError(
-                `Fork request exceeds ${MAX_REQUEST_BODY_BYTES} bytes.`,
+                `${operationName} request exceeds ${MAX_REQUEST_BODY_BYTES} bytes.`,
             );
         }
         body += chunk;
     }
-    if (!body) throw new TypeError("Fork request body is required.");
+    if (!body) {
+        throw new TypeError(`${operationName} request body is required.`);
+    }
     return JSON.parse(body);
 }
 
@@ -168,5 +199,18 @@ function statusForForkResult(result) {
             return 500;
         default:
             throw new TypeError("Fork service returned an unknown result.");
+    }
+}
+
+function statusForOpenResult(result) {
+    switch (result?.kind) {
+        case "opened":
+            return 200;
+        case "navigation_failed":
+            return 502;
+        case "unavailable":
+            return 409;
+        default:
+            throw new TypeError("Open Chat service returned an unknown result.");
     }
 }

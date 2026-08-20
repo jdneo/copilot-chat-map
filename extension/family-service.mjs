@@ -1,5 +1,12 @@
 import { readSessionEvents } from "./event-reader.mjs";
-import { canForkSession } from "./runtime.mjs";
+import { createLineageStore } from "./lineage-store.mjs";
+import {
+    canCheckSessionsInUse,
+    canForkSession,
+    canListSessions,
+    checkSessionsInUse,
+    listLocalSessions,
+} from "./runtime.mjs";
 import { groupTurns } from "./transcript.mjs";
 
 /** @typedef {import("@github/copilot-sdk").CopilotSession} JoinedSession */
@@ -21,7 +28,10 @@ import { groupTurns } from "./transcript.mjs";
  * @typedef {{
  *   kind: "ready",
  *   canFork: boolean,
+ *   currentSessionId: string,
+ *   family: { id: string, rootSessionId: string },
  *   session: { id: string, title: string },
+ *   lanes: object[],
  *   turns: TurnNode[],
  *   updatedAt: string
  * }} ReadyMap
@@ -61,12 +71,33 @@ const REQUIRED_CAPABILITIES = [
 
 /**
  * @param {JoinedSession} session
+ * @param {{
+ *   lineageStore?: ReturnType<typeof createLineageStore>,
+ *   readEvents?: typeof readSessionEvents,
+ *   listSessions?: () => Promise<object[]>,
+ *   checkInUse?: (sessionIds: string[]) => Promise<Set<string>>
+ * }} [dependencies]
  * @returns {Promise<CurrentSessionMap>}
  */
-export async function loadCurrentSessionMap(session) {
+export async function loadCurrentSessionMap(
+    session,
+    dependencies = {},
+) {
+    const {
+        lineageStore = createLineageStore(),
+        readEvents = readSessionEvents,
+        listSessions = () => listLocalSessions(session),
+        checkInUse = (sessionIds) => checkSessionsInUse(session, sessionIds),
+    } = dependencies;
     const missingCapabilities = REQUIRED_CAPABILITIES.filter(
         ([, isAvailable]) => !isAvailable(session),
     ).map(([name]) => name);
+    if (!dependencies.listSessions && !canListSessions(session)) {
+        missingCapabilities.push("sessions.list");
+    }
+    if (!dependencies.checkInUse && !canCheckSessionsInUse(session)) {
+        missingCapabilities.push("sessions.checkInUse");
+    }
 
     if (missingCapabilities.length > 0) {
         return {
@@ -78,14 +109,18 @@ export async function loadCurrentSessionMap(session) {
     let metadata;
     let name;
     let activity;
+    let lineage;
+    let listedSessions;
     try {
-        [metadata, name, activity] = await Promise.all([
+        [metadata, name, activity, lineage, listedSessions] = await Promise.all([
             session.rpc.metadata.snapshot(),
             session.rpc.name.get(),
             session.rpc.metadata.isProcessing(),
+            lineageStore.read(),
+            listSessions(),
         ]);
     } catch (error) {
-        return errorState("Could not inspect the current Copilot session.", error);
+        return errorState("Could not restore the Conversation Family.", error);
     }
 
     if (metadata.isRemote) {
@@ -97,22 +132,128 @@ export async function loadCurrentSessionMap(session) {
     }
 
     try {
-        const events = await readSessionEvents(session.sessionId);
-        const turns = groupTurns(events, {
-            isProcessing: activity.processing,
+        const familyId = lineage.sessionToFamily[session.sessionId];
+        const family = familyId
+            ? lineage.families[familyId]
+            : untrackedFamily(session.sessionId);
+        if (!family) {
+            throw new TypeError(
+                `Conversation Family ${familyId} is missing for ${session.sessionId}.`,
+            );
+        }
+
+        const members = orderedMembers(family);
+        const sessionIds = members.map((member) => member.sessionId);
+        const inUse = await checkInUse(sessionIds);
+        const metadataById = new Map(
+            listedSessions.map((entry) => [entry.sessionId, entry]),
+        );
+        metadataById.set(session.sessionId, {
+            ...metadataById.get(session.sessionId),
+            sessionId: session.sessionId,
+            name: name.name || metadataById.get(session.sessionId)?.name,
+            summary:
+                metadata.summary ||
+                metadataById.get(session.sessionId)?.summary ||
+                metadata.initialName,
+            modifiedTime:
+                metadata.modifiedTime ||
+                metadataById.get(session.sessionId)?.modifiedTime,
+            isRemote: metadata.isRemote,
         });
+
+        const eventsById = new Map();
+        await Promise.all(
+            members.map(async (member) => {
+                try {
+                    eventsById.set(
+                        member.sessionId,
+                        await readEvents(member.sessionId),
+                    );
+                } catch (error) {
+                    if (!hasCode(error, "ENOENT")) throw error;
+                    eventsById.set(member.sessionId, null);
+                }
+            }),
+        );
+
+        const turnsById = new Map();
+        const lanes = members.map((member) => {
+            const entry = metadataById.get(member.sessionId);
+            const events = eventsById.get(member.sessionId);
+            const available = Boolean(entry && !entry.isRemote && events);
+            const parentTurns = member.parentSessionId
+                ? turnsById.get(member.parentSessionId) || []
+                : [];
+            const checkpointIndex = member.parentSessionId
+                ? parentTurns.findIndex(
+                      (turn) => turn.id === member.sourceUserEventId,
+                  )
+                : -1;
+            const inheritedTurnCount =
+                member.parentSessionId && checkpointIndex >= 0
+                    ? checkpointIndex + 1
+                    : 0;
+            const laneEvents =
+                events && member.parentSessionId
+                    ? incrementalEvents(
+                          events,
+                          eventsById.get(member.parentSessionId),
+                          member,
+                      )
+                    : events || [];
+            const turns = available
+                ? groupTurns(laneEvents, {
+                      isProcessing:
+                          member.sessionId === session.sessionId &&
+                          activity.processing,
+                  })
+                : [];
+            turnsById.set(member.sessionId, turns);
+
+            return {
+                session: {
+                    id: member.sessionId,
+                    title:
+                        entry?.name ||
+                        entry?.summary ||
+                        (available ? "Untitled session" : "Session unavailable"),
+                    summary: entry?.summary || "",
+                    modifiedTime: entry?.modifiedTime || null,
+                    available,
+                    inUse: inUse.has(member.sessionId),
+                    current: member.sessionId === session.sessionId,
+                },
+                parentSessionId: member.parentSessionId,
+                inheritedTurnCount,
+                sourceCheckpoint: member.parentSessionId
+                    ? {
+                          sessionId: member.parentSessionId,
+                          turnId: member.sourceUserEventId,
+                          available: checkpointIndex >= 0,
+                      }
+                    : null,
+                turns,
+            };
+        });
+
+        const currentLane = lanes.find((lane) => lane.session.current);
+        if (!currentLane) {
+            throw new TypeError(
+                `Current session ${session.sessionId} is not in its Conversation Family.`,
+            );
+        }
         return {
             kind: "ready",
             canFork: !activity.processing,
-            session: {
-                id: session.sessionId,
-                title:
-                    name.name ||
-                    metadata.initialName ||
-                    metadata.summary ||
-                    "Current Copilot session",
+            currentSessionId: session.sessionId,
+            family: {
+                id: family.familyId,
+                rootSessionId: family.rootSessionId,
             },
-            turns,
+            session: currentLane.session,
+            lanes,
+            turns: currentLane.turns,
             updatedAt: new Date().toISOString(),
         };
     } catch (error) {
@@ -128,8 +269,95 @@ export async function loadCurrentSessionMap(session) {
                     "The current session does not have a readable local event log.",
             };
         }
+
         return errorState("Could not read the current session event log.", error);
     }
+}
+
+function untrackedFamily(sessionId) {
+    return {
+        familyId: sessionId,
+        rootSessionId: sessionId,
+        members: {
+            [sessionId]: {
+                sessionId,
+                parentSessionId: null,
+                sourceUserEventId: null,
+                sourceAssistantEventId: null,
+                toEventId: null,
+                childForkMarkerEventId: null,
+                siblingOrdinal: 0,
+                createdAt: new Date(0).toISOString(),
+            },
+        },
+    };
+}
+
+function orderedMembers(family) {
+    const ordered = [];
+    const visit = (parentSessionId) => {
+        Object.values(family.members)
+            .filter((member) => member.parentSessionId === parentSessionId)
+            .sort(
+                (left, right) =>
+                    left.siblingOrdinal - right.siblingOrdinal ||
+                    left.createdAt.localeCompare(right.createdAt) ||
+                    left.sessionId.localeCompare(right.sessionId),
+            )
+            .forEach((member) => {
+                ordered.push(member);
+                visit(member.sessionId);
+            });
+    };
+    const root = family.members[family.rootSessionId];
+    if (!root) {
+        throw new TypeError(
+            `Conversation Family ${family.familyId} has no root member.`,
+        );
+    }
+    ordered.push(root);
+    visit(root.sessionId);
+    if (ordered.length !== Object.keys(family.members).length) {
+        throw new TypeError(
+            `Conversation Family ${family.familyId} is not a connected tree.`,
+        );
+    }
+    return ordered;
+}
+
+function incrementalEvents(childEvents, parentEvents, member) {
+    const markerIndex = childEvents.findIndex(
+        (event) => event.id === member.childForkMarkerEventId,
+    );
+    if (markerIndex >= 0) return childEvents.slice(markerIndex + 1);
+    if (!Array.isArray(parentEvents)) {
+        throw new TypeError(
+            `Fork boundary unavailable for child session ${member.sessionId}.`,
+        );
+    }
+
+    const parentBoundary = member.toEventId
+        ? parentEvents.findIndex((event) => event.id === member.toEventId)
+        : parentEvents.length;
+    if (parentBoundary < 0) {
+        throw new TypeError(
+            `Fork checkpoint boundary is missing for child session ${member.sessionId}.`,
+        );
+    }
+    const sharedEvents = parentEvents.slice(0, parentBoundary);
+    if (
+        sharedEvents.length > childEvents.length ||
+        sharedEvents.some((event, index) => event.id !== childEvents[index]?.id)
+    ) {
+        throw new TypeError(
+            `Fork boundary is contradictory for child session ${member.sessionId}.`,
+        );
+    }
+    return childEvents.slice(sharedEvents.length);
+}
+
+function hasCode(error, code) {
+    return Boolean(error && typeof error === "object" && error.code === code);
 }
 
 /**

@@ -5,6 +5,20 @@ export function canForkSession(session) {
     );
 }
 
+export function canListSessions(session) {
+    return (
+        typeof session.rpc.sessions?.list === "function" ||
+        typeof session.connection?.sendRequest === "function"
+    );
+}
+
+export function canCheckSessionsInUse(session) {
+    return (
+        typeof session.rpc.sessions?.checkInUse === "function" ||
+        typeof session.connection?.sendRequest === "function"
+    );
+}
+
 export function forkSession(session, params) {
     if (typeof session.rpc.sessions?.fork === "function") {
         return session.rpc.sessions.fork(params);
@@ -15,5 +29,43 @@ export function forkSession(session, params) {
     }
     throw new Error(
         "Conversation Fork Map requires the experimental sessions.fork runtime capability.",
+    );
+}
+
+export async function listLocalSessions(session) {
+    const result = await serverRequest(session, "list", "sessions.list", {
+        source: "local",
+    });
+    return result.sessions;
+}
+
+export async function checkSessionsInUse(session, sessionIds) {
+    const result = await serverRequest(
+        session,
+        "checkInUse",
+        "sessions.checkInUse",
+        { sessionIds },
+    );
+    return new Set(result.inUse);
+}
+
+export function navigateToSession(session, sessionId) {
+    if (typeof session.rpc.commands?.enqueue !== "function") {
+        throw new Error(
+            "Host navigation is unavailable. Open the session manually from the session list.",
+        );
+    }
+    return session.rpc.commands.enqueue({ command: `/resume ${sessionId}` });
+}
+
+function serverRequest(session, rpcMethod, wireMethod, params) {
+    if (typeof session.rpc.sessions?.[rpcMethod] === "function") {
+        return session.rpc.sessions[rpcMethod](params);
+    }
+    if (typeof session.connection?.sendRequest === "function") {
+        return session.connection.sendRequest(wireMethod, params);
+    }
+    throw new Error(
+        `Conversation Fork Map requires the experimental ${wireMethod} runtime capability.`,
     );
 }

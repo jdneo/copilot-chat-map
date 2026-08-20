@@ -1,10 +1,11 @@
 import { createCanvas, joinSession } from "@github/copilot-sdk/extension";
 
 import { closeServer, startCanvasServer } from "./canvas-server.mjs";
-import { readSessionEvents } from "./event-reader.mjs";
+import { isValidLocalSessionId, readSessionEvents } from "./event-reader.mjs";
 import { loadCurrentSessionMap } from "./family-service.mjs";
 import { createForkService } from "./fork-service.mjs";
 import { createLineageStore } from "./lineage-store.mjs";
+import { navigateToSession } from "./runtime.mjs";
 
 const CANVAS_ID = "chat-fork-map";
 const CURRENT_MAP_INSTANCE_ID = "chat-fork-map-current";
@@ -12,6 +13,7 @@ const servers = new Map();
 /** @type {import("@github/copilot-sdk").CopilotSession | undefined} */
 let session;
 let forkService;
+const lineageStore = createLineageStore();
 
 function currentSession() {
     if (!session) {
@@ -21,12 +23,59 @@ function currentSession() {
 }
 
 async function loadSnapshot() {
-    return loadCurrentSessionMap(currentSession());
+    return loadCurrentSessionMap(currentSession(), { lineageStore });
 }
 
 function forkFromTurn(request) {
     if (!forkService) {
         throw new Error("Conversation Fork Map fork service is not ready.");
+    }
+
+    async function openSession(request) {
+        const sessionId = request?.sessionId;
+        if (!isValidLocalSessionId(sessionId)) {
+            return {
+                kind: "unavailable",
+                message: "Open Chat requires a valid local session ID.",
+            };
+        }
+
+        const snapshot = await loadSnapshot();
+        if (snapshot.kind !== "ready") {
+            return {
+                kind: "unavailable",
+                message: snapshot.message,
+            };
+        }
+        const lane = snapshot.lanes.find(
+            (candidate) => candidate.session.id === sessionId,
+        );
+        if (!lane?.session.available) {
+            return {
+                kind: "unavailable",
+                sessionId,
+                message: "This family session is no longer available locally.",
+            };
+        }
+        if (lane.session.current) {
+            return {
+                kind: "opened",
+                sessionId,
+                navigation: "already_current",
+            };
+        }
+
+        try {
+            await navigateToSession(currentSession(), sessionId);
+            return { kind: "opened", sessionId, navigation: "requested" };
+        } catch (error) {
+            const detail = error instanceof Error ? ` ${error.message}` : "";
+            return {
+                kind: "navigation_failed",
+                sessionId,
+                message: `Could not open this chat.${detail} Open it manually from the session list.`,
+            };
+        }
     }
     return forkService.forkFromTurn(request);
 }
@@ -35,12 +84,12 @@ const canvas = createCanvas({
     id: CANVAS_ID,
     displayName: "Conversation Fork Map",
     description:
-        "Visualize a local conversation, fork from completed Turn Nodes, and enter the child chat; use instance chat-fork-map-current to focus and refresh the same panel.",
+        "Visualize a local Conversation Family, fork from completed Turn Nodes, and open any available session; use instance chat-fork-map-current to focus and refresh the same panel.",
     actions: [
         {
             name: "refresh_map",
             description:
-                "Refresh the current local session and report the latest map state.",
+                "Refresh the local Conversation Family and report its latest map state.",
             handler: async () => {
                 const snapshot = await loadSnapshot();
                 return snapshot.kind === "ready"
@@ -82,6 +131,22 @@ const canvas = createCanvas({
             },
             handler: async (context) => forkFromTurn(context.input),
         },
+        {
+            name: "open_branch",
+            description: "Open an existing available family session in Chat View.",
+            inputSchema: {
+                type: "object",
+                additionalProperties: false,
+                required: ["sessionId"],
+                properties: {
+                    sessionId: {
+                        type: "string",
+                        description: "The local family session ID to open.",
+                    },
+                },
+            },
+            handler: async (context) => openSession(context.input),
+        },
     ],
     open: async (context) => {
         let entry = servers.get(context.instanceId);
@@ -89,6 +154,7 @@ const canvas = createCanvas({
             entry = await startCanvasServer({
                 loadSnapshot,
                 forkFromTurn,
+                openSession,
             });
             servers.set(context.instanceId, entry);
         }
@@ -131,6 +197,6 @@ session = await joinSession({
 
 forkService = createForkService({
     session,
-    lineageStore: createLineageStore(),
+    lineageStore,
     readEvents: readSessionEvents,
 });

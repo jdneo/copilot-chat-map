@@ -1,9 +1,10 @@
 # Conversation Fork Map
 
-Conversation Fork Map is a Copilot Canvas Extension that opens the current local
-session as one lane of grouped Turn Nodes. Select a completed turn and use
-`+ New branch` to create a child session at that checkpoint and enter its Chat
-View.
+Conversation Fork Map is a Copilot Canvas Extension that restores a local
+Conversation Family as session lanes. Shared turns remain in the parent lane,
+each child starts after its Fork Checkpoint, and the Current Session is focused.
+Use `Open Chat` on another lane to switch sessions, or select a completed turn
+and use `+ New branch` to create a child at that checkpoint.
 
 ## Run from source
 
@@ -31,6 +32,10 @@ The extension requires Copilot 1.0.80 or newer. It reads the current local
 session's native `events.jsonl` without modifying it. Structured lineage is
 created lazily after the first successful fork and stored under the extension's
 local `artifacts` directory.
+
+Session names, summaries, modification times, and availability are read from
+current local session metadata whenever the map refreshes. Corrupt lineage is
+shown as an error instead of being rendered as a successful family.
 
 ## Tests
 

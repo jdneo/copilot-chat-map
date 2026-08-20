@@ -71,10 +71,76 @@ export function renderHtml() {
       border-radius: 10px;
       background: var(--background-color-muted, #161b22);
     }
+    .family {
+      display: flex;
+      align-items: flex-start;
+      gap: 48px;
+      min-width: min-content;
+      overflow-x: auto;
+      padding: 2px;
+    }
     .lane {
       position: relative;
       width: min(340px, 100%);
-      margin: 0 auto;
+      min-width: min(340px, calc(100vw - 48px));
+    }
+    .lane.current {
+      filter: drop-shadow(0 0 8px color-mix(in srgb, var(--true-color-blue, #58a6ff) 32%, transparent));
+    }
+    .lane-header {
+      margin-bottom: 18px;
+      padding: 12px;
+      border: 1px solid var(--border-color-default, #30363d);
+      border-radius: 10px;
+      background: var(--background-color-muted, #161b22);
+    }
+    .lane.current > .lane-header {
+      border-color: var(--true-color-blue, #58a6ff);
+    }
+    .lane-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .lane-heading h2 {
+      overflow-wrap: anywhere;
+      font-size: 16px;
+      line-height: 22px;
+    }
+    .lane-badge {
+      flex: none;
+      color: var(--true-color-blue, #58a6ff);
+      font-size: 12px;
+      font-weight: var(--font-weight-semibold, 600);
+    }
+    .lane-meta {
+      margin-top: 7px;
+      color: var(--text-color-muted, #8b949e);
+      font-size: 12px;
+    }
+    .lane-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .checkpoint-link {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: var(--true-color-blue, #58a6ff);
+      font-size: 12px;
+    }
+    .checkpoint-link:disabled {
+      color: var(--text-color-muted, #8b949e);
+      cursor: not-allowed;
+      opacity: 1;
+    }
+    .open-chat {
+      margin-left: auto;
+      white-space: nowrap;
     }
     .turn {
       position: relative;
@@ -180,6 +246,7 @@ export function renderHtml() {
     let currentState;
     let forkPending = false;
     let availabilityError = "";
+    let focusedSessionId = "";
 
     function element(tag, className, text) {
       const node = document.createElement(tag);
@@ -314,18 +381,122 @@ export function renderHtml() {
       }
     }
 
-    function renderReady(state) {
-      currentState = state;
-      availabilityError = "";
-      const lane = element("section", "lane");
+    async function openChat(sessionId) {
+      showNotice("Opening chat", "Requesting a switch to the selected session...", false);
+      try {
+        const response = await fetch("/api/open-session?token=" + encodeURIComponent(token), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        });
+        const result = await response.json();
+        if (result.kind === "opened") {
+          showNotice("Opening chat", "The host is switching to the selected session.", false);
+          return;
+        }
+        showNotice(
+          "Could not open chat",
+          result.message || "Open this session manually from the session list.",
+          true,
+        );
+      } catch (error) {
+        showNotice(
+          "Could not open chat",
+          (error instanceof Error ? error.message + " " : "") +
+            "Open this session manually from the session list.",
+          true,
+        );
+      }
+    }
 
-      if (state.turns.length === 0) {
-        lane.append(element("div", "state", "No visible conversation turns yet."));
+    function focusCheckpoint(checkpoint) {
+      const turn = Array.from(document.querySelectorAll(".turn")).find(
+        (candidate) =>
+          candidate.dataset.sessionId === checkpoint.sessionId &&
+          candidate.dataset.turnId === checkpoint.turnId,
+      );
+      if (!turn) {
+        showNotice(
+          "Fork Checkpoint unavailable",
+          "The source turn could not be found in the parent session.",
+          true,
+        );
+        return;
+      }
+      selectTurn(turn);
+      turn.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+    }
+
+    function renderLane(state, laneState) {
+      const lane = element(
+        "section",
+        "lane" + (laneState.session.current ? " current" : ""),
+      );
+      lane.dataset.sessionId = laneState.session.id;
+
+      const header = element("div", "lane-header");
+      const heading = element("div", "lane-heading");
+      heading.append(element("h2", "", laneState.session.title));
+      if (laneState.session.current) {
+        heading.append(element("span", "lane-badge", "Current Session"));
+      }
+      header.append(heading);
+
+      const details = [];
+      if (laneState.session.summary && laneState.session.summary !== laneState.session.title) {
+        details.push(laneState.session.summary);
+      }
+      if (laneState.session.modifiedTime) {
+        const modified = new Date(laneState.session.modifiedTime);
+        if (!Number.isNaN(modified.valueOf())) details.push("Modified " + modified.toLocaleString());
+      }
+      if (!laneState.session.available) details.push("Session unavailable");
+      if (details.length) header.append(element("p", "lane-meta", details.join(" · ")));
+
+      const actions = element("div", "lane-actions");
+      if (laneState.sourceCheckpoint) {
+        const checkpoint = element(
+          "button",
+          "checkpoint-link",
+          laneState.inheritedTurnCount +
+            " inherited " +
+            (laneState.inheritedTurnCount === 1 ? "turn" : "turns") +
+            " · Fork Checkpoint",
+        );
+        checkpoint.type = "button";
+        checkpoint.disabled = !laneState.sourceCheckpoint.available;
+        checkpoint.addEventListener("click", () =>
+          focusCheckpoint(laneState.sourceCheckpoint),
+        );
+        actions.append(checkpoint);
+      }
+      if (!laneState.session.current) {
+        const openButton = element("button", "open-chat", "Open Chat");
+        openButton.type = "button";
+        openButton.disabled = !laneState.session.available;
+        openButton.addEventListener("click", () => openChat(laneState.session.id));
+        actions.append(openButton);
+      }
+      if (actions.childElementCount) header.append(actions);
+      lane.append(header);
+
+      if (laneState.turns.length === 0) {
+        lane.append(
+          element(
+            "div",
+            "state",
+            laneState.session.available
+              ? "No post-fork conversation turns yet."
+              : "Session unavailable.",
+          ),
+        );
       }
 
-      state.turns.forEach((turn) => {
+      laneState.turns.forEach((turn) => {
         const completed = turn.status === "completed";
         const article = element("article", "turn " + turn.status);
+        article.dataset.sessionId = laneState.session.id;
+        article.dataset.turnId = turn.id;
         article.setAttribute("aria-label", completed ? "Completed turn" : "Incomplete turn");
         article.setAttribute("aria-selected", "false");
         article.title = completed ? "Completed" : "Incomplete";
@@ -349,7 +520,7 @@ export function renderHtml() {
           toggle.hidden = body.scrollHeight <= body.clientHeight + 1;
         });
 
-        if (completed) {
+        if (completed && laneState.session.current) {
           const branchButton = element("button", "branch-button", "+ New branch");
           branchButton.type = "button";
           branchButton.dataset.turnId = turn.id;
@@ -358,13 +529,37 @@ export function renderHtml() {
             createBranch(turn);
           });
           article.append(branchButton);
+        }
+        if (completed) {
           article.addEventListener("click", () => selectTurn(article));
         }
 
         lane.append(article);
       });
+      return lane;
+    }
 
-      content.replaceChildren(lane);
+    function renderReady(state) {
+      currentState = state;
+      availabilityError = "";
+      const family = element("section", "family");
+      const lanes = state.lanes || [{
+        session: { ...state.session, current: true, available: true },
+        sourceCheckpoint: null,
+        inheritedTurnCount: 0,
+        turns: state.turns,
+      }];
+      lanes.forEach((lane) => family.append(renderLane(state, lane)));
+      content.replaceChildren(family);
+      if (focusedSessionId !== state.currentSessionId) {
+        focusedSessionId = state.currentSessionId;
+        requestAnimationFrame(() => {
+          document.querySelector(".lane.current")?.scrollIntoView({
+            block: "nearest",
+            inline: "center",
+          });
+        });
+      }
       renderForkAvailability();
     }
 

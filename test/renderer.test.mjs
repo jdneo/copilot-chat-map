@@ -17,3 +17,19 @@ test("renders selectable checkpoint controls and the fork API workflow", () => {
     assert.ok(script);
     assert.doesNotThrow(() => new vm.Script(script));
 });
+
+test("renders family lanes with explicit chat and checkpoint navigation", () => {
+    const html = renderHtml();
+
+    assert.match(html, /state\.lanes/);
+    assert.match(html, /"Current Session"/);
+    assert.match(html, /"Open Chat"/);
+    assert.match(html, /\/api\/open-session/);
+    assert.match(html, /Fork Checkpoint/);
+    assert.match(html, /scrollIntoView/);
+    assert.match(html, /article\.dataset\.turnId = turn\.id/);
+    assert.doesNotMatch(
+        html,
+        /article\.addEventListener\("click",\s*\(\)\s*=>\s*openChat/,
+    );
+});
