@@ -196,7 +196,8 @@ export async function loadCurrentSessionMap(
                 (!checkpoint ||
                     checkpoint.assistantEventId !==
                         member.sourceAssistantEventId ||
-                    checkpoint.toEventId !== member.toEventId)
+                    (member.toEventId !== null &&
+                        checkpoint.toEventId !== member.toEventId))
             ) {
                 throw new TypeError(
                     `Fork checkpoint is contradictory for child session ${member.sessionId}.`,
@@ -212,6 +213,7 @@ export async function loadCurrentSessionMap(
                           events,
                           eventsById.get(member.parentSessionId),
                           member,
+                          checkpoint,
                       )
                     : events || [];
             const turns = available
@@ -337,7 +339,7 @@ function orderedMembers(family) {
     return ordered;
 }
 
-function incrementalEvents(childEvents, parentEvents, member) {
+function incrementalEvents(childEvents, parentEvents, member, checkpoint) {
     const markerIndex = childEvents.findIndex(
         (event) => event.id === member.childForkMarkerEventId,
     );
@@ -354,7 +356,7 @@ function incrementalEvents(childEvents, parentEvents, member) {
         if (Array.isArray(parentEvents)) {
             validateSharedPrefix(
                 childEvents.slice(0, markerIndex),
-                sharedParentEvents(parentEvents, member),
+                sharedParentEvents(parentEvents, member, checkpoint),
                 member,
             );
         }
@@ -366,14 +368,16 @@ function incrementalEvents(childEvents, parentEvents, member) {
         );
     }
 
-    const sharedEvents = sharedParentEvents(parentEvents, member);
+    const sharedEvents = sharedParentEvents(parentEvents, member, checkpoint);
     validateSharedPrefix(childEvents, sharedEvents, member);
     return childEvents.slice(sharedEvents.length);
 }
 
-function sharedParentEvents(parentEvents, member) {
-    const parentBoundary = member.toEventId
-        ? parentEvents.findIndex((event) => event.id === member.toEventId)
+function sharedParentEvents(parentEvents, member, checkpoint) {
+    const currentBoundaryEventId =
+        member.toEventId || checkpoint?.toEventId || null;
+    const parentBoundary = currentBoundaryEventId
+        ? parentEvents.findIndex((event) => event.id === currentBoundaryEventId)
         : parentEvents.length;
     if (parentBoundary < 0) {
         throw new TypeError(

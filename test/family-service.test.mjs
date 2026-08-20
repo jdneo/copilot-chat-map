@@ -309,6 +309,37 @@ test("rejects a Fork Checkpoint that contradicts the parent transcript", async (
     }
 });
 
+test("keeps a final-turn fork valid after the parent continues", async () => {
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-family-parent-continued-"),
+    );
+    const lineageStore = createLineageStore({
+        filePath: path.join(temporaryRoot, "lineage-v1.json"),
+    });
+    await lineageStore.recordFork({
+        ...forkRecord(),
+        toEventId: null,
+    });
+
+    try {
+        const state = await loadCurrentSessionMap(testSession(PARENT_ID), {
+            lineageStore,
+            readEvents: async (sessionId) =>
+                sessionId === PARENT_ID ? parentEvents() : childEvents(),
+            listSessions: async () => sessionMetadata(),
+            checkInUse: async () => new Set(),
+        });
+
+        assert.equal(state.kind, "ready", state.message);
+        assert.deepEqual(
+            state.lanes[1].turns.map((turn) => turn.userContent),
+            ["Child-only prompt"],
+        );
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
 function testSession(sessionId) {
     return {
         sessionId,
