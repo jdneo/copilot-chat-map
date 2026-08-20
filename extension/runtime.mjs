@@ -49,13 +49,21 @@ export async function checkSessionsInUse(session, sessionIds) {
     return new Set(result.inUse);
 }
 
-export function navigateToSession(session, sessionId) {
+export async function navigateToSession(session, sessionId) {
     if (typeof session.rpc.commands?.enqueue !== "function") {
         throw new Error(
             "Host navigation is unavailable. Open the session manually from the session list.",
         );
     }
-    return session.rpc.commands.enqueue({ command: `/resume ${sessionId}` });
+    const result = await session.rpc.commands.enqueue({
+        command: `/resume ${sessionId}`,
+    });
+    if (result?.queued !== true) {
+        throw new Error(
+            "The host did not accept the session switch request.",
+        );
+    }
+    return result;
 }
 
 function serverRequest(session, rpcMethod, wireMethod, params) {

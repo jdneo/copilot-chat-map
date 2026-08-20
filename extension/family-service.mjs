@@ -179,9 +179,11 @@ export async function loadCurrentSessionMap(
 
         const turnsById = new Map();
         const lanes = members.map((member) => {
-            const entry = metadataById.get(member.sessionId);
+            const sessionMetadata = metadataById.get(member.sessionId);
             const events = eventsById.get(member.sessionId);
-            const available = Boolean(entry && !entry.isRemote && events);
+            const available = Boolean(
+                sessionMetadata && !sessionMetadata.isRemote && events,
+            );
             const parentTurns = member.parentSessionId
                 ? turnsById.get(member.parentSessionId) || []
                 : [];
@@ -215,11 +217,11 @@ export async function loadCurrentSessionMap(
                 session: {
                     id: member.sessionId,
                     title:
-                        entry?.name ||
-                        entry?.summary ||
+                        sessionMetadata?.name ||
+                        sessionMetadata?.summary ||
                         (available ? "Untitled session" : "Session unavailable"),
-                    summary: entry?.summary || "",
-                    modifiedTime: entry?.modifiedTime || null,
+                    summary: sessionMetadata?.summary || "",
+                    modifiedTime: sessionMetadata?.modifiedTime || null,
                     available,
                     inUse: inUse.has(member.sessionId),
                     current: member.sessionId === session.sessionId,
@@ -329,13 +331,37 @@ function incrementalEvents(childEvents, parentEvents, member) {
     const markerIndex = childEvents.findIndex(
         (event) => event.id === member.childForkMarkerEventId,
     );
-    if (markerIndex >= 0) return childEvents.slice(markerIndex + 1);
+    if (markerIndex >= 0) {
+        const marker = childEvents[markerIndex];
+        if (
+            marker.type !== "session.info" ||
+            marker.data?.infoType !== "fork"
+        ) {
+            throw new TypeError(
+                `The fork marker is contradictory for child session ${member.sessionId}.`,
+            );
+        }
+        if (Array.isArray(parentEvents)) {
+            validateSharedPrefix(
+                childEvents.slice(0, markerIndex),
+                sharedParentEvents(parentEvents, member),
+                member,
+            );
+        }
+        return childEvents.slice(markerIndex + 1);
+    }
     if (!Array.isArray(parentEvents)) {
         throw new TypeError(
             `Fork boundary unavailable for child session ${member.sessionId}.`,
         );
     }
 
+    const sharedEvents = sharedParentEvents(parentEvents, member);
+    validateSharedPrefix(childEvents, sharedEvents, member);
+    return childEvents.slice(sharedEvents.length);
+}
+
+function sharedParentEvents(parentEvents, member) {
     const parentBoundary = member.toEventId
         ? parentEvents.findIndex((event) => event.id === member.toEventId)
         : parentEvents.length;
@@ -344,7 +370,10 @@ function incrementalEvents(childEvents, parentEvents, member) {
             `Fork checkpoint boundary is missing for child session ${member.sessionId}.`,
         );
     }
-    const sharedEvents = parentEvents.slice(0, parentBoundary);
+    return parentEvents.slice(0, parentBoundary);
+}
+
+function validateSharedPrefix(childEvents, sharedEvents, member) {
     if (
         sharedEvents.length > childEvents.length ||
         sharedEvents.some((event, index) => event.id !== childEvents[index]?.id)
@@ -353,7 +382,6 @@ function incrementalEvents(childEvents, parentEvents, member) {
             `Fork boundary is contradictory for child session ${member.sessionId}.`,
         );
     }
-    return childEvents.slice(sharedEvents.length);
 }
 
 function hasCode(error, code) {

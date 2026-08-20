@@ -228,6 +228,35 @@ test("surfaces corrupt Conversation Family trees instead of rendering them", asy
     }
 });
 
+test("rejects a contradictory child fork marker", async () => {
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-family-marker-"),
+    );
+    const lineageStore = createLineageStore({
+        filePath: path.join(temporaryRoot, "lineage-v1.json"),
+    });
+    await lineageStore.recordFork(forkRecord());
+    const contradictoryChildEvents = childEvents();
+    contradictoryChildEvents[3] = user(CHILD_MARKER_ID, "Not a fork marker");
+
+    try {
+        const state = await loadCurrentSessionMap(testSession(PARENT_ID), {
+            lineageStore,
+            readEvents: async (sessionId) =>
+                sessionId === PARENT_ID
+                    ? parentEvents()
+                    : contradictoryChildEvents,
+            listSessions: async () => sessionMetadata(),
+            checkInUse: async () => new Set(),
+        });
+
+        assert.equal(state.kind, "error");
+        assert.match(state.message, /fork marker is contradictory/i);
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
 function testSession(sessionId) {
     return {
         sessionId,
