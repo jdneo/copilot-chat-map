@@ -46,7 +46,7 @@ export function renderHtml() {
       border-bottom: 1px solid var(--border-color-default, #30363d);
       background: var(--background-color-default, #0d1117);
     }
-    h1, h2, h3, p { margin: 0; }
+    h1, h2, p { margin: 0; }
     h1 {
       font-size: var(--text-title-medium, 20px);
       line-height: var(--leading-title-medium, 26px);
@@ -63,70 +63,33 @@ export function renderHtml() {
     }
     .lane {
       position: relative;
-      width: min(680px, 100%);
+      width: min(340px, 100%);
       margin: 0 auto;
-      padding-left: 30px;
-    }
-    .lane::before {
-      position: absolute;
-      top: 70px;
-      bottom: 18px;
-      left: 9px;
-      width: 2px;
-      background: var(--border-color-default, #30363d);
-      content: "";
-    }
-    .lane-header {
-      margin-bottom: 18px;
-      padding: 14px 16px;
-      border: 1px solid var(--color-focus-outline, #2f81f7);
-      border-radius: 10px;
-      background: var(--background-color-muted, #161b22);
-    }
-    .meta, .turn-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .meta { margin-top: 5px; color: var(--text-color-muted, #8b949e); }
-    .badge {
-      display: inline-flex;
-      border-radius: 999px;
-      padding: 2px 8px;
-      background: var(--true-color-blue-muted, #1f6feb33);
-      color: var(--true-color-blue, #58a6ff);
-      font-size: 12px;
-      font-weight: var(--font-weight-semibold, 600);
-      white-space: nowrap;
-    }
-    .badge.incomplete {
-      background: var(--true-color-red-muted, #f8514933);
-      color: var(--true-color-red, #ff7b72);
     }
     .turn {
       position: relative;
       margin-bottom: 18px;
-      overflow: hidden;
       border: 1px solid var(--border-color-default, #30363d);
       border-radius: 10px;
       background: var(--background-color-muted, #161b22);
     }
-    .turn::before {
+    .turn.completed { border-color: var(--true-color-green, #3fb950); }
+    .turn.incomplete {
+      border-color: var(--border-color-default, #30363d);
+      border-style: dashed;
+    }
+    .turn + .turn::before {
       position: absolute;
-      top: 20px;
-      left: -27px;
-      width: 12px;
-      height: 12px;
-      border: 3px solid var(--background-color-default, #0d1117);
-      border-radius: 50%;
-      background: var(--color-focus-outline, #2f81f7);
+      top: -19px;
+      left: 50%;
+      width: 2px;
+      height: 18px;
+      transform: translateX(-50%);
+      background: var(--border-color-default, #30363d);
       content: "";
     }
-    .turn-heading { padding: 10px 14px; }
-    .message { padding: 12px 14px 14px; border-top: 1px solid var(--border-color-default, #30363d); }
-    .message.user { border-left: 4px solid var(--true-color-blue, #58a6ff); }
-    .message.assistant { border-left: 4px solid var(--true-color-green, #3fb950); }
+    .message { padding: 9px 12px 10px; border-top: 1px solid var(--border-color-default, #30363d); }
+    .message:first-child { border-top: 0; }
     .role {
       margin-bottom: 6px;
       color: var(--text-color-muted, #8b949e);
@@ -140,6 +103,29 @@ export function renderHtml() {
       overflow-wrap: anywhere;
       white-space: pre-wrap;
       font: inherit;
+    }
+    .turn-body.collapsed {
+      max-height: 240px;
+      overflow: hidden;
+    }
+    .turn-toggle {
+      width: 100%;
+      border: 0;
+      border-top: 1px solid var(--border-color-default, #30363d);
+      border-radius: 0 0 10px 10px;
+      padding: 6px 12px;
+      background: var(--background-color-muted, #161b22);
+      color: var(--true-color-blue, #58a6ff);
+      font-size: 12px;
+      font-weight: var(--font-weight-semibold, 600);
+      text-align: center;
+    }
+    .turn-toggle:hover {
+      background: var(--background-color-default, #0d1117);
+    }
+    .turn-toggle:focus-visible {
+      border: 0;
+      border-top: 1px solid var(--border-color-default, #30363d);
     }
     .empty { color: var(--text-color-muted, #8b949e); font-style: italic; }
   </style>
@@ -175,31 +161,40 @@ export function renderHtml() {
 
     function renderReady(state) {
       const lane = element("section", "lane");
-      const laneHeader = element("div", "lane-header");
-      laneHeader.append(element("h2", "", state.session.title));
-      const meta = element("div", "meta");
-      meta.append(element("span", "", state.turns.length + (state.turns.length === 1 ? " turn" : " turns")));
-      meta.append(element("span", "badge", "Current session"));
-      laneHeader.append(meta);
-      lane.append(laneHeader);
 
       if (state.turns.length === 0) {
         lane.append(element("div", "state", "No visible conversation turns yet."));
       }
 
-      state.turns.forEach((turn, index) => {
-        const article = element("article", "turn");
-        const heading = element("div", "turn-heading");
-        heading.append(element("h3", "", "Turn " + (index + 1)));
-        heading.append(element("span", "badge " + (turn.status === "completed" ? "" : "incomplete"), turn.status === "completed" ? "Completed" : "Incomplete"));
-        article.append(heading);
-        article.append(renderMessage("You", turn.userContent, "user"));
-        article.append(renderMessage("Copilot", turn.assistantContent, "assistant"));
+      state.turns.forEach((turn) => {
+        const completed = turn.status === "completed";
+        const article = element("article", "turn " + turn.status);
+        article.setAttribute("aria-label", completed ? "Completed turn" : "Incomplete turn");
+        article.title = completed ? "Completed" : "Incomplete";
+        const body = element("div", "turn-body collapsed");
+        body.append(renderMessage("You", turn.userContent, "user"));
+        body.append(renderMessage("Copilot", turn.assistantContent, "assistant"));
+        article.append(body);
+
+        const toggle = element("button", "turn-toggle", "Show more");
+        toggle.type = "button";
+        toggle.hidden = true;
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.addEventListener("click", () => {
+          const expanded = !body.classList.toggle("collapsed");
+          toggle.textContent = expanded ? "Show less" : "Show more";
+          toggle.setAttribute("aria-expanded", String(expanded));
+        });
+        article.append(toggle);
+        requestAnimationFrame(() => {
+          toggle.hidden = body.scrollHeight <= body.clientHeight + 1;
+        });
+
         lane.append(article);
       });
 
       content.replaceChildren(lane);
-      status.textContent = "Read-only current session";
+      status.hidden = true;
     }
 
     function renderState(state) {
@@ -211,11 +206,13 @@ export function renderHtml() {
       panel.append(element("h2", "", state.kind === "unsupported" ? "Unavailable" : "Could not load map"));
       panel.append(element("p", "", state.message));
       content.replaceChildren(panel);
+      status.hidden = false;
       status.textContent = state.kind === "unsupported" ? "Unsupported session" : "Load error";
     }
 
     async function refresh() {
       refreshButton.disabled = true;
+      status.hidden = false;
       status.textContent = "Refreshing...";
       try {
         const response = await fetch("/api/state?token=" + encodeURIComponent(token), { cache: "no-store" });
