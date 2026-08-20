@@ -60,10 +60,6 @@ const REQUIRED_CAPABILITIES = [
         (session) => typeof session.rpc.name?.get === "function",
     ],
     [
-        "commands.enqueue",
-        (session) => typeof session.rpc.commands?.enqueue === "function",
-    ],
-    [
         "sessions.fork",
         (session) => canForkSession(session),
     ],
@@ -192,6 +188,20 @@ export async function loadCurrentSessionMap(
                       (turn) => turn.id === member.sourceUserEventId,
                   )
                 : -1;
+            const checkpoint =
+                checkpointIndex >= 0 ? parentTurns[checkpointIndex] : null;
+            if (
+                member.parentSessionId &&
+                eventsById.get(member.parentSessionId) &&
+                (!checkpoint ||
+                    checkpoint.assistantEventId !==
+                        member.sourceAssistantEventId ||
+                    checkpoint.toEventId !== member.toEventId)
+            ) {
+                throw new TypeError(
+                    `Fork checkpoint is contradictory for child session ${member.sessionId}.`,
+                );
+            }
             const inheritedTurnCount =
                 member.parentSessionId && checkpointIndex >= 0
                     ? checkpointIndex + 1

@@ -5,6 +5,7 @@ import {
     closeServer,
     startCanvasServer,
 } from "../extension/canvas-server.mjs";
+import { createOpenSessionService } from "../extension/navigation-service.mjs";
 
 test("creates a child through the authenticated canvas API", async () => {
     const requests = [];
@@ -62,18 +63,24 @@ test("creates a child through the authenticated canvas API", async () => {
 });
 
 test("opens an existing family session through the authenticated canvas API", async () => {
-    const requests = [];
+    const commands = [];
+    const service = createOpenSessionService({
+        getSession: () => ({
+            rpc: {
+                commands: {
+                    enqueue: async (params) => {
+                        commands.push(params);
+                        return { queued: true };
+                    },
+                },
+            },
+        }),
+        loadSnapshot: async () => navigationSnapshot(),
+    });
     const entry = await startCanvasServer({
         loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
         forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: async (request) => {
-            requests.push(request);
-            return {
-                kind: "opened",
-                sessionId: "22222222-2222-4222-8222-222222222222",
-                navigation: "requested",
-            };
-        },
+        openSession: service.openSession,
     });
 
     try {
@@ -93,8 +100,11 @@ test("opens an existing family session through the authenticated canvas API", as
             sessionId: "22222222-2222-4222-8222-222222222222",
             navigation: "requested",
         });
-        assert.deepEqual(requests, [
-            { sessionId: "22222222-2222-4222-8222-222222222222" },
+        assert.deepEqual(commands, [
+            {
+                command:
+                    "/resume 22222222-2222-4222-8222-222222222222",
+            },
         ]);
     } finally {
         await closeServer(entry.server);
@@ -102,15 +112,14 @@ test("opens an existing family session through the authenticated canvas API", as
 });
 
 test("returns a clear manual fallback when host navigation is unavailable", async () => {
+    const service = createOpenSessionService({
+        getSession: () => ({ rpc: {} }),
+        loadSnapshot: async () => navigationSnapshot(),
+    });
     const entry = await startCanvasServer({
         loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
         forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: async ({ sessionId }) => ({
-            kind: "navigation_failed",
-            sessionId,
-            message:
-                "Could not open this chat. Open it manually from the session list.",
-        }),
+        openSession: service.openSession,
     });
 
     try {
@@ -129,9 +138,69 @@ test("returns a clear manual fallback when host navigation is unavailable", asyn
             kind: "navigation_failed",
             sessionId: "22222222-2222-4222-8222-222222222222",
             message:
-                "Could not open this chat. Open it manually from the session list.",
+                "Could not open this chat. Host navigation is unavailable. Open it manually from the session list.",
         });
     } finally {
         await closeServer(entry.server);
     }
 });
+
+test("falls back when the host rejects a session switch request", async () => {
+    const service = createOpenSessionService({
+        getSession: () => ({
+            rpc: {
+                commands: {
+                    enqueue: async () => ({ queued: false }),
+                },
+            },
+        }),
+        loadSnapshot: async () => navigationSnapshot(),
+    });
+    const entry = await startCanvasServer({
+        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
+        forkFromTurn: async () => ({ kind: "fork_failed" }),
+        openSession: service.openSession,
+    });
+
+    try {
+        const url = new URL(entry.url);
+        url.pathname = "/api/open-session";
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                sessionId: "22222222-2222-4222-8222-222222222222",
+            }),
+        });
+
+        assert.equal(response.status, 502);
+        assert.match(
+            (await response.json()).message,
+            /host did not accept the session switch request/i,
+        );
+    } finally {
+        await closeServer(entry.server);
+    }
+});
+
+function navigationSnapshot() {
+    return {
+        kind: "ready",
+        lanes: [
+            {
+                session: {
+                    id: "11111111-1111-4111-8111-111111111111",
+                    current: true,
+                    available: true,
+                },
+            },
+            {
+                session: {
+                    id: "22222222-2222-4222-8222-222222222222",
+                    current: false,
+                    available: true,
+                },
+            },
+        ],
+    };
+}

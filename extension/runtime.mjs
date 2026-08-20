@@ -51,9 +51,7 @@ export async function checkSessionsInUse(session, sessionIds) {
 
 export async function navigateToSession(session, sessionId) {
     if (typeof session.rpc.commands?.enqueue !== "function") {
-        throw new Error(
-            "Host navigation is unavailable. Open the session manually from the session list.",
-        );
+        throw new Error("Host navigation is unavailable.");
     }
     const result = await session.rpc.commands.enqueue({
         command: `/resume ${sessionId}`,

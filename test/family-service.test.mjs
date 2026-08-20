@@ -197,6 +197,29 @@ test("reads live local metadata through the joined session runtime", async () =>
     }
 });
 
+test("restores the family when host navigation is unavailable", async () => {
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-family-no-navigation-"),
+    );
+    const session = testSession(PARENT_ID);
+    delete session.rpc.commands;
+
+    try {
+        const state = await loadCurrentSessionMap(session, {
+            lineageStore: createLineageStore({
+                filePath: path.join(temporaryRoot, "lineage-v1.json"),
+            }),
+            readEvents: async () => parentEvents(),
+            listSessions: async () => sessionMetadata(),
+            checkInUse: async () => new Set(),
+        });
+
+        assert.equal(state.kind, "ready", state.message);
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
 test("surfaces corrupt Conversation Family trees instead of rendering them", async () => {
     const invalidIndexes = [
         cycleIndex(),
@@ -252,6 +275,35 @@ test("rejects a contradictory child fork marker", async () => {
 
         assert.equal(state.kind, "error");
         assert.match(state.message, /fork marker is contradictory/i);
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
+test("rejects a Fork Checkpoint that contradicts the parent transcript", async () => {
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-family-checkpoint-"),
+    );
+    const lineageStore = createLineageStore({
+        filePath: path.join(temporaryRoot, "lineage-v1.json"),
+    });
+    await lineageStore.recordFork({
+        ...forkRecord(),
+        sourceAssistantEventId:
+            "15151515-1515-4515-8515-151515151515",
+    });
+
+    try {
+        const state = await loadCurrentSessionMap(testSession(PARENT_ID), {
+            lineageStore,
+            readEvents: async (sessionId) =>
+                sessionId === PARENT_ID ? parentEvents() : childEvents(),
+            listSessions: async () => sessionMetadata(),
+            checkInUse: async () => new Set(),
+        });
+
+        assert.equal(state.kind, "error");
+        assert.match(state.message, /Fork checkpoint is contradictory/);
     } finally {
         await rm(temporaryRoot, { recursive: true, force: true });
     }
