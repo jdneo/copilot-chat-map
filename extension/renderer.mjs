@@ -15,7 +15,8 @@ export function renderHtml() {
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       background: var(--background-color-default, #0d1117);
       color: var(--text-color-default, #f0f6fc);
     }
@@ -72,7 +73,83 @@ export function renderHtml() {
     }
     #refresh:disabled svg { animation: refresh-spin .8s linear infinite; }
     @keyframes refresh-spin { to { transform: rotate(360deg); } }
-    main { padding: 24px 24px 82px; }
+    main { height: 100%; }
+    .map-viewport {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      cursor: grab;
+      overscroll-behavior: contain;
+    }
+    .map-viewport.panning {
+      cursor: grabbing;
+      user-select: none;
+    }
+    .map-stage {
+      position: relative;
+      min-width: 100%;
+      min-height: 100%;
+      padding: 24px 90px 82px 24px;
+    }
+    .map-controls {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 3;
+      display: flex;
+      gap: 6px;
+      padding: 6px;
+      border: 1px solid var(--border-color-default, #30363d);
+      border-radius: 8px;
+      background: var(--background-color-muted, #161b22);
+      box-shadow: 0 4px 14px rgb(0 0 0 / 25%);
+    }
+    .map-controls button { padding: 5px 9px; }
+    #zoom-level {
+      min-width: 46px;
+      align-self: center;
+      color: var(--text-color-muted, #8b949e);
+      text-align: center;
+    }
+    .minimap {
+      position: fixed;
+      right: 16px;
+      bottom: 76px;
+      z-index: 3;
+      width: 180px;
+      padding: 8px;
+      border: 1px solid var(--border-color-default, #30363d);
+      border-radius: 8px;
+      background: var(--background-color-muted, #161b22);
+      box-shadow: 0 4px 14px rgb(0 0 0 / 25%);
+    }
+    .minimap-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text-color-muted, #8b949e);
+      font-size: 11px;
+    }
+    .minimap svg { display: block; width: 100%; height: 92px; }
+    .minimap-lane {
+      fill: var(--border-color-default, #30363d);
+      stroke: var(--text-color-muted, #8b949e);
+      stroke-width: 1;
+    }
+    .minimap-lane.current {
+      fill: var(--true-color-blue, #1f6feb);
+      stroke: var(--true-color-blue, #58a6ff);
+    }
+    .minimap-lane.collapsed {
+      opacity: .35;
+      stroke-dasharray: 2 2;
+    }
+    .minimap-selection { fill: var(--true-color-green, #3fb950); }
+    .minimap-viewport {
+      fill: color-mix(in srgb, var(--true-color-blue, #58a6ff) 12%, transparent);
+      stroke: var(--true-color-blue, #58a6ff);
+      stroke-width: 1.5;
+      vector-effect: non-scaling-stroke;
+    }
     #notice {
       position: fixed;
       top: 16px;
@@ -115,14 +192,25 @@ export function renderHtml() {
       align-items: flex-start;
       gap: 48px;
       min-width: min-content;
-      overflow-x: auto;
       padding: 2px 90px 2px 2px;
+      transform-origin: 0 0;
     }
     .lane {
       position: relative;
       z-index: 1;
       width: min(340px, 100%);
       min-width: min(340px, calc(100vw - 48px));
+    }
+    .lane-tools {
+      display: flex;
+      justify-content: flex-end;
+      min-height: 30px;
+      margin-bottom: 8px;
+    }
+    .subtree-toggle {
+      padding: 4px 8px;
+      color: var(--text-color-muted, #8b949e);
+      font-size: 11px;
     }
     .branch-connections {
       position: absolute;
@@ -172,6 +260,11 @@ export function renderHtml() {
       border: 1px solid var(--border-color-default, #30363d);
       border-radius: 10px;
       background: var(--background-color-muted, #161b22);
+    }
+    .turn[data-rich="false"] {
+      min-height: 120px;
+      contain: layout style paint;
+      contain-intrinsic-size: 120px;
     }
     .turn.completed {
       border-color: var(--true-color-green, #3fb950);
@@ -300,6 +393,13 @@ export function renderHtml() {
 <body>
   <p id="status" role="status">Loading current session...</p>
   <aside id="notice" role="status" hidden></aside>
+  <nav class="map-controls" aria-label="Map controls">
+    <button id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out">−</button>
+    <span id="zoom-level" aria-live="polite">100%</span>
+    <button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">+</button>
+    <button id="fit-all" type="button">Fit all</button>
+    <button id="focus-current" type="button">Focus current</button>
+  </nav>
   <main id="content" aria-live="polite"></main>
   <button id="refresh" type="button" aria-label="Refresh" title="Refresh">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
@@ -312,13 +412,32 @@ export function renderHtml() {
     const refreshButton = document.querySelector("#refresh");
     const status = document.querySelector("#status");
     const notice = document.querySelector("#notice");
+    const zoomOutButton = document.querySelector("#zoom-out");
+    const zoomInButton = document.querySelector("#zoom-in");
+    const zoomLevel = document.querySelector("#zoom-level");
+    const fitAllButton = document.querySelector("#fit-all");
+    const focusCurrentButton = document.querySelector("#focus-current");
     const token = new URLSearchParams(window.location.search).get("token") || "";
     const operationIdsByCheckpoint = new Map();
     const blockedCheckpoints = new Set();
+    const collapsedSessionIds = new Set();
+    const expandedMessages = new Set();
+    let laneElementsById = new Map();
+    let laneFingerprintsById = new Map();
+    const view = {
+      scale: 1,
+      minScale: 0.2,
+      fitMinScale: 0.02,
+      maxScale: 2,
+    };
     let currentState;
     let forkPending = false;
     let availabilityError = "";
     let focusedSessionId = "";
+    let selectedCheckpoint;
+    let turnObserver;
+    let initializedFamilyId = "";
+    let initializedCurrentSessionId = "";
 
     function element(tag, className, text) {
       const node = document.createElement(tag);
@@ -331,21 +450,318 @@ export function renderHtml() {
       return sessionId + ":" + turnId;
     }
 
-    function renderMessage(role, text, className, lineClamp) {
+    function currentMap() {
+      const viewport = document.querySelector(".map-viewport");
+      const stage = document.querySelector(".map-stage");
+      const family = document.querySelector(".family");
+      return viewport && stage && family ? { viewport, stage, family } : null;
+    }
+
+    function applyViewTransform() {
+      const map = currentMap();
+      if (!map) return;
+      const { viewport, stage, family } = map;
+      family.style.transform = "scale(" + view.scale + ")";
+      const familyRect = family.getBoundingClientRect();
+      const unscaledWidth = Math.max(
+        family.scrollWidth,
+        familyRect.width / view.scale,
+      );
+      const unscaledHeight = Math.max(
+        family.scrollHeight,
+        familyRect.height / view.scale,
+      );
+      stage.style.width =
+        Math.max(viewport.clientWidth || 0, Math.ceil(unscaledWidth * view.scale) + 114) +
+        "px";
+      stage.style.height =
+        Math.max(viewport.clientHeight || 0, Math.ceil(unscaledHeight * view.scale) + 106) +
+        "px";
+      zoomLevel.textContent = Math.round(view.scale * 100) + "%";
+      updateMinimapViewport();
+    }
+
+    function setScale(nextScale, anchorX, anchorY) {
+      const map = currentMap();
+      if (!map) return;
+      const { viewport } = map;
+      const scale = Math.min(view.maxScale, Math.max(view.minScale, nextScale));
+      if (scale === view.scale) return;
+      const x = (viewport.scrollLeft + anchorX) / view.scale;
+      const y = (viewport.scrollTop + anchorY) / view.scale;
+      view.scale = scale;
+      applyViewTransform();
+      viewport.scrollLeft = x * scale - anchorX;
+      viewport.scrollTop = y * scale - anchorY;
+      drawConnections(map.family);
+    }
+
+    function zoomBy(factor) {
+      const map = currentMap();
+      if (!map) return;
+      setScale(
+        view.scale * factor,
+        (map.viewport.clientWidth || 0) / 2,
+        (map.viewport.clientHeight || 0) / 2,
+      );
+    }
+
+    function fitAll() {
+      const map = currentMap();
+      if (!map) return;
+      const { viewport, family } = map;
+      const familyRect = family.getBoundingClientRect();
+      const width = Math.max(family.scrollWidth, familyRect.width / view.scale);
+      const height = Math.max(family.scrollHeight, familyRect.height / view.scale);
+      const availableWidth = Math.max(1, (viewport.clientWidth || familyRect.width) - 48);
+      const availableHeight = Math.max(1, (viewport.clientHeight || familyRect.height) - 48);
+      view.scale = Math.min(
+        1,
+        Math.max(
+          view.fitMinScale,
+          Math.min(availableWidth / width, availableHeight / height),
+        ),
+      );
+      applyViewTransform();
+      viewport.scrollLeft = 0;
+      viewport.scrollTop = 0;
+      drawConnections(family);
+    }
+
+    function focusCurrent() {
+      const scrollToCurrent = () =>
+        document.querySelector(".lane.current")?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "center",
+        });
+      if (document.querySelector(".lane.current") || !currentState?.lanes) {
+        scrollToCurrent();
+        return;
+      }
+      const byId = new Map(
+        currentState.lanes.map((lane) => [lane.session.id, lane]),
+      );
+      let parentId = byId.get(currentState.currentSessionId)?.parentSessionId;
+      let reopened = false;
+      while (parentId) {
+        reopened = collapsedSessionIds.delete(parentId) || reopened;
+        parentId = byId.get(parentId)?.parentSessionId || null;
+      }
+      if (!reopened) return;
+      renderReady(currentState);
+      requestAnimationFrame(scrollToCurrent);
+    }
+
+    function enableMapNavigation(viewport) {
+      let drag;
+      viewport.addEventListener("pointerdown", (event) => {
+        if (event.button !== 0) return;
+        if (event.target.closest("button, a, .turn, .message")) return;
+        drag = {
+          x: event.clientX,
+          y: event.clientY,
+          left: viewport.scrollLeft,
+          top: viewport.scrollTop,
+        };
+        viewport.classList.add("panning");
+        viewport.setPointerCapture?.(event.pointerId);
+        event.preventDefault();
+      });
+      viewport.addEventListener("pointermove", (event) => {
+        if (!drag) return;
+        viewport.scrollLeft = drag.left - (event.clientX - drag.x);
+        viewport.scrollTop = drag.top - (event.clientY - drag.y);
+      });
+      const finishDrag = (event) => {
+        if (!drag) return;
+        drag = undefined;
+        viewport.classList.remove("panning");
+        viewport.releasePointerCapture?.(event.pointerId);
+      };
+      viewport.addEventListener("pointerup", finishDrag);
+      viewport.addEventListener("pointercancel", finishDrag);
+      viewport.addEventListener("scroll", () => updateMinimapViewport());
+      viewport.addEventListener("wheel", (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        const rect = viewport.getBoundingClientRect();
+        event.preventDefault();
+        setScale(
+          view.scale * (event.deltaY < 0 ? 1.1 : 1 / 1.1),
+          event.clientX - rect.left,
+          event.clientY - rect.top,
+        );
+      }, { passive: false });
+    }
+
+    function visibleLaneStates(state) {
+      const lanes = state.lanes || [];
+      const byId = new Map(lanes.map((lane) => [lane.session.id, lane]));
+      return lanes.filter((lane) => {
+        let parentId = lane.parentSessionId;
+        while (parentId) {
+          if (collapsedSessionIds.has(parentId)) return false;
+          parentId = byId.get(parentId)?.parentSessionId || null;
+        }
+        return true;
+      });
+    }
+
+    function initializeCollapsedSubtrees(state, lanes, childCountByParent) {
+      const familyId = state.family?.id || state.family?.rootSessionId || "";
+      const byId = new Map(lanes.map((lane) => [lane.session.id, lane]));
+      const currentPath = new Set();
+      let currentId = state.currentSessionId;
+      while (currentId) {
+        currentPath.add(currentId);
+        currentId = byId.get(currentId)?.parentSessionId || null;
+      }
+      if (initializedFamilyId === familyId) {
+        if (initializedCurrentSessionId !== state.currentSessionId) {
+          currentPath.forEach((sessionId) => collapsedSessionIds.delete(sessionId));
+          initializedCurrentSessionId = state.currentSessionId;
+        }
+        return;
+      }
+      collapsedSessionIds.clear();
+      initializedFamilyId = familyId;
+      initializedCurrentSessionId = state.currentSessionId;
+      if (lanes.length <= 20) return;
+      lanes.forEach((lane) => {
+        if (
+          childCountByParent.has(lane.session.id) &&
+          !currentPath.has(lane.session.id)
+        ) {
+          collapsedSessionIds.add(lane.session.id);
+        }
+      });
+    }
+
+    function laneFingerprint(lane, hasChildren) {
+      return JSON.stringify([
+        lane.session,
+        lane.parentSessionId,
+        lane.inheritedTurnCount,
+        lane.sourceCheckpoint,
+        lane.turns,
+        hasChildren,
+        collapsedSessionIds.has(lane.session.id),
+      ]);
+    }
+
+    function renderMinimap(
+      viewport,
+      lanes,
+      visibleIds = new Set(lanes.map((lane) => lane.session.id)),
+    ) {
+      let minimap = document.querySelector(".minimap");
+      if (!minimap) {
+        minimap = element("aside", "minimap");
+        minimap.setAttribute("aria-label", "Conversation family minimap");
+        content.append(minimap);
+      }
+      const label = element("span", "minimap-label", "Family minimap");
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      const width = Math.max(24, lanes.length * 14 + 10);
+      const maxTurns = Math.max(1, ...lanes.map((lane) => lane.turns.length));
+      const height = Math.max(48, maxTurns * 3 + 14);
+      svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+      lanes.forEach((lane, index) => {
+        const laneShape = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "rect",
+        );
+        laneShape.setAttribute(
+          "class",
+          "minimap-lane" +
+            (lane.session.current ? " current" : "") +
+            (visibleIds.has(lane.session.id) ? "" : " collapsed"),
+        );
+        laneShape.setAttribute("x", String(index * 14 + 5));
+        laneShape.setAttribute("y", "5");
+        laneShape.setAttribute("width", "8");
+        laneShape.setAttribute(
+          "height",
+          String(Math.max(8, lane.turns.length * 3)),
+        );
+        svg.append(laneShape);
+        if (selectedCheckpoint?.sessionId === lane.session.id) {
+          const turnIndex = Math.max(
+            0,
+            lane.turns.findIndex((turn) => turn.id === selectedCheckpoint.turnId),
+          );
+          const marker = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "circle",
+          );
+          marker.setAttribute("class", "minimap-selection");
+          marker.setAttribute("cx", String(index * 14 + 9));
+          marker.setAttribute("cy", String(turnIndex * 3 + 7));
+          marker.setAttribute("r", "2");
+          svg.append(marker);
+        }
+      });
+      const viewportShape = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "rect",
+      );
+      viewportShape.setAttribute("class", "minimap-viewport");
+      viewportShape.dataset.mapWidth = String(width);
+      viewportShape.dataset.mapHeight = String(height);
+      svg.append(viewportShape);
+      minimap.replaceChildren(label, svg);
+      updateMinimapViewport(viewport, width, height);
+    }
+
+    function updateMinimapViewport(
+      viewport = document.querySelector(".map-viewport"),
+      minimapWidth,
+      minimapHeight,
+    ) {
+      const shape = document.querySelector(".minimap-viewport");
+      const stage = document.querySelector(".map-stage");
+      if (!viewport || !stage || !shape) return;
+      const width = minimapWidth || Number(shape.dataset.mapWidth) || 1;
+      const height = minimapHeight || Number(shape.dataset.mapHeight) || 1;
+      const stageWidth = Math.max(1, stage.scrollWidth || parseFloat(stage.style.width) || 1);
+      const stageHeight = Math.max(1, stage.scrollHeight || parseFloat(stage.style.height) || 1);
+      shape.setAttribute("x", String((viewport.scrollLeft / stageWidth) * width));
+      shape.setAttribute("y", String((viewport.scrollTop / stageHeight) * height));
+      shape.setAttribute(
+        "width",
+        String(Math.min(width, ((viewport.clientWidth || stageWidth) / stageWidth) * width)),
+      );
+      shape.setAttribute(
+        "height",
+        String(Math.min(height, ((viewport.clientHeight || stageHeight) / stageHeight) * height)),
+      );
+    }
+
+    function renderMessage(role, text, className, lineClamp, messageKey) {
       const section = element("section", "message " + className);
       section.setAttribute("aria-label", role + " message");
       const rendered = renderMarkdown(text || "Waiting for Copilot's final response.");
-      rendered.className = "content collapsed" + (text ? "" : " empty");
+      const initiallyExpanded = expandedMessages.has(messageKey);
+      rendered.className =
+        "content" +
+        (initiallyExpanded ? "" : " collapsed") +
+        (text ? "" : " empty");
       rendered.style.setProperty("--line-clamp", String(lineClamp));
       section.append(rendered);
 
-      const toggle = element("button", "message-toggle", "Expand");
+      const toggle = element(
+        "button",
+        "message-toggle",
+        initiallyExpanded ? "Collapse" : "Expand",
+      );
       toggle.type = "button";
-      toggle.hidden = true;
-      toggle.setAttribute("aria-expanded", "false");
+      toggle.hidden = !initiallyExpanded;
+      toggle.setAttribute("aria-expanded", String(initiallyExpanded));
       toggle.addEventListener("click", (event) => {
         event.stopPropagation();
         const expanded = !rendered.classList.toggle("collapsed");
+        if (expanded) expandedMessages.add(messageKey);
+        else expandedMessages.delete(messageKey);
         toggle.textContent = expanded ? "Collapse" : "Expand";
         toggle.setAttribute("aria-expanded", String(expanded));
         requestAnimationFrame(() => {
@@ -355,7 +771,9 @@ export function renderHtml() {
       });
       section.append(toggle);
       requestAnimationFrame(() => {
-        toggle.hidden = rendered.scrollHeight <= rendered.clientHeight + 1;
+        toggle.hidden =
+          !expandedMessages.has(messageKey) &&
+          rendered.scrollHeight <= rendered.clientHeight + 1;
       });
       return section;
     }
@@ -577,12 +995,35 @@ export function renderHtml() {
     }
 
     function selectTurn(article) {
-      document.querySelector(".turn.selected")?.classList.remove("selected");
+      const previousSelection = document.querySelector(".turn.selected");
+      previousSelection?.classList.remove("selected");
+      if (
+        previousSelection &&
+        previousSelection !== article &&
+        previousSelection.dataset.inViewport !== "true"
+      ) {
+        previousSelection.unmountRich?.();
+      }
       document.querySelectorAll(".turn").forEach((turn) => {
         turn.setAttribute("aria-selected", "false");
       });
       article.classList.add("selected");
       article.setAttribute("aria-selected", "true");
+      selectedCheckpoint = {
+        sessionId: article.dataset.sessionId,
+        turnId: article.dataset.turnId,
+      };
+      const map = currentMap();
+      if (map && currentState) {
+        const visibleIds = new Set(
+          visibleLaneStates(currentState).map((lane) => lane.session.id),
+        );
+        renderMinimap(
+          map.viewport,
+          currentState.lanes || [],
+          visibleIds,
+        );
+      }
       requestAnimationFrame(() => {
         article.querySelector(".branch-button")?.scrollIntoView({
           block: "nearest",
@@ -763,6 +1204,7 @@ export function renderHtml() {
     function drawConnections(family) {
       const svg = family.querySelector(".branch-connections");
       if (!svg) return;
+      const scale = view.scale;
       svg.replaceChildren();
       const entries = Array.from(document.querySelectorAll(".branch-entry"));
       document.querySelectorAll(".lane").forEach((lane) => {
@@ -776,17 +1218,17 @@ export function renderHtml() {
         const sourceRect = source.getBoundingClientRect();
         const lane = entry.parentElement;
         const branchTop =
-          sourceRect.top +
-          sourceRect.height / 2 -
-          familyRect.top +
-          family.scrollTop +
+          (sourceRect.top +
+            sourceRect.height / 2 -
+            familyRect.top) /
+            scale +
           48;
         lane.style.paddingTop = branchTop + "px";
       });
 
       familyRect = family.getBoundingClientRect();
-      const width = Math.max(family.scrollWidth, familyRect.width);
-      const height = Math.max(family.scrollHeight, familyRect.height);
+      const width = Math.max(family.scrollWidth, familyRect.width / scale);
+      const height = Math.max(family.scrollHeight, familyRect.height / scale);
       svg.setAttribute("viewBox", "0 0 " + width + " " + height);
       svg.setAttribute("width", String(width));
       svg.setAttribute("height", String(height));
@@ -807,15 +1249,15 @@ export function renderHtml() {
         if (!source) return;
 
         const sourceRect = source.getBoundingClientRect();
-        const startX = sourceRect.right - familyRect.left + family.scrollLeft;
+        const startX = (sourceRect.right - familyRect.left) / scale;
         const busY =
-          sourceRect.top + sourceRect.height / 2 - familyRect.top + family.scrollTop;
+          (sourceRect.top + sourceRect.height / 2 - familyRect.top) / scale;
         const targets = group.map((entry) => {
           const rect = entry.getBoundingClientRect();
           return {
             entry,
-            x: rect.left + rect.width / 2 - familyRect.left + family.scrollLeft,
-            y: rect.top - familyRect.top + family.scrollTop,
+            x: (rect.left + rect.width / 2 - familyRect.left) / scale,
+            y: (rect.top - familyRect.top) / scale,
           };
         });
         const busEndX = Math.max(
@@ -879,12 +1321,112 @@ export function renderHtml() {
       return Math.min(12, Math.max(0, (targetY - busY) / 2));
     }
 
-    function renderLane(state, laneState) {
+    function mountRichTurn(article, laneState, turn) {
+      if (article.dataset.rich === "true") return;
+      const body = element("div", "turn-body");
+      const key = checkpointKey(laneState.session.id, turn.id);
+      body.append(
+        renderMessage("You", turn.userContent, "user", 3, key + ":user"),
+      );
+      body.append(
+        renderMessage(
+          "Copilot",
+          turn.assistantContent,
+          "assistant",
+          8,
+          key + ":assistant",
+        ),
+      );
+      article.replaceChildren(body);
+      if (turn.status === "completed" && laneState.session.available) {
+        const branchButton = element("button", "branch-button", "+ Fork");
+        branchButton.type = "button";
+        branchButton.dataset.sessionId = laneState.session.id;
+        branchButton.dataset.turnId = turn.id;
+        branchButton.dataset.checkpointKey = checkpointKey(
+          laneState.session.id,
+          turn.id,
+        );
+        branchButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+          createBranch(laneState.session.id, turn);
+        });
+        article.append(branchButton);
+      }
+      article.dataset.rich = "true";
+      updateBranchControls();
+    }
+
+    function unmountRichTurn(article) {
+      if (
+        article.dataset.rich !== "true" ||
+        article.classList.contains("selected")
+      ) return;
+      article.replaceChildren();
+      article.dataset.rich = "false";
+    }
+
+    function setupTurnVirtualization(viewport, family) {
+      turnObserver?.disconnect();
+      const turns = Array.from(document.querySelectorAll(".turn")).filter(
+        (turn) => !turn.classList.contains("virtual"),
+      );
+      if (typeof IntersectionObserver !== "function") {
+        turns.forEach((turn) => {
+          turn.dataset.inViewport = "true";
+          turn.mountRich?.();
+        });
+        return;
+      }
+      turnObserver = new IntersectionObserver(
+        (entries) => {
+          let changed = false;
+          entries.forEach((entry) => {
+            const wasRich = entry.target.dataset.rich === "true";
+            entry.target.dataset.inViewport = String(entry.isIntersecting);
+            if (entry.isIntersecting) entry.target.mountRich?.();
+            else entry.target.unmountRich?.();
+            changed = changed || wasRich !== (entry.target.dataset.rich === "true");
+          });
+          if (changed) requestAnimationFrame(() => drawConnections(family));
+        },
+        { root: viewport, rootMargin: "600px 480px" },
+      );
+      turns.forEach((turn) => turnObserver.observe(turn));
+    }
+
+    function renderLane(state, laneState, hasChildren) {
       const lane = element(
         "section",
         "lane" + (laneState.session.current ? " current" : ""),
       );
       lane.dataset.sessionId = laneState.session.id;
+      if (hasChildren) {
+        const tools = element("div", "lane-tools");
+        const toggle = element(
+          "button",
+          "subtree-toggle",
+          collapsedSessionIds.has(laneState.session.id)
+            ? "Expand subtree"
+            : "Collapse subtree",
+        );
+        toggle.type = "button";
+        toggle.setAttribute(
+          "aria-expanded",
+          String(!collapsedSessionIds.has(laneState.session.id)),
+        );
+        toggle.addEventListener("click", (event) => {
+          event.stopPropagation();
+          if (collapsedSessionIds.has(laneState.session.id)) {
+            collapsedSessionIds.delete(laneState.session.id);
+          } else {
+            collapsedSessionIds.add(laneState.session.id);
+          }
+          renderReady(currentState);
+        });
+        tools.append(toggle);
+        lane.append(tools);
+      }
 
       if (laneState.sourceCheckpoint) {
         const isVirtual = laneState.turns.length === 0;
@@ -946,30 +1488,21 @@ export function renderHtml() {
         const article = element("article", "turn " + turn.status);
         article.dataset.sessionId = laneState.session.id;
         article.dataset.turnId = turn.id;
+        article.dataset.rich = "false";
         article.setAttribute("aria-label", completed ? "Completed turn" : "Incomplete turn");
-        article.setAttribute("aria-selected", "false");
+        const selected =
+          selectedCheckpoint?.sessionId === laneState.session.id &&
+          selectedCheckpoint?.turnId === turn.id;
+        if (selected) article.classList.add("selected");
+        article.setAttribute("aria-selected", String(selected));
         article.title = completed ? "Completed" : "Incomplete";
-        const body = element("div", "turn-body");
-        body.append(renderMessage("You", turn.userContent, "user", 3));
-        body.append(renderMessage("Copilot", turn.assistantContent, "assistant", 8));
-        article.append(body);
-        if (completed && laneState.session.available) {
-          const branchButton = element("button", "branch-button", "+ Fork");
-          branchButton.type = "button";
-          branchButton.dataset.sessionId = laneState.session.id;
-          branchButton.dataset.turnId = turn.id;
-          branchButton.dataset.checkpointKey = checkpointKey(
-            laneState.session.id,
-            turn.id,
-          );
-          branchButton.addEventListener("click", (event) => {
-            event.stopPropagation();
-            createBranch(laneState.session.id, turn);
-          });
-          article.append(branchButton);
-        }
+        article.mountRich = () => mountRichTurn(article, laneState, turn);
+        article.unmountRich = () => unmountRichTurn(article);
         if (completed) {
-          article.addEventListener("click", () => selectTurn(article));
+          article.addEventListener("click", () => {
+            article.mountRich();
+            selectTurn(article);
+          });
         }
 
         lane.append(article);
@@ -978,8 +1511,14 @@ export function renderHtml() {
     }
 
     function renderReady(state) {
+      const previousViewport = document.querySelector(".map-viewport");
+      const previousScroll = previousViewport
+        ? { left: previousViewport.scrollLeft, top: previousViewport.scrollTop }
+        : { left: 0, top: 0 };
       currentState = state;
       availabilityError = "";
+      const viewport = element("div", "map-viewport");
+      const stage = element("div", "map-stage");
       const family = element("section", "family");
       const connections = document.createElementNS(
         "http://www.w3.org/2000/svg",
@@ -988,15 +1527,55 @@ export function renderHtml() {
       connections.setAttribute("class", "branch-connections");
       connections.setAttribute("aria-hidden", "true");
       family.append(connections);
-      const lanes = state.lanes || [{
+      const allLanes = state.lanes || [{
         session: { ...state.session, current: true, available: true },
         sourceCheckpoint: null,
         inheritedTurnCount: 0,
         turns: state.turns,
       }];
-      lanes.forEach((lane) => family.append(renderLane(state, lane)));
-      content.replaceChildren(family);
-      requestAnimationFrame(() => drawConnections(family));
+      const childCountByParent = new Map();
+      allLanes.forEach((lane) => {
+        if (!lane.parentSessionId) return;
+        childCountByParent.set(
+          lane.parentSessionId,
+          (childCountByParent.get(lane.parentSessionId) || 0) + 1,
+        );
+      });
+      initializeCollapsedSubtrees(state, allLanes, childCountByParent);
+      const lanes = visibleLaneStates({ ...state, lanes: allLanes });
+      const nextLaneElements = new Map();
+      const nextLaneFingerprints = new Map();
+      lanes.forEach((lane) => {
+        const hasChildren = childCountByParent.has(lane.session.id);
+        const fingerprint = laneFingerprint(lane, hasChildren);
+        const cached =
+          laneFingerprintsById.get(lane.session.id) === fingerprint
+            ? laneElementsById.get(lane.session.id)
+            : null;
+        const laneElement = cached || renderLane(state, lane, hasChildren);
+        nextLaneElements.set(lane.session.id, laneElement);
+        nextLaneFingerprints.set(lane.session.id, fingerprint);
+        family.append(laneElement);
+      });
+      laneElementsById = nextLaneElements;
+      laneFingerprintsById = nextLaneFingerprints;
+      stage.append(family);
+      viewport.append(stage);
+      content.replaceChildren(viewport);
+      renderMinimap(
+        viewport,
+        allLanes,
+        new Set(lanes.map((lane) => lane.session.id)),
+      );
+      enableMapNavigation(viewport);
+      setupTurnVirtualization(viewport, family);
+      requestAnimationFrame(() => {
+        applyViewTransform();
+        drawConnections(family);
+        viewport.scrollLeft = previousScroll.left;
+        viewport.scrollTop = previousScroll.top;
+        updateMinimapViewport();
+      });
       if (focusedSessionId !== state.currentSessionId) {
         focusedSessionId = state.currentSessionId;
         requestAnimationFrame(() => {
@@ -1039,6 +1618,11 @@ export function renderHtml() {
     }
 
     refreshButton.addEventListener("click", refresh);
+    zoomOutButton.addEventListener("click", () => zoomBy(1 / 1.2));
+    zoomInButton.addEventListener("click", () => zoomBy(1.2));
+    fitAllButton.addEventListener("click", fitAll);
+    focusCurrentButton.addEventListener("click", focusCurrent);
+    window.addEventListener?.("resize", applyViewTransform);
     window.addEventListener?.("resize", () => {
       const family = document.querySelector(".family");
       if (family) requestAnimationFrame(() => drawConnections(family));

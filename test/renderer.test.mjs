@@ -52,6 +52,550 @@ test("renders family lanes with explicit chat and checkpoint navigation", () => 
     );
 });
 
+test("keeps a zoomed large family scrollable and recoverable", () => {
+    const html = renderHtml();
+
+    assert.match(
+        html,
+        /\.map-viewport \{[\s\S]*?overflow: auto;[\s\S]*?cursor: grab;/,
+    );
+    assert.match(
+        html,
+        /\.map-stage \{[\s\S]*?min-width: 100%;[\s\S]*?min-height: 100%;/,
+    );
+    assert.match(html, /id="zoom-out"[^>]+aria-label="Zoom out"/);
+    assert.match(html, /id="zoom-in"[^>]+aria-label="Zoom in"/);
+    assert.match(html, />Fit all<\/button>/);
+    assert.match(html, />Focus current<\/button>/);
+    assert.match(html, /family\.style\.transform = "scale\(" \+ view\.scale \+ "\)"/);
+    assert.match(html, /viewport\.addEventListener\("pointerdown"/);
+});
+
+test("pans from empty canvas drag without taking over Turn Node gestures", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const sessionId = "11111111-1111-4111-8111-111111111111";
+    const turn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Selectable text",
+        assistantContent: "Response",
+        status: "completed",
+    };
+    const document = fakeDocument();
+    const context = browserContext(
+        document,
+        readyState(sessionId, [lane(sessionId, true, [turn])]),
+    );
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const viewport = document.querySelector(".map-viewport");
+    viewport.scrollLeft = 100;
+    viewport.scrollTop = 80;
+    viewport.dispatchEvent(pointerEvent("pointerdown", viewport, 60, 50));
+    viewport.dispatchEvent(pointerEvent("pointermove", viewport, 20, 10));
+    viewport.dispatchEvent(pointerEvent("pointerup", viewport, 20, 10));
+    assert.equal(viewport.scrollLeft, 140);
+    assert.equal(viewport.scrollTop, 120);
+    viewport.dispatchEvent({ type: "scroll", target: viewport });
+    const minimapViewport = document.querySelector(".minimap-viewport");
+    assert.notEqual(minimapViewport.x, "NaN");
+    assert.notEqual(minimapViewport.y, "NaN");
+
+    const article = document.querySelector(".turn");
+    viewport.dispatchEvent(pointerEvent("pointerdown", article, 20, 10));
+    viewport.dispatchEvent(pointerEvent("pointermove", article, 0, 0));
+    assert.equal(viewport.scrollLeft, 140);
+    assert.equal(viewport.scrollTop, 120);
+});
+
+test("keeps connector coordinates aligned when the family is zoomed", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const rootId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const turn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Source",
+        assistantContent: "Response",
+        status: "completed",
+    };
+    const document = fakeDocument();
+    const context = browserContext(
+        document,
+        readyState(rootId, [
+            lane(rootId, true, [turn]),
+            lane(childId, false, []),
+        ]),
+    );
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const family = document.querySelector(".family");
+    const source = document.querySelector(".turn.completed");
+    const target = document.querySelector(".branch-entry");
+    family.getBoundingClientRect = () => rect(0, 0, 960, 720);
+    source.getBoundingClientRect = () => rect(0, 120, 408, 144);
+    target.getBoundingClientRect = () => rect(466, 240, 408, 110);
+
+    document.querySelector("#zoom-in").click();
+
+    const bus = document.querySelector(".branch-bus");
+    assert.equal(Number(bus.x1), 340);
+});
+
+test("Fit all can frame a family wider than the interactive zoom range", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const sessionId = "11111111-1111-4111-8111-111111111111";
+    const document = fakeDocument();
+    const context = browserContext(
+        document,
+        readyState(sessionId, [lane(sessionId, true, [])]),
+    );
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const viewport = document.querySelector(".map-viewport");
+    const family = document.querySelector(".family");
+    viewport.clientWidth = 800;
+    viewport.clientHeight = 600;
+    family.scrollWidth = 40_000;
+    family.scrollHeight = 1_000;
+    document.querySelector("#fit-all").click();
+
+    assert.equal(document.querySelector("#zoom-level").textContent, "2%");
+});
+
+test("collapses and restores descendants while the minimap keeps map state", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const rootId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const grandchildId = "33333333-3333-4333-8333-333333333333";
+    const rootTurn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Root turn",
+        assistantContent: "Root response",
+        status: "completed",
+    };
+    const childTurn = {
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        userContent: "Child turn",
+        assistantContent: "Child response",
+        status: "completed",
+    };
+    const lanes = [
+        lane(rootId, true, [rootTurn]),
+        lane(childId, false, [childTurn]),
+        {
+            ...lane(grandchildId, false, []),
+            parentSessionId: childId,
+            sourceCheckpoint: {
+                sessionId: childId,
+                turnId: childTurn.id,
+                available: true,
+            },
+        },
+    ];
+    const document = fakeDocument();
+    const context = browserContext(document, readyState(rootId, lanes));
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    assert.equal(document.querySelectorAll(".lane").length, 3);
+    assert.equal(document.querySelectorAll(".minimap-lane").length, 3);
+    assert.equal(document.querySelectorAll(".minimap-lane.current").length, 1);
+    assert.ok(document.querySelector(".minimap-viewport"));
+
+    const rootLane = document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === rootId);
+    const collapse = rootLane.querySelector(".subtree-toggle");
+    assert.equal(collapse.textContent, "Collapse subtree");
+    collapse.click();
+
+    assert.equal(document.querySelectorAll(".lane").length, 1);
+    assert.equal(document.querySelectorAll(".minimap-lane").length, 3);
+    assert.equal(document.querySelectorAll(".minimap-lane.collapsed").length, 2);
+    const expand = document.querySelector(".subtree-toggle");
+    assert.equal(expand.textContent, "Expand subtree");
+    expand.click();
+
+    assert.deepEqual(
+        document.querySelectorAll(".lane").map((candidate) => candidate.dataset.sessionId),
+        [rootId, childId, grandchildId],
+    );
+    document.querySelector(".turn").click();
+    assert.ok(document.querySelector(".minimap-selection"));
+});
+
+test("Focus current reopens a collapsed path to the Current Session", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const rootId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const rootTurn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Root turn",
+        assistantContent: "Root response",
+        status: "completed",
+    };
+    const rootLane = {
+        ...lane(rootId, false, [rootTurn]),
+        parentSessionId: null,
+        sourceCheckpoint: null,
+    };
+    const childLane = {
+        ...lane(childId, true, []),
+        parentSessionId: rootId,
+        sourceCheckpoint: {
+            sessionId: rootId,
+            turnId: rootTurn.id,
+            available: true,
+        },
+    };
+    const document = fakeDocument();
+    const context = browserContext(
+        document,
+        readyState(childId, [rootLane, childLane]),
+    );
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === rootId)
+        .querySelector(".subtree-toggle")
+        .click();
+    assert.equal(document.querySelectorAll(".lane").length, 1);
+
+    document.querySelector("#focus-current").click();
+
+    assert.equal(document.querySelectorAll(".lane").length, 2);
+    assert.equal(document.querySelector(".lane.current").scrollIntoViewCount, 1);
+});
+
+test("keeps rich DOM bounded for a 50-session 5,000-turn family", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const rootId = "11111111-1111-4111-8111-111111111111";
+    const turns = Array.from({ length: 100 }, (_, index) => ({
+        id: `aaaaaaaa-aaaa-4aaa-8aaa-${String(index).padStart(12, "0")}`,
+        userContent: `Prompt ${index}\nDetail one\nDetail two\nDetail three`,
+        assistantContent: `Response ${index}`,
+        status: "completed",
+    }));
+    const lanes = Array.from({ length: 50 }, (_, index) =>
+        lane(
+            index === 0
+                ? rootId
+                : `22222222-2222-4222-8222-${String(index).padStart(12, "0")}`,
+            index === 0,
+            turns,
+        ),
+    );
+    const document = fakeDocument();
+    const observers = [];
+    const context = browserContext(document, readyState(rootId, lanes));
+    context.IntersectionObserver = class {
+        constructor(callback) {
+            this.callback = callback;
+            this.targets = [];
+            observers.push(this);
+        }
+
+        observe(target) {
+            this.targets.push(target);
+        }
+
+        disconnect() {}
+
+        reveal(count) {
+            this.callback(
+                this.targets
+                    .slice(0, count)
+                    .map((target) => ({ target, isIntersecting: true })),
+            );
+        }
+    };
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    assert.equal(document.querySelectorAll(".turn").length, 5_000);
+    assert.equal(document.querySelectorAll(".turn-body").length, 0);
+    assert.equal(observers.length, 1);
+    assert.equal(observers[0].targets.length, 5_000);
+
+    observers[0].reveal(8);
+
+    assert.equal(document.querySelectorAll(".turn-body").length, 8);
+    const firstTurn = document.querySelector(".turn");
+    firstTurn.click();
+    firstTurn.querySelector(".message-toggle").click();
+    assert.equal(firstTurn["aria-selected"], "true");
+    assert.equal(
+        firstTurn.querySelector(".message-toggle").textContent,
+        "Collapse",
+    );
+
+    const viewport = document.querySelector(".map-viewport");
+    viewport.dispatchEvent(pointerEvent("pointerdown", viewport, 80, 60));
+    viewport.dispatchEvent(pointerEvent("pointermove", viewport, 30, 20));
+    viewport.dispatchEvent(pointerEvent("pointerup", viewport, 30, 20));
+    assert.equal(viewport.scrollLeft, 50);
+    assert.equal(viewport.scrollTop, 40);
+    document.querySelector("#zoom-in").click();
+    assert.equal(document.querySelector("#zoom-level").textContent, "120%");
+    document.querySelector("#fit-all").click();
+    const currentLane = document.querySelector(".lane.current");
+    const focusCount = currentLane.scrollIntoViewCount;
+    document.querySelector("#focus-current").click();
+    assert.equal(currentLane.scrollIntoViewCount, focusCount + 1);
+
+    document.querySelector(".subtree-toggle").click();
+    assert.equal(document.querySelectorAll(".lane").length, 1);
+    document.querySelector(".subtree-toggle").click();
+    assert.equal(document.querySelectorAll(".lane").length, 50);
+    assert.ok(document.querySelector(".minimap-selection"));
+});
+
+test("restores expanded content after an off-screen turn is virtualized", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const sessionId = "11111111-1111-4111-8111-111111111111";
+    const turn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "One\nTwo\nThree\nFour",
+        assistantContent: "Done.",
+        status: "completed",
+    };
+    const document = fakeDocument();
+    let observer;
+    const context = browserContext(
+        document,
+        readyState(sessionId, [lane(sessionId, true, [turn])]),
+    );
+    context.IntersectionObserver = class {
+        constructor(callback) {
+            this.callback = callback;
+            this.targets = [];
+            observer = this;
+        }
+
+        observe(target) {
+            this.targets.push(target);
+        }
+
+        disconnect() {}
+
+        setVisible(target, isIntersecting) {
+            this.callback([{ target, isIntersecting }]);
+        }
+    };
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const article = document.querySelector(".turn");
+    observer.setVisible(article, true);
+    const toggle = article.querySelector(".message-toggle");
+    toggle.click();
+    assert.equal(toggle.textContent, "Collapse");
+
+    observer.setVisible(article, false);
+    assert.equal(article.querySelector(".turn-body"), null);
+    observer.setVisible(article, true);
+
+    const restoredToggle = article.querySelector(".message-toggle");
+    assert.equal(restoredToggle.textContent, "Collapse");
+    assert.equal(restoredToggle["aria-expanded"], "true");
+    assert.equal(restoredToggle.hidden, false);
+});
+
+test("unmounts a previous selection after it moves off-screen", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const sessionId = "11111111-1111-4111-8111-111111111111";
+    const turns = ["first", "second"].map((name, index) => ({
+        id: `${index + 1}aaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa`,
+        userContent: name,
+        assistantContent: `${name} response`,
+        status: "completed",
+    }));
+    const document = fakeDocument();
+    let observer;
+    const context = browserContext(
+        document,
+        readyState(sessionId, [lane(sessionId, true, turns)]),
+    );
+    context.IntersectionObserver = class {
+        constructor(callback) {
+            this.callback = callback;
+            this.targets = [];
+            observer = this;
+        }
+
+        observe(target) {
+            this.targets.push(target);
+        }
+
+        disconnect() {}
+
+        setVisible(target, isIntersecting) {
+            this.callback([{ target, isIntersecting }]);
+        }
+    };
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const [first, second] = document.querySelectorAll(".turn");
+    observer.setVisible(first, true);
+    first.click();
+    observer.setVisible(first, false);
+    assert.ok(first.querySelector(".turn-body"));
+
+    observer.setVisible(second, true);
+    second.click();
+
+    assert.equal(first.querySelector(".turn-body"), null);
+    assert.ok(second.querySelector(".turn-body"));
+});
+
+test("reuses unchanged lane DOM when one branch updates", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const rootId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const rootTurn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Stable root",
+        assistantContent: "Unchanged",
+        status: "completed",
+    };
+    const childTurn = {
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        userContent: "Existing child",
+        assistantContent: "Existing response",
+        status: "completed",
+    };
+    const appendedTurn = {
+        id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        userContent: "Appended child turn",
+        assistantContent: "New response",
+        status: "completed",
+    };
+    const states = [
+        readyState(rootId, [
+            lane(rootId, true, [rootTurn]),
+            lane(childId, false, [childTurn]),
+        ]),
+        readyState(rootId, [
+            lane(rootId, true, [rootTurn]),
+            lane(childId, false, [childTurn, appendedTurn]),
+        ]),
+    ];
+    const document = fakeDocument();
+    let requestCount = 0;
+    const context = browserContext(document, states[0]);
+    context.fetch = async (url) => {
+        if (url.startsWith("/api/state")) {
+            return jsonResponse(states[Math.min(requestCount++, states.length - 1)]);
+        }
+        throw new Error(`Unexpected request: ${url}`);
+    };
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const before = document.querySelectorAll(".lane");
+    document.querySelector("#refresh").click();
+    await settle();
+    const after = document.querySelectorAll(".lane");
+
+    assert.equal(after[0], before[0]);
+    assert.notEqual(after[1], before[1]);
+    assert.equal(after[1].querySelectorAll(".turn").length, 2);
+});
+
+test("defaults a large non-current subtree to collapsed without hiding its root", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const rootId = "11111111-1111-4111-8111-111111111111";
+    const branchId = "22222222-2222-4222-8222-222222222222";
+    const grandchildId = "33333333-3333-4333-8333-333333333333";
+    const rootTurn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Root turn",
+        assistantContent: "Root response",
+        status: "completed",
+    };
+    const branchTurn = {
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        userContent: "Branch turn",
+        assistantContent: "Branch response",
+        status: "completed",
+    };
+    const lanes = [
+        lane(rootId, true, [rootTurn]),
+        lane(branchId, false, [branchTurn]),
+        {
+            ...lane(grandchildId, false, []),
+            parentSessionId: branchId,
+            sourceCheckpoint: {
+                sessionId: branchId,
+                turnId: branchTurn.id,
+                available: true,
+            },
+        },
+        ...Array.from({ length: 18 }, (_, index) =>
+            lane(
+                `44444444-4444-4444-8444-${String(index).padStart(12, "0")}`,
+                false,
+                [],
+            ),
+        ),
+    ];
+    const document = fakeDocument();
+    const context = browserContext(document, readyState(rootId, lanes));
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    assert.equal(document.querySelectorAll(".lane").length, 20);
+    const branch = document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === branchId);
+    assert.ok(branch);
+    assert.equal(
+        branch.querySelector(".subtree-toggle").textContent,
+        "Expand subtree",
+    );
+    assert.equal(
+        document
+            .querySelectorAll(".lane")
+            .some((candidate) => candidate.dataset.sessionId === grandchildId),
+        false,
+    );
+});
+
 test("dismisses an Open Chat error notice", async () => {
     const html = renderHtml();
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
@@ -515,6 +1059,21 @@ function settle() {
     return new Promise((resolve) => setImmediate(resolve));
 }
 
+function pointerEvent(type, target, clientX, clientY) {
+    return {
+        type,
+        target,
+        button: 0,
+        clientX,
+        clientY,
+        pointerId: 1,
+        defaultPrevented: false,
+        preventDefault() {
+            this.defaultPrevented = true;
+        },
+    };
+}
+
 function browserContext(document, state) {
     return {
         console,
@@ -547,6 +1106,11 @@ function fakeDocument() {
         ["refresh", new FakeElement("button")],
         ["status", new FakeElement("p")],
         ["notice", new FakeElement("aside")],
+        ["zoom-out", new FakeElement("button")],
+        ["zoom-in", new FakeElement("button")],
+        ["zoom-level", new FakeElement("span")],
+        ["fit-all", new FakeElement("button")],
+        ["focus-current", new FakeElement("button")],
     ]);
     return {
         createElement: (tag) => new FakeElement(tag),
@@ -645,6 +1209,29 @@ class FakeElement {
         this.listeners.set(type, listener);
     }
 
+    dispatchEvent(event) {
+        this.listeners.get(event.type)?.(event);
+        return !event.defaultPrevented;
+    }
+
+    closest(selector) {
+        const selectors = selector.split(",").map((part) => part.trim());
+        let candidate = this;
+        while (candidate) {
+            if (
+                selectors.some((part) =>
+                    part.startsWith(".")
+                        ? candidate.#classes().has(part.slice(1))
+                        : candidate.tagName === part,
+                )
+            ) {
+                return candidate;
+            }
+            candidate = candidate.parent;
+        }
+        return null;
+    }
+
     click() {
         const event = {
             propagationStopped: false,
@@ -727,7 +1314,9 @@ class FakeElement {
 
     #changeClasses(operation, names) {
         const classes = this.#classes();
-        names.forEach((name) => classes[operation](name));
+        names.forEach((name) =>
+            operation === "remove" ? classes.delete(name) : classes.add(name),
+        );
         this.className = [...classes].join(" ");
     }
 

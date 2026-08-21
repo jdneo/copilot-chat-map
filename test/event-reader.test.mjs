@@ -1,5 +1,12 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
+import {
+    appendFile,
+    mkdir,
+    mkdtemp,
+    rm,
+    symlink,
+    writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -97,6 +104,57 @@ test("rejects a valid session ID whose event log resolves outside session-state"
                 message: `Resolved session path is outside session-state: ${sessionId}`,
             },
         );
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
+test("retains the parsed prefix when new session events are appended", async () => {
+    const sessionId = "3bc4d926-f2d2-48ec-81fb-aafb579e671a";
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-map-incremental-"),
+    );
+    const copilotHome = path.join(temporaryRoot, ".copilot");
+    const sessionDirectory = path.join(
+        copilotHome,
+        "session-state",
+        sessionId,
+    );
+    const eventLogPath = path.join(sessionDirectory, "events.jsonl");
+    const options = {
+        platform: process.platform,
+        env: { COPILOT_HOME: copilotHome },
+        homedir: os.homedir(),
+    };
+
+    try {
+        await mkdir(sessionDirectory, { recursive: true });
+        await writeFile(
+            eventLogPath,
+            [
+                JSON.stringify({ id: "event-1", type: "user.message", data: {} }),
+                JSON.stringify({
+                    id: "event-2",
+                    type: "assistant.message",
+                    data: {},
+                }),
+                "",
+            ].join("\n"),
+        );
+        const initial = await readSessionEvents(sessionId, options);
+
+        await appendFile(
+            eventLogPath,
+            `${JSON.stringify({ id: "event-3", type: "turn.end", data: {} })}\n`,
+        );
+        const appended = await readSessionEvents(sessionId, options);
+
+        assert.deepEqual(
+            appended.map((event) => event.id),
+            ["event-1", "event-2", "event-3"],
+        );
+        assert.equal(appended[0], initial[0]);
+        assert.equal(appended[1], initial[1]);
     } finally {
         await rm(temporaryRoot, { recursive: true, force: true });
     }
