@@ -105,7 +105,7 @@ export function renderHtml() {
       gap: 48px;
       min-width: min-content;
       overflow-x: auto;
-      padding: 2px;
+      padding: 2px 90px 2px 2px;
     }
     .lane {
       position: relative;
@@ -339,6 +339,12 @@ export function renderHtml() {
       });
       article.classList.add("selected");
       article.setAttribute("aria-selected", "true");
+      requestAnimationFrame(() => {
+        article.querySelector(".branch-button")?.scrollIntoView({
+          block: "nearest",
+          inline: "nearest",
+        });
+      });
     }
 
     function updateBranchControls() {

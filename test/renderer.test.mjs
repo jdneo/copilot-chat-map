@@ -206,6 +206,7 @@ test("forks a completed turn directly from a non-current family lane", async () 
     const childForkButton = childLane?.querySelector(".branch-button");
     assert.ok(childForkButton);
     childLane.querySelector(".turn").click();
+    assert.equal(childForkButton.scrollIntoViewCount, 1);
     childForkButton.click();
     await settle();
 
@@ -216,6 +217,19 @@ test("forks a completed turn directly from a non-current family lane", async () 
             turnId: childTurn.id,
         },
     ]);
+});
+
+test("keeps the Fork control visible beside the rightmost family lane", () => {
+    const html = renderHtml();
+
+    assert.match(
+        html,
+        /\.family \{[\s\S]*?padding: 2px 90px 2px 2px;[\s\S]*?\}/,
+    );
+    assert.match(
+        html,
+        /\.branch-button \{[\s\S]*?top: 50%;[\s\S]*?left: calc\(100% \+ 10px\);[\s\S]*?transform: translateY\(-50%\);[\s\S]*?\}/,
+    );
 });
 
 function readyState(currentSessionId, lanes) {
