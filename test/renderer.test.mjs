@@ -7,11 +7,20 @@ import { renderHtml } from "../extension/renderer.mjs";
 test("renders selectable checkpoint controls and the fork API workflow", () => {
     const html = renderHtml();
 
-    assert.match(html, /"\+ New branch"/);
+    assert.match(html, /"\+ Fork"/);
     assert.match(html, /\/api\/fork/);
     assert.match(html, /crypto\.randomUUID\(\)/);
     assert.match(html, /state\.canFork/);
     assert.match(html, /Open it manually from the session list/);
+    assert.doesNotMatch(html, /<header>/);
+    assert.doesNotMatch(html, /<h1>Conversation Fork Map<\/h1>/);
+    assert.match(
+        html,
+        /<button id="refresh"[^>]+aria-label="Refresh"[^>]+title="Refresh"/,
+    );
+    assert.match(html, /<svg[^>]+aria-hidden="true"/);
+    assert.match(html, /#refresh \{[\s\S]+background: #1f6feb;/);
+    assert.match(html, /#refresh svg \{[\s\S]+stroke: #fff;/);
     assert.match(html, /#notice \{[\s\S]+position: fixed;/);
 
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];

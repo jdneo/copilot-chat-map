@@ -34,25 +34,45 @@ export function renderHtml() {
       outline-offset: 2px;
     }
     button:disabled { cursor: wait; opacity: .65; }
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color-default, #30363d);
-      background: var(--background-color-default, #0d1117);
+    h2, p { margin: 0; }
+    #status {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 3;
+      max-width: calc(100vw - 96px);
+      padding: 7px 10px;
+      border: 1px solid var(--border-color-default, #30363d);
+      border-radius: 999px;
+      background: var(--background-color-muted, #161b22);
+      color: var(--text-color-muted, #8b949e);
+      box-shadow: 0 4px 14px rgb(0 0 0 / 25%);
     }
-    h1, h2, p { margin: 0; }
-    h1 {
-      font-size: var(--text-title-medium, 20px);
-      line-height: var(--leading-title-medium, 26px);
+    #refresh {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 3;
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      padding: 0;
+      border-color: #58a6ff;
+      border-radius: 50%;
+      background: #1f6feb;
+      color: #fff;
+      box-shadow: 0 4px 14px rgb(0 0 0 / 30%);
     }
-    #status { color: var(--text-color-muted, #8b949e); }
-    main { padding: 24px; }
+    #refresh:hover { background: #388bfd; }
+    #refresh svg {
+      width: 20px;
+      height: 20px;
+      stroke: #fff;
+    }
+    #refresh:disabled svg { animation: refresh-spin .8s linear infinite; }
+    @keyframes refresh-spin { to { transform: rotate(360deg); } }
+    main { padding: 24px 24px 82px; }
     #notice {
       position: fixed;
       top: 16px;
@@ -263,15 +283,15 @@ export function renderHtml() {
   </style>
 </head>
 <body>
-  <header>
-    <div>
-      <h1>Conversation Fork Map</h1>
-      <p id="status">Loading current session...</p>
-    </div>
-    <button id="refresh" type="button">Refresh</button>
-  </header>
+  <p id="status" role="status">Loading current session...</p>
   <aside id="notice" role="status" hidden></aside>
   <main id="content" aria-live="polite"></main>
+  <button id="refresh" type="button" aria-label="Refresh" title="Refresh">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M20 11a8 8 0 1 0-2.34 5.66" stroke-width="2" stroke-linecap="round"/>
+      <path d="M20 4v7h-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
   <script>
     const content = document.querySelector("#content");
     const refreshButton = document.querySelector("#refresh");
@@ -695,7 +715,7 @@ export function renderHtml() {
         });
 
         if (completed && laneState.session.current) {
-          const branchButton = element("button", "branch-button", "+ New branch");
+          const branchButton = element("button", "branch-button", "+ Fork");
           branchButton.type = "button";
           branchButton.dataset.turnId = turn.id;
           branchButton.addEventListener("click", (event) => {
