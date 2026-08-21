@@ -52,6 +52,80 @@ test("renders family lanes with explicit chat and checkpoint navigation", () => 
     );
 });
 
+test("dismisses an Open Chat error notice", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const parentId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const document = fakeDocument();
+    const state = readyState(parentId, [
+        lane(parentId, true, []),
+        lane(childId, false, []),
+    ]);
+    const context = browserContext(document, state);
+    context.fetch = async (url) => {
+        if (url.startsWith("/api/state")) return jsonResponse(state);
+        if (url.startsWith("/api/open-session")) {
+            return jsonResponse({
+                kind: "navigation_failed",
+                message: "Open this session manually.",
+            });
+        }
+        throw new Error(`Unexpected request: ${url}`);
+    };
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    document.querySelector(".open-chat").click();
+    await settle();
+
+    const notice = document.querySelector("#notice");
+    assert.equal(notice.hidden, false);
+    const closeButton = notice.querySelector(".notice-close");
+    assert.ok(closeButton);
+
+    closeButton.click();
+
+    assert.equal(notice.hidden, true);
+});
+
+test("removes virtual-node information once a child lane has turns", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const parentId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const childTurn = {
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        userContent: "Continue in the child",
+        assistantContent: "Child reply.",
+        status: "completed",
+    };
+    const document = fakeDocument();
+    const context = browserContext(
+        document,
+        readyState(parentId, [
+            lane(parentId, true, []),
+            lane(childId, false, [childTurn]),
+        ]),
+    );
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const childLane = document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === childId);
+    const branchEntry = childLane.querySelector(".branch-entry");
+    assert.ok(branchEntry);
+    assert.equal(branchEntry.childElementCount, 0);
+    assert.equal(childLane.querySelector(".turn.virtual"), null);
+    assert.equal(childLane.querySelector(".checkpoint-link"), null);
+    assert.equal(childLane.querySelector(".open-chat"), null);
+});
+
 test("refreshes the family after a branch is created", async () => {
     const html = renderHtml();
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
@@ -134,6 +208,11 @@ test("refreshes the family after a branch is created", async () => {
         2,
     );
     assert.equal(document.querySelectorAll(".branch-bus.pending").length, 1);
+    const bus = document.querySelector(".branch-bus");
+    const stemStartXs = document
+        .querySelectorAll(".branch-stem")
+        .map((stem) => Number(/^M ([\d.-]+)/.exec(stem.d)?.[1]));
+    assert.equal(Number(bus.x2), Math.max(...stemStartXs));
     assert.equal(document.querySelectorAll(".state").length, 0);
     assert.equal(
         document

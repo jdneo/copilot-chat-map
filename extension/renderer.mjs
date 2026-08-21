@@ -90,6 +90,17 @@ export function renderHtml() {
     }
     #notice.error { border-color: var(--danger-color-emphasis, #f85149); }
     #notice strong { display: block; margin-bottom: 4px; }
+    .notice-close {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      border: 0;
+      padding: 4px 8px;
+      background: transparent;
+      color: var(--text-color-muted, #8b949e);
+      font-size: 12px;
+    }
+    .notice-close:hover { color: var(--text-color-default, #f0f6fc); }
     .state {
       max-width: 680px;
       margin: 48px auto;
@@ -550,10 +561,17 @@ export function renderHtml() {
     }
 
     function showNotice(title, message, isError) {
+      const closeButton = element("button", "notice-close", "Close");
+      closeButton.type = "button";
+      closeButton.setAttribute("aria-label", "Dismiss notification");
+      closeButton.addEventListener("click", () => {
+        notice.hidden = true;
+      });
       notice.className = isError ? "error" : "";
       notice.replaceChildren(
         element("strong", "", title),
         element("span", "", message),
+        closeButton,
       );
       notice.hidden = false;
     }
@@ -800,7 +818,11 @@ export function renderHtml() {
             y: rect.top - familyRect.top + family.scrollTop,
           };
         });
-        const busEndX = Math.max(...targets.map((target) => target.x));
+        const busEndX = Math.max(
+          ...targets.map(
+            (target) => target.x - roundedStemRadius(busY, target.y),
+          ),
+        );
         const bus = svgLine(startX, busY, busEndX, busY);
         bus.setAttribute(
           "class",
@@ -842,7 +864,7 @@ export function renderHtml() {
 
     function svgRoundedStem(x, busY, targetY) {
       const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      const radius = Math.min(12, Math.max(0, (targetY - busY) / 2));
+      const radius = roundedStemRadius(busY, targetY);
       path.setAttribute(
         "d",
         "M " + (x - radius) + " " + busY +
@@ -851,6 +873,10 @@ export function renderHtml() {
           " V " + targetY,
       );
       return path;
+    }
+
+    function roundedStemRadius(busY, targetY) {
+      return Math.min(12, Math.max(0, (targetY - busY) / 2));
     }
 
     function renderLane(state, laneState) {
@@ -866,37 +892,39 @@ export function renderHtml() {
           isVirtual ? "article" : "div",
           isVirtual
             ? "turn virtual branch-entry pending"
-            : "lane-actions branch-entry",
+            : "branch-entry",
         );
         entry.dataset.parentSessionId = laneState.sourceCheckpoint.sessionId;
         entry.dataset.sourceTurnId = laneState.sourceCheckpoint.turnId;
-        const actions = isVirtual
-          ? element("div", "lane-actions")
-          : entry;
-        const checkpoint = element(
-          "button",
-          "checkpoint-link",
-          laneState.inheritedTurnCount +
-            " inherited " +
-            (laneState.inheritedTurnCount === 1 ? "turn" : "turns") +
-            " · Fork Checkpoint",
-        );
-        checkpoint.type = "button";
-        checkpoint.disabled = !laneState.sourceCheckpoint.available;
-        checkpoint.addEventListener("click", () =>
-          focusCheckpoint(laneState.sourceCheckpoint),
-        );
-        actions.append(checkpoint);
-        const openButton = element("button", "open-chat", "Open Chat");
-        openButton.type = "button";
-        openButton.disabled = !laneState.session.available;
-        openButton.addEventListener("click", () => openChat(laneState.session.id));
-        actions.append(openButton);
         if (isVirtual) {
+          const actions = element("div", "lane-actions");
+          const checkpoint = element(
+            "button",
+            "checkpoint-link",
+            laneState.inheritedTurnCount +
+              " inherited " +
+              (laneState.inheritedTurnCount === 1 ? "turn" : "turns") +
+              " · Fork Checkpoint",
+          );
+          checkpoint.type = "button";
+          checkpoint.disabled = !laneState.sourceCheckpoint.available;
+          checkpoint.addEventListener("click", () =>
+            focusCheckpoint(laneState.sourceCheckpoint),
+          );
+          actions.append(checkpoint);
+          const openButton = element("button", "open-chat", "Open Chat");
+          openButton.type = "button";
+          openButton.disabled = !laneState.session.available;
+          openButton.addEventListener("click", () =>
+            openChat(laneState.session.id),
+          );
+          actions.append(openButton);
           entry.append(
             element("p", "virtual-copy", "No conversation turns yet."),
             actions,
           );
+        } else {
+          entry.setAttribute("aria-hidden", "true");
         }
         lane.append(entry);
       }
