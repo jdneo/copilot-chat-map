@@ -50,20 +50,14 @@ export function renderHtml() {
       box-shadow: 0 4px 14px rgb(0 0 0 / 25%);
     }
     #refresh {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 3;
       display: grid;
-      width: 42px;
-      height: 42px;
+      width: 32px;
+      height: 32px;
       place-items: center;
       padding: 0;
       border-color: #58a6ff;
-      border-radius: 50%;
       background: #1f6feb;
       color: #fff;
-      box-shadow: 0 4px 14px rgb(0 0 0 / 30%);
     }
     #refresh:hover { background: #388bfd; }
     #refresh svg {
@@ -114,7 +108,7 @@ export function renderHtml() {
     .minimap {
       position: fixed;
       right: 16px;
-      bottom: 76px;
+      bottom: 16px;
       z-index: 3;
       width: 180px;
       padding: 8px;
@@ -399,14 +393,14 @@ export function renderHtml() {
     <button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">+</button>
     <button id="fit-all" type="button">Fit all</button>
     <button id="focus-current" type="button">Focus current</button>
+    <button id="refresh" type="button" aria-label="Refresh" title="Refresh">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+        <path d="M20 11a8 8 0 1 0-2.34 5.66" stroke-width="2" stroke-linecap="round"/>
+        <path d="M20 4v7h-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
   </nav>
   <main id="content" aria-live="polite"></main>
-  <button id="refresh" type="button" aria-label="Refresh" title="Refresh">
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-      <path d="M20 11a8 8 0 1 0-2.34 5.66" stroke-width="2" stroke-linecap="round"/>
-      <path d="M20 4v7h-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
   <script>
     const content = document.querySelector("#content");
     const refreshButton = document.querySelector("#refresh");

@@ -18,9 +18,14 @@ test("renders selectable checkpoint controls and the fork API workflow", () => {
         html,
         /<button id="refresh"[^>]+aria-label="Refresh"[^>]+title="Refresh"/,
     );
+    assert.match(
+        html,
+        /<nav class="map-controls"[\s\S]*?<button id="refresh"[\s\S]*?<\/nav>/,
+    );
     assert.match(html, /<svg[^>]+aria-hidden="true"/);
     assert.match(html, /#refresh \{[\s\S]+background: #1f6feb;/);
     assert.match(html, /#refresh svg \{[\s\S]+stroke: #fff;/);
+    assert.match(html, /\.minimap \{[\s\S]*?bottom: 16px;/);
     assert.match(html, /#notice \{[\s\S]+position: fixed;/);
 
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
