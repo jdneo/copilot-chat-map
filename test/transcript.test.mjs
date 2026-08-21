@@ -90,6 +90,133 @@ test("keeps ephemeral, subagent, and injected events out of top-level turns", ()
     assert.equal(turns[0].assistantContent, "Visible response");
 });
 
+test("owns tool, permission, and subagent activity as execution details of the visible turn", () => {
+    const events = [
+        {
+            id: "11111111-1111-4111-8111-111111111111",
+            type: "user.message",
+            data: { content: "Inspect the project", source: "user" },
+        },
+        {
+            id: "22222222-2222-4222-8222-222222222222",
+            type: "assistant.message",
+            data: {
+                content: "I am checking the files.",
+                toolRequests: [{ toolCallId: "tool-1", name: "view" }],
+            },
+        },
+        {
+            id: "33333333-3333-4333-8333-333333333333",
+            type: "tool.execution_start",
+            data: { toolCallId: "tool-1", name: "view" },
+        },
+        {
+            id: "44444444-4444-4444-8444-444444444444",
+            type: "permission.requested",
+            data: { toolCallId: "tool-1", permission: "read" },
+        },
+        {
+            id: "55555555-5555-4555-8555-555555555555",
+            type: "tool.execution_complete",
+            data: { toolCallId: "tool-1", result: "renderer.mjs" },
+        },
+        {
+            id: "66666666-6666-4666-8666-666666666666",
+            type: "assistant.message",
+            agentId: "research-agent",
+            data: { content: "Subagent finding" },
+        },
+        {
+            id: "77777777-7777-4777-8777-777777777777",
+            type: "assistant.message",
+            data: { content: "The project is ready." },
+        },
+        {
+            id: "88888888-8888-4888-8888-888888888888",
+            type: "assistant.turn_end",
+            data: { turnId: "turn-1" },
+        },
+    ];
+
+    const [turn] = groupTurns(events);
+
+    assert.equal(turn.assistantContent, "The project is ready.");
+    assert.deepEqual(
+        turn.executionDetails.map(({ id, type }) => ({ id, type })),
+        [
+            {
+                id: "22222222-2222-4222-8222-222222222222",
+                type: "assistant.message",
+            },
+            {
+                id: "33333333-3333-4333-8333-333333333333",
+                type: "tool.execution_start",
+            },
+            {
+                id: "44444444-4444-4444-8444-444444444444",
+                type: "permission.requested",
+            },
+            {
+                id: "55555555-5555-4555-8555-555555555555",
+                type: "tool.execution_complete",
+            },
+            {
+                id: "66666666-6666-4666-8666-666666666666",
+                type: "assistant.message",
+            },
+        ],
+    );
+});
+
+test("keeps delayed tool results with the turn that requested the tool", () => {
+    const events = [
+        {
+            id: "11111111-1111-4111-8111-111111111111",
+            type: "user.message",
+            data: { content: "Inspect the project", source: "user" },
+        },
+        {
+            id: "22222222-2222-4222-8222-222222222222",
+            type: "assistant.message",
+            data: {
+                content: "Checking.",
+                toolRequests: [{ toolCallId: "tool-1", name: "view" }],
+            },
+        },
+        {
+            id: "33333333-3333-4333-8333-333333333333",
+            type: "assistant.message",
+            data: { content: "Inspection started." },
+        },
+        {
+            id: "44444444-4444-4444-8444-444444444444",
+            type: "assistant.turn_end",
+            data: { turnId: "turn-1" },
+        },
+        {
+            id: "55555555-5555-4555-8555-555555555555",
+            type: "user.message",
+            data: { content: "Continue", source: "user" },
+        },
+        {
+            id: "66666666-6666-4666-8666-666666666666",
+            type: "tool.execution_complete",
+            data: { toolCallId: "tool-1", result: "renderer.mjs" },
+        },
+    ];
+
+    const turns = groupTurns(events);
+
+    assert.deepEqual(
+        turns[0].executionDetails.map(({ id }) => id),
+        [
+            "22222222-2222-4222-8222-222222222222",
+            "66666666-6666-4666-8666-666666666666",
+        ],
+    );
+    assert.deepEqual(turns[1].executionDetails, []);
+});
+
 test("marks a turn without a final Copilot response as incomplete", () => {
     const events = [
         {
@@ -122,7 +249,19 @@ test("marks a turn without a final Copilot response as incomplete", () => {
             userContent: "Run the check",
             assistantContent: "",
             status: "incomplete",
-            executionDetails: [],
+            executionDetails: [
+                {
+                    id: "22222222-2222-4222-8222-222222222222",
+                    type: "assistant.message",
+                    data: {
+                        content: "",
+                        messageId: "tool-request",
+                        toolRequests: [
+                            { toolCallId: "tool-1", name: "shell" },
+                        ],
+                    },
+                },
+            ],
         },
     ]);
 });

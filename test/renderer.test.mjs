@@ -232,6 +232,130 @@ test("keeps the Fork control visible beside the rightmost family lane", () => {
     );
 });
 
+test("renders independently expandable role bands and collapsed execution details", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const sessionId = "11111111-1111-4111-8111-111111111111";
+    const turn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "First user line\nSecond user line\nThird user line\nFourth user line",
+        assistantContent: "Copilot response",
+        status: "completed",
+        executionDetails: [
+            {
+                id: "tool-event",
+                type: "tool.execution_complete",
+                data: { name: "view", result: "Read renderer.mjs" },
+            },
+        ],
+    };
+    const document = fakeDocument();
+    const context = browserContext(
+        document,
+        readyState(sessionId, [lane(sessionId, true, [turn])]),
+    );
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const article = document.querySelector(".turn");
+    const bands = article.querySelectorAll(".message");
+    const toggles = article.querySelectorAll(".message-toggle");
+    assert.equal(bands.length, 2);
+    assert.equal(bands[0].querySelector(".role").textContent, "You");
+    assert.equal(bands[1].querySelector(".role").textContent, "Copilot");
+    assert.equal(bands[0].querySelector(".content").style["--line-clamp"], "3");
+    assert.equal(bands[1].querySelector(".content").style["--line-clamp"], "8");
+    assert.equal(toggles.length, 2);
+    assert.equal(toggles[0].textContent, "Expand");
+    assert.equal(article.querySelectorAll(".execution-details").length, 1);
+    assert.equal(
+        article.querySelector(".execution-summary").textContent,
+        "Execution details (1)",
+    );
+
+    toggles[0].click();
+    article.querySelector(".execution-summary").click();
+
+    assert.equal(toggles[0].textContent, "Collapse");
+    assert.equal(toggles[0]["aria-expanded"], "true");
+    assert.equal(toggles[1]["aria-expanded"], "false");
+    assert.equal(article.dataset.turnId, turn.id);
+    assert.equal(article["aria-selected"], "false");
+});
+
+test("renders useful Markdown without activating unsafe content or remote images", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const sessionId = "11111111-1111-4111-8111-111111111111";
+    const markdown = [
+        "# Heading",
+        "",
+        "- one",
+        "- two with `code`",
+        "",
+        "| Name | Value |",
+        "| --- | --- |",
+        "| safe | [Docs](https://example.com/docs) |",
+        "",
+        "```js",
+        "alert('shown, not run')",
+        "```",
+        "",
+        "<script>globalThis.compromised = true</script>",
+        "<img src=x onerror=globalThis.compromised=true>",
+        "[Bad](javascript:globalThis.compromised=true)",
+        "![Diagram](https://images.example.com/diagram.png)",
+        "[malformed](https://example.com",
+    ].join("\n");
+    const turn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: markdown,
+        assistantContent: "Done.",
+        status: "completed",
+        executionDetails: [],
+    };
+    const document = fakeDocument();
+    const context = browserContext(
+        document,
+        readyState(sessionId, [lane(sessionId, true, [turn])]),
+    );
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const article = document.querySelector(".turn");
+    assert.equal(article.querySelectorAll(".markdown-heading").length, 1);
+    assert.equal(article.querySelectorAll(".markdown-list").length, 1);
+    assert.equal(article.querySelectorAll(".markdown-table").length, 1);
+    assert.equal(article.querySelectorAll(".inline-code").length, 1);
+    assert.equal(article.querySelectorAll(".code-block").length, 1);
+    assert.equal(article.querySelectorAll(".markdown-link").length, 1);
+    const link = article.querySelector(".markdown-link");
+    assert.equal(link.href, "https://example.com/docs");
+    assert.equal(link.target, "_blank");
+    assert.equal(link.rel, "noopener noreferrer");
+    assert.equal(context.compromised, undefined);
+    assert.match(textIn(article), /<script>globalThis\.compromised = true<\/script>/);
+    assert.match(textIn(article), /<img src=x onerror=globalThis\.compromised=true>/);
+    assert.match(textIn(article), /Bad/);
+    assert.match(textIn(article), /\[malformed\]\(https:\/\/example\.com/);
+
+    assert.equal(article.querySelectorAll(".remote-image").length, 1);
+    const image = article.querySelector(".remote-image");
+    const loadImage = article.querySelector(".load-image");
+    assert.ok(image);
+    assert.equal(image.src, undefined);
+    assert.equal(image.alt, "Diagram");
+
+    loadImage.click();
+
+    assert.equal(image.src, "https://images.example.com/diagram.png");
+    assert.equal(image.referrerPolicy, "no-referrer");
+});
+
 function readyState(currentSessionId, lanes) {
     const currentLane = lanes.find((candidate) => candidate.session.current);
     return {
@@ -282,6 +406,32 @@ function jsonResponse(value) {
 
 function settle() {
     return new Promise((resolve) => setImmediate(resolve));
+}
+
+function browserContext(document, state) {
+    return {
+        console,
+        crypto: { randomUUID: () => "operation-1" },
+        document,
+        fetch: async (url) => {
+            if (url.startsWith("/api/state")) return jsonResponse(state);
+            throw new Error(`Unexpected request: ${url}`);
+        },
+        requestAnimationFrame: (callback) => callback(),
+        setInterval: () => 0,
+        setTimeout: () => 0,
+        URL,
+        URLSearchParams,
+        window: {
+            addEventListener() {},
+            location: { search: "?token=<REDACTED>" },
+        },
+    };
+}
+
+function textIn(node) {
+    if (!(node instanceof FakeElement)) return String(node);
+    return [node.textContent, ...node.children.map(textIn)].join("");
 }
 
 function fakeDocument() {
@@ -364,7 +514,13 @@ class FakeElement {
     }
 
     click() {
-        this.listeners.get("click")?.({ stopPropagation() {} });
+        const event = {
+            propagationStopped: false,
+            stopPropagation() {
+                this.propagationStopped = true;
+            },
+        };
+        this.#dispatchClick(event);
     }
 
     setAttribute(name, value) {
@@ -378,6 +534,10 @@ class FakeElement {
 
     querySelector(selector) {
         return this.findAll(selector)[0] || null;
+    }
+
+    querySelectorAll(selector) {
+        return this.findAll(selector);
     }
 
     getBoundingClientRect() {
@@ -426,6 +586,11 @@ class FakeElement {
 
     #classes() {
         return new Set(this.className.split(/\s+/).filter(Boolean));
+    }
+
+    #dispatchClick(event) {
+        this.listeners.get("click")?.(event);
+        if (!event.propagationStopped) this.parent?.#dispatchClick(event);
     }
 
     #changeClasses(operation, names) {

@@ -8,7 +8,7 @@ const CONTENT_SECURITY_POLICY = [
     "script-src 'unsafe-inline'",
     "style-src 'unsafe-inline'",
     "connect-src 'self'",
-    "img-src 'none'",
+    "img-src https:",
     "base-uri 'none'",
     "form-action 'none'",
 ].join("; ");

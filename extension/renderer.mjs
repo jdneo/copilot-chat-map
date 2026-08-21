@@ -231,6 +231,8 @@ export function renderHtml() {
     }
     .message { padding: 9px 12px 10px; border-top: 1px solid var(--border-color-default, #30363d); }
     .message:first-child { border-top: 0; }
+    .message.user { background: color-mix(in srgb, var(--true-color-blue, #58a6ff) 6%, transparent); }
+    .message.assistant { background: color-mix(in srgb, var(--true-color-green, #3fb950) 5%, transparent); }
     .role {
       margin-bottom: 6px;
       color: var(--text-color-muted, #8b949e);
@@ -242,31 +244,91 @@ export function renderHtml() {
     .content {
       margin: 0;
       overflow-wrap: anywhere;
-      white-space: pre-wrap;
-      font: inherit;
+      white-space: normal;
     }
-    .turn-body.collapsed {
-      max-height: 240px;
+    .content.collapsed {
+      display: -webkit-box;
       overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: var(--line-clamp);
     }
-    .turn-toggle {
+    .content p,
+    .content pre,
+    .content ul,
+    .content ol,
+    .content table,
+    .content h1,
+    .content h2,
+    .content h3,
+    .content h4,
+    .content h5,
+    .content h6 { margin: 0 0 8px; }
+    .content > :last-child { margin-bottom: 0; }
+    .content ul, .content ol { padding-left: 22px; }
+    .content table {
       width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .content th, .content td {
+      padding: 4px 6px;
+      border: 1px solid var(--border-color-default, #30363d);
+      text-align: left;
+      vertical-align: top;
+    }
+    .content code {
+      border-radius: 4px;
+      padding: 1px 4px;
+      background: var(--background-color-default, #0d1117);
+      font-family: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
+      font-size: .92em;
+    }
+    .content .code-block {
+      overflow-x: auto;
+      padding: 9px 10px;
+      border-radius: 6px;
+      background: var(--background-color-default, #0d1117);
+      white-space: pre;
+    }
+    .content .code-block code { padding: 0; background: transparent; }
+    .content a { color: var(--true-color-blue, #58a6ff); }
+    .remote-image-frame {
+      margin: 8px 0 0;
+      padding: 8px;
+      border: 1px solid var(--border-color-default, #30363d);
+      border-radius: 6px;
+    }
+    .remote-image { display: block; max-width: 100%; margin-top: 8px; }
+    .message-toggle {
       border: 0;
-      border-top: 1px solid var(--border-color-default, #30363d);
-      border-radius: 0 0 10px 10px;
-      padding: 6px 12px;
-      background: var(--background-color-muted, #161b22);
+      padding: 5px 0 0;
+      background: transparent;
       color: var(--true-color-blue, #58a6ff);
       font-size: 12px;
       font-weight: var(--font-weight-semibold, 600);
-      text-align: center;
     }
-    .turn-toggle:hover {
-      background: var(--background-color-default, #0d1117);
-    }
-    .turn-toggle:focus-visible {
-      border: 0;
+    .message-toggle:hover { text-decoration: underline; }
+    .execution-details {
       border-top: 1px solid var(--border-color-default, #30363d);
+      padding: 8px 12px 10px;
+    }
+    .execution-summary {
+      color: var(--text-color-muted, #8b949e);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: var(--font-weight-semibold, 600);
+    }
+    .execution-event {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-color-default, #30363d);
+    }
+    .execution-event pre {
+      margin: 4px 0 0;
+      overflow-x: auto;
+      color: var(--text-color-muted, #8b949e);
+      font: 11px/16px var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
+      white-space: pre-wrap;
     }
     .branch-button {
       position: absolute;
@@ -316,11 +378,247 @@ export function renderHtml() {
       return sessionId + ":" + turnId;
     }
 
-    function renderMessage(role, text, className) {
+    function renderMessage(role, text, className, lineClamp) {
       const section = element("section", "message " + className);
       section.append(element("div", "role", role));
-      section.append(element("pre", "content" + (text ? "" : " empty"), text || "Waiting for Copilot's final response."));
+      const rendered = renderMarkdown(text || "Waiting for Copilot's final response.");
+      rendered.className = "content collapsed" + (text ? "" : " empty");
+      rendered.style["--line-clamp"] = String(lineClamp);
+      section.append(rendered);
+
+      const toggle = element("button", "message-toggle", "Expand");
+      toggle.type = "button";
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const expanded = !rendered.classList.toggle("collapsed");
+        toggle.textContent = expanded ? "Collapse" : "Expand";
+        toggle.setAttribute("aria-expanded", String(expanded));
+        requestAnimationFrame(() => {
+          const family = document.querySelector(".family");
+          if (family) drawConnections(family);
+        });
+      });
+      section.append(toggle);
       return section;
+    }
+
+    function renderMarkdown(markdown) {
+      const container = element("div");
+      const lines = String(markdown).replace(/\\r\\n?/g, "\\n").split("\\n");
+      let index = 0;
+
+      while (index < lines.length) {
+        const line = lines[index];
+        if (!line.trim()) {
+          index += 1;
+          continue;
+        }
+
+        const fence = /^ {0,3}\\x60\\x60\\x60([\\w+-]*)\\s*$/.exec(line);
+        if (fence) {
+          const codeLines = [];
+          index += 1;
+          while (
+            index < lines.length &&
+            !/^ {0,3}\\x60\\x60\\x60\\s*$/.test(lines[index])
+          ) {
+            codeLines.push(lines[index]);
+            index += 1;
+          }
+          if (index < lines.length) index += 1;
+          const pre = element("pre", "code-block");
+          const code = element("code", "", codeLines.join("\\n"));
+          if (fence[1]) code.dataset.language = fence[1];
+          pre.append(code);
+          container.append(pre);
+          continue;
+        }
+
+        const heading = /^(#{1,6})\\s+(.+)$/.exec(line);
+        if (heading) {
+          const node = element("h" + heading[1].length, "markdown-heading");
+          appendInline(node, heading[2]);
+          container.append(node);
+          index += 1;
+          continue;
+        }
+
+        if (isTableStart(lines, index)) {
+          const table = element("table", "markdown-table");
+          const head = element("thead");
+          const headRow = element("tr");
+          tableCells(line).forEach((cell) => {
+            const th = element("th");
+            appendInline(th, cell);
+            headRow.append(th);
+          });
+          head.append(headRow);
+          table.append(head);
+          index += 2;
+          const body = element("tbody");
+          while (index < lines.length && isTableRow(lines[index])) {
+            const row = element("tr");
+            tableCells(lines[index]).forEach((cell) => {
+              const td = element("td");
+              appendInline(td, cell);
+              row.append(td);
+            });
+            body.append(row);
+            index += 1;
+          }
+          table.append(body);
+          container.append(table);
+          continue;
+        }
+
+        const listMatch = /^(\\s*)([-*+]|\\d+\\.)\\s+(.+)$/.exec(line);
+        if (listMatch) {
+          const ordered = /\\d+\\./.test(listMatch[2]);
+          const list = element(ordered ? "ol" : "ul", "markdown-list");
+          while (index < lines.length) {
+            const itemMatch = /^(\\s*)([-*+]|\\d+\\.)\\s+(.+)$/.exec(lines[index]);
+            if (!itemMatch || /\\d+\\./.test(itemMatch[2]) !== ordered) break;
+            const item = element("li");
+            appendInline(item, itemMatch[3]);
+            list.append(item);
+            index += 1;
+          }
+          container.append(list);
+          continue;
+        }
+
+        const paragraphLines = [line];
+        index += 1;
+        while (
+          index < lines.length &&
+          lines[index].trim() &&
+          !isBlockStart(lines, index)
+        ) {
+          paragraphLines.push(lines[index]);
+          index += 1;
+        }
+        const paragraph = element("p", "markdown-paragraph");
+        appendInline(paragraph, paragraphLines.join("\\n"));
+        container.append(paragraph);
+      }
+      return container;
+    }
+
+    function isBlockStart(lines, index) {
+      return (
+        /^ {0,3}\\x60\\x60\\x60/.test(lines[index]) ||
+        /^(#{1,6})\\s+/.test(lines[index]) ||
+        /^(\\s*)([-*+]|\\d+\\.)\\s+/.test(lines[index]) ||
+        isTableStart(lines, index)
+      );
+    }
+
+    function isTableStart(lines, index) {
+      if (index + 1 >= lines.length || !isTableRow(lines[index])) return false;
+      const separators = tableCells(lines[index + 1]);
+      return separators.length > 0 &&
+        separators.every((cell) => /^:?-{3,}:?$/.test(cell));
+    }
+
+    function isTableRow(line) {
+      return line.includes("|") && tableCells(line).length > 1;
+    }
+
+    function tableCells(line) {
+      const trimmed = line.trim().replace(/^\\|/, "").replace(/\\|$/, "");
+      return trimmed.split("|").map((cell) => cell.trim());
+    }
+
+    function appendInline(parent, text) {
+      const tokenPattern = /(\\x60[^\\x60\\n]+\\x60|!\\[[^\\]\\n]*\\]\\([^\\)\\n]+\\)|\\[[^\\]\\n]+\\]\\([^\\)\\n]+\\))/g;
+      let offset = 0;
+      for (const match of text.matchAll(tokenPattern)) {
+        if (match.index > offset) parent.append(text.slice(offset, match.index));
+        const token = match[0];
+        if (token.startsWith("\\x60")) {
+          parent.append(element("code", "inline-code", token.slice(1, -1)));
+        } else if (token.startsWith("!")) {
+          appendRemoteImage(parent, token);
+        } else {
+          appendLink(parent, token);
+        }
+        offset = match.index + token.length;
+      }
+      if (offset < text.length) parent.append(text.slice(offset));
+    }
+
+    function appendLink(parent, token) {
+      const match = /^\\[([^\\]]+)\\]\\(([^\\)]+)\\)$/.exec(token);
+      const url = match && safeUrl(match[2]);
+      if (!match || !url) {
+        parent.append(match ? match[1] : token);
+        return;
+      }
+      const link = element("a", "markdown-link", match[1]);
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.referrerPolicy = "no-referrer";
+      parent.append(link);
+    }
+
+    function appendRemoteImage(parent, token) {
+      const match = /^!\\[([^\\]]*)\\]\\(([^\\)]+)\\)$/.exec(token);
+      const url = match && safeImageUrl(match[2]);
+      if (!match || !url) {
+        parent.append(match ? match[1] : token);
+        return;
+      }
+      const frame = element("span", "remote-image-frame");
+      const image = element("img", "remote-image");
+      image.alt = match[1];
+      image.referrerPolicy = "no-referrer";
+      const load = element("button", "load-image", "Load remote image");
+      load.type = "button";
+      load.addEventListener("click", (event) => {
+        event.stopPropagation();
+        image.src = url;
+        load.hidden = true;
+      });
+      frame.append(load, image);
+      parent.append(frame);
+    }
+
+    function safeUrl(value) {
+      try {
+        const url = new URL(value.trim(), "http://127.0.0.1/");
+        return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+      } catch {
+        return "";
+      }
+    }
+
+    function safeImageUrl(value) {
+      const url = safeUrl(value);
+      return url.startsWith("https://") ? url : "";
+    }
+
+    function renderExecutionDetails(events) {
+      const details = element("details", "execution-details");
+      details.addEventListener("click", (event) => event.stopPropagation());
+      details.append(
+        element(
+          "summary",
+          "execution-summary",
+          "Execution details (" + events.length + ")",
+        ),
+      );
+      events.forEach((event) => {
+        const item = element("div", "execution-event");
+        item.append(element("strong", "", event.type || "Activity"));
+        const data = event.data && Object.keys(event.data).length
+          ? JSON.stringify(event.data, null, 2)
+          : "";
+        if (data) item.append(element("pre", "", data));
+        details.append(item);
+      });
+      return details;
     }
 
     function showNotice(title, message, isError) {
@@ -711,29 +1009,13 @@ export function renderHtml() {
         article.setAttribute("aria-label", completed ? "Completed turn" : "Incomplete turn");
         article.setAttribute("aria-selected", "false");
         article.title = completed ? "Completed" : "Incomplete";
-        const body = element("div", "turn-body collapsed");
-        body.append(renderMessage("You", turn.userContent, "user"));
-        body.append(renderMessage("Copilot", turn.assistantContent, "assistant"));
+        const body = element("div", "turn-body");
+        body.append(renderMessage("You", turn.userContent, "user", 3));
+        body.append(renderMessage("Copilot", turn.assistantContent, "assistant", 8));
         article.append(body);
-
-        const toggle = element("button", "turn-toggle", "Show more");
-        toggle.type = "button";
-        toggle.hidden = true;
-        toggle.setAttribute("aria-expanded", "false");
-        toggle.addEventListener("click", (event) => {
-          event.stopPropagation();
-          const expanded = !body.classList.toggle("collapsed");
-          toggle.textContent = expanded ? "Show less" : "Show more";
-          toggle.setAttribute("aria-expanded", String(expanded));
-          requestAnimationFrame(() => {
-            const family = document.querySelector(".family");
-            if (family) drawConnections(family);
-          });
-        });
-        article.append(toggle);
-        requestAnimationFrame(() => {
-          toggle.hidden = body.scrollHeight <= body.clientHeight + 1;
-        });
+        if (turn.executionDetails?.length) {
+          article.append(renderExecutionDetails(turn.executionDetails));
+        }
 
         if (completed && laneState.session.available) {
           const branchButton = element("button", "branch-button", "+ Fork");

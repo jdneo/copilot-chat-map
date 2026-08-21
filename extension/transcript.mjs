@@ -33,18 +33,33 @@
 export function groupTurns(events, { isProcessing = false } = {}) {
     /** @type {TurnNode[]} */
     const turns = [];
+    /** @type {Map<string, TurnNode>} */
+    const toolOwners = new Map();
+    /** @type {Map<string, TurnNode>} */
+    const agentOwners = new Map();
     /** @type {TurnNode | undefined} */
     let currentTurn;
     let turnEnded = false;
     let turnAborted = false;
 
     for (const event of events) {
-        if (
-            event.ephemeral ||
-            event.agentId ||
-            event.data?.agentId ||
-            event.data?.parentToolCallId
-        ) {
+        if (event.ephemeral) {
+            continue;
+        }
+
+        if (isExecutionDetail(event)) {
+            const owner =
+                findExecutionOwner(event, toolOwners, agentOwners) ||
+                currentTurn;
+            if (owner) {
+                owner.executionDetails.push(event);
+                rememberExecutionOwner(
+                    event,
+                    owner,
+                    toolOwners,
+                    agentOwners,
+                );
+            }
             continue;
         }
 
@@ -114,4 +129,59 @@ export function groupTurns(events, { isProcessing = false } = {}) {
     }
 
     return turns;
+}
+
+/** @param {SessionEvent} event */
+function isExecutionDetail(event) {
+    return Boolean(
+        event.agentId ||
+        event.data?.agentId ||
+        event.data?.parentToolCallId ||
+        event.type.startsWith("tool.") ||
+        event.type.startsWith("permission.") ||
+        event.type.startsWith("subagent.") ||
+        (event.type === "assistant.message" &&
+            Array.isArray(event.data?.toolRequests) &&
+            event.data.toolRequests.length > 0),
+    );
+}
+
+/**
+ * @param {SessionEvent} event
+ * @param {Map<string, TurnNode>} toolOwners
+ * @param {Map<string, TurnNode>} agentOwners
+ */
+function findExecutionOwner(event, toolOwners, agentOwners) {
+    const toolCallId =
+        event.data?.parentToolCallId || event.data?.toolCallId;
+    const agentId = event.agentId || event.data?.agentId;
+    return (
+        (toolCallId && toolOwners.get(toolCallId)) ||
+        (agentId && agentOwners.get(agentId))
+    );
+}
+
+/**
+ * @param {SessionEvent} event
+ * @param {TurnNode} owner
+ * @param {Map<string, TurnNode>} toolOwners
+ * @param {Map<string, TurnNode>} agentOwners
+ */
+function rememberExecutionOwner(event, owner, toolOwners, agentOwners) {
+    const toolCallIds = [
+        event.data?.toolCallId,
+        ...(Array.isArray(event.data?.toolRequests)
+            ? event.data.toolRequests.map((request) => request?.toolCallId)
+            : []),
+    ];
+    for (const toolCallId of toolCallIds) {
+        if (typeof toolCallId === "string" && toolCallId) {
+            toolOwners.set(toolCallId, owner);
+        }
+    }
+
+    const agentId = event.agentId || event.data?.agentId;
+    if (typeof agentId === "string" && agentId) {
+        agentOwners.set(agentId, owner);
+    }
 }
