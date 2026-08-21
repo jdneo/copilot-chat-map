@@ -32,7 +32,9 @@ test("renders family lanes with explicit chat and checkpoint navigation", () => 
     const html = renderHtml();
 
     assert.match(html, /state\.lanes/);
-    assert.match(html, /"Current Session"/);
+    assert.doesNotMatch(html, /"Current Session"/);
+    assert.doesNotMatch(html, /lane-header/);
+    assert.doesNotMatch(html, /lane-heading/);
     assert.match(html, /"Open Chat"/);
     assert.match(html, /\/api\/open-session/);
     assert.match(html, /Fork Checkpoint/);
@@ -123,6 +125,7 @@ test("refreshes the family after a branch is created", async () => {
     assert.equal(stateRequests, 2);
     assert.equal(document.querySelectorAll(".lane").length, 3);
     assert.equal(document.querySelectorAll(".branch-entry").length, 2);
+    assert.equal(document.querySelectorAll(".turn.virtual").length, 2);
     assert.equal(document.querySelectorAll(".branch-bus").length, 1);
     assert.equal(document.querySelectorAll(".branch-stem").length, 2);
     assert.equal(document.querySelectorAll(".branch-entry.pending").length, 2);
@@ -144,6 +147,7 @@ test("refreshes the family after a branch is created", async () => {
     await settle();
 
     assert.equal(document.querySelectorAll(".branch-entry.pending").length, 1);
+    assert.equal(document.querySelectorAll(".turn.virtual").length, 1);
     assert.equal(
         document.querySelectorAll(".branch-stem.pending").length,
         1,
@@ -230,9 +234,19 @@ test("keeps the Fork control visible beside the rightmost family lane", () => {
         html,
         /\.branch-button \{[\s\S]*?top: 50%;[\s\S]*?left: calc\(100% \+ 10px\);[\s\S]*?transform: translateY\(-50%\);[\s\S]*?\}/,
     );
+    assert.match(
+        html,
+        /\.message\.assistant \{[\s\S]*?background: var\(--background-color-default, Canvas\);[\s\S]*?color: var\(--text-color-default, CanvasText\);/,
+    );
+    assert.match(
+        html,
+        /\.message:last-child \{ border-radius: 0 0 9px 9px; \}/,
+    );
+    assert.doesNotMatch(html, /\.turn \{[^}]*overflow: hidden;/);
+    assert.doesNotMatch(html, /\.lane\.current \{[\s\S]*?drop-shadow/);
 });
 
-test("renders independently expandable role bands and collapsed execution details", async () => {
+test("renders independently expandable role bands without execution details", async () => {
     const html = renderHtml();
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
     assert.ok(script);
@@ -263,20 +277,29 @@ test("renders independently expandable role bands and collapsed execution detail
     const bands = article.querySelectorAll(".message");
     const toggles = article.querySelectorAll(".message-toggle");
     assert.equal(bands.length, 2);
-    assert.equal(bands[0].querySelector(".role").textContent, "You");
-    assert.equal(bands[1].querySelector(".role").textContent, "Copilot");
-    assert.equal(bands[0].querySelector(".content").style["--line-clamp"], "3");
-    assert.equal(bands[1].querySelector(".content").style["--line-clamp"], "8");
+    assert.equal(bands[0].querySelector(".role"), null);
+    assert.equal(bands[1].querySelector(".role"), null);
+    assert.equal(bands[0]["aria-label"], "You message");
+    assert.equal(bands[1]["aria-label"], "Copilot message");
+    assert.equal(
+        bands[0]
+            .querySelector(".content")
+            .style.getPropertyValue("--line-clamp"),
+        "3",
+    );
+    assert.equal(
+        bands[1]
+            .querySelector(".content")
+            .style.getPropertyValue("--line-clamp"),
+        "8",
+    );
     assert.equal(toggles.length, 2);
     assert.equal(toggles[0].textContent, "Expand");
-    assert.equal(article.querySelectorAll(".execution-details").length, 1);
-    assert.equal(
-        article.querySelector(".execution-summary").textContent,
-        "Execution details (1)",
-    );
+    assert.equal(toggles[0].hidden, false);
+    assert.equal(toggles[1].hidden, true);
+    assert.equal(article.querySelectorAll(".execution-details").length, 0);
 
     toggles[0].click();
-    article.querySelector(".execution-summary").click();
 
     assert.equal(toggles[0].textContent, "Collapse");
     assert.equal(toggles[0]["aria-expanded"], "true");
@@ -295,7 +318,7 @@ test("renders useful Markdown without activating unsafe content or remote images
         "# Heading",
         "",
         "- one",
-        "- two with `code`",
+        "- two with `code` and **strong text**",
         "",
         "| Name | Value |",
         "| --- | --- |",
@@ -331,6 +354,11 @@ test("renders useful Markdown without activating unsafe content or remote images
     assert.equal(article.querySelectorAll(".markdown-list").length, 1);
     assert.equal(article.querySelectorAll(".markdown-table").length, 1);
     assert.equal(article.querySelectorAll(".inline-code").length, 1);
+    assert.equal(article.querySelectorAll(".markdown-strong").length, 1);
+    assert.equal(
+        article.querySelector(".markdown-strong").textContent,
+        "strong text",
+    );
     assert.equal(article.querySelectorAll(".code-block").length, 1);
     assert.equal(article.querySelectorAll(".markdown-link").length, 1);
     const link = article.querySelector(".markdown-link");
@@ -463,7 +491,7 @@ class FakeElement {
         this.className = "";
         this.dataset = {};
         this.listeners = new Map();
-        this.style = {};
+        this.style = new FakeStyle();
         this.hidden = false;
         this.disabled = false;
         this.scrollHeight = 0;
@@ -495,11 +523,36 @@ class FakeElement {
         return this.parent || null;
     }
 
+    get clientHeight() {
+        if (!this.#classes().has("content")) return this._clientHeight;
+        const lineCount = textIn(this).split("\n").length;
+        const clamp = Number(this.style.getPropertyValue("--line-clamp"));
+        return this.#classes().has("collapsed")
+            ? Math.min(lineCount, clamp) * 20
+            : lineCount * 20;
+    }
+
+    set clientHeight(value) {
+        this._clientHeight = value;
+    }
+
+    get scrollHeight() {
+        if (!this.#classes().has("content")) return this._scrollHeight;
+        return textIn(this).split("\n").length * 20;
+    }
+
+    set scrollHeight(value) {
+        this._scrollHeight = value;
+    }
+
     append(...children) {
         children.forEach((child) => {
             if (child instanceof FakeElement) child.parent = this;
         });
         this.children.push(...children);
+        if (this.#classes().has("content")) {
+            this.scrollHeight = textIn(this).split("\n").length * 20;
+        }
     }
 
     replaceChildren(...children) {
@@ -613,6 +666,33 @@ class FakeElement {
         const classes = selector.slice(1).split(".");
         const ownClasses = this.#classes();
         return classes.every((name) => ownClasses.has(name));
+    }
+}
+
+class FakeStyle {
+    constructor() {
+        return new Proxy(this, {
+            set(target, name, value) {
+                if (typeof name === "string" && name.startsWith("--")) {
+                    return true;
+                }
+                target[name] = value;
+                return true;
+            },
+        });
+    }
+
+    setProperty(name, value) {
+        Object.defineProperty(this, name, {
+            configurable: true,
+            enumerable: true,
+            value: String(value),
+            writable: true,
+        });
+    }
+
+    getPropertyValue(name) {
+        return this[name] || "";
     }
 }
 

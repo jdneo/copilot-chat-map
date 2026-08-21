@@ -113,27 +113,6 @@ export function renderHtml() {
       width: min(340px, 100%);
       min-width: min(340px, calc(100vw - 48px));
     }
-    .lane.current {
-      filter: drop-shadow(0 0 8px color-mix(in srgb, var(--true-color-blue, #58a6ff) 32%, transparent));
-    }
-    .lane-header {
-      margin-bottom: 18px;
-      padding: 12px;
-      border: 1px solid var(--border-color-default, #30363d);
-      border-radius: 10px;
-      background: var(--background-color-muted, #161b22);
-    }
-    .lane.current > .lane-header {
-      border-color: var(--true-color-blue, #58a6ff);
-    }
-    .branch-entry {
-      border-color: var(--true-color-blue, #58a6ff);
-      box-shadow: 0 0 0 1px color-mix(in srgb, var(--true-color-blue, #58a6ff) 20%, transparent);
-    }
-    .branch-entry.pending {
-      border-style: dashed;
-      box-shadow: none;
-    }
     .branch-connections {
       position: absolute;
       top: 0;
@@ -153,34 +132,12 @@ export function renderHtml() {
     .branch-connection.pending {
       stroke-dasharray: 6 5;
     }
-    .lane-heading {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .lane-heading h2 {
-      overflow-wrap: anywhere;
-      font-size: 16px;
-      line-height: 22px;
-    }
-    .lane-badge {
-      flex: none;
-      color: var(--true-color-blue, #58a6ff);
-      font-size: 12px;
-      font-weight: var(--font-weight-semibold, 600);
-    }
-    .lane-meta {
-      margin-top: 7px;
-      color: var(--text-color-muted, #8b949e);
-      font-size: 12px;
-    }
     .lane-actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-top: 10px;
+      margin-bottom: 18px;
     }
     .checkpoint-link {
       border: 0;
@@ -218,6 +175,16 @@ export function renderHtml() {
       border-color: var(--border-color-default, #30363d);
       border-style: dashed;
     }
+    .turn.virtual {
+      min-height: 92px;
+      padding: 12px;
+      border-style: dashed;
+      color: var(--text-color-muted, #8b949e);
+    }
+    .virtual-copy { font-style: italic; }
+    .turn.virtual .lane-actions {
+      margin: 10px 0 0;
+    }
     .turn + .turn::before,
     .branch-entry + .turn::before {
       position: absolute;
@@ -230,16 +197,12 @@ export function renderHtml() {
       content: "";
     }
     .message { padding: 9px 12px 10px; border-top: 1px solid var(--border-color-default, #30363d); }
-    .message:first-child { border-top: 0; }
+    .message:first-child { border-top: 0; border-radius: 9px 9px 0 0; }
+    .message:last-child { border-radius: 0 0 9px 9px; }
     .message.user { background: color-mix(in srgb, var(--true-color-blue, #58a6ff) 6%, transparent); }
-    .message.assistant { background: color-mix(in srgb, var(--true-color-green, #3fb950) 5%, transparent); }
-    .role {
-      margin-bottom: 6px;
-      color: var(--text-color-muted, #8b949e);
-      font-size: 12px;
-      font-weight: var(--font-weight-semibold, 600);
-      text-transform: uppercase;
-      letter-spacing: .04em;
+    .message.assistant {
+      background: var(--background-color-default, Canvas);
+      color: var(--text-color-default, CanvasText);
     }
     .content {
       margin: 0;
@@ -283,6 +246,7 @@ export function renderHtml() {
       font-family: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
       font-size: .92em;
     }
+    .content .markdown-strong { font-weight: 700; }
     .content .code-block {
       overflow-x: auto;
       padding: 9px 10px;
@@ -308,28 +272,6 @@ export function renderHtml() {
       font-weight: var(--font-weight-semibold, 600);
     }
     .message-toggle:hover { text-decoration: underline; }
-    .execution-details {
-      border-top: 1px solid var(--border-color-default, #30363d);
-      padding: 8px 12px 10px;
-    }
-    .execution-summary {
-      color: var(--text-color-muted, #8b949e);
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: var(--font-weight-semibold, 600);
-    }
-    .execution-event {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border-color-default, #30363d);
-    }
-    .execution-event pre {
-      margin: 4px 0 0;
-      overflow-x: auto;
-      color: var(--text-color-muted, #8b949e);
-      font: 11px/16px var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
-      white-space: pre-wrap;
-    }
     .branch-button {
       position: absolute;
       top: 50%;
@@ -380,14 +322,15 @@ export function renderHtml() {
 
     function renderMessage(role, text, className, lineClamp) {
       const section = element("section", "message " + className);
-      section.append(element("div", "role", role));
+      section.setAttribute("aria-label", role + " message");
       const rendered = renderMarkdown(text || "Waiting for Copilot's final response.");
       rendered.className = "content collapsed" + (text ? "" : " empty");
-      rendered.style["--line-clamp"] = String(lineClamp);
+      rendered.style.setProperty("--line-clamp", String(lineClamp));
       section.append(rendered);
 
       const toggle = element("button", "message-toggle", "Expand");
       toggle.type = "button";
+      toggle.hidden = true;
       toggle.setAttribute("aria-expanded", "false");
       toggle.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -400,6 +343,9 @@ export function renderHtml() {
         });
       });
       section.append(toggle);
+      requestAnimationFrame(() => {
+        toggle.hidden = rendered.scrollHeight <= rendered.clientHeight + 1;
+      });
       return section;
     }
 
@@ -531,13 +477,17 @@ export function renderHtml() {
     }
 
     function appendInline(parent, text) {
-      const tokenPattern = /(\\x60[^\\x60\\n]+\\x60|!\\[[^\\]\\n]*\\]\\([^\\)\\n]+\\)|\\[[^\\]\\n]+\\]\\([^\\)\\n]+\\))/g;
+      const tokenPattern = /(\\x60[^\\x60\\n]+\\x60|\\*\\*[^*\\n]+\\*\\*|__[^_\\n]+__|!\\[[^\\]\\n]*\\]\\([^\\)\\n]+\\)|\\[[^\\]\\n]+\\]\\([^\\)\\n]+\\))/g;
       let offset = 0;
       for (const match of text.matchAll(tokenPattern)) {
         if (match.index > offset) parent.append(text.slice(offset, match.index));
         const token = match[0];
         if (token.startsWith("\\x60")) {
           parent.append(element("code", "inline-code", token.slice(1, -1)));
+        } else if (token.startsWith("**") || token.startsWith("__")) {
+          parent.append(
+            element("strong", "markdown-strong", token.slice(2, -2)),
+          );
         } else if (token.startsWith("!")) {
           appendRemoteImage(parent, token);
         } else {
@@ -597,28 +547,6 @@ export function renderHtml() {
     function safeImageUrl(value) {
       const url = safeUrl(value);
       return url.startsWith("https://") ? url : "";
-    }
-
-    function renderExecutionDetails(events) {
-      const details = element("details", "execution-details");
-      details.addEventListener("click", (event) => event.stopPropagation());
-      details.append(
-        element(
-          "summary",
-          "execution-summary",
-          "Execution details (" + events.length + ")",
-        ),
-      );
-      events.forEach((event) => {
-        const item = element("div", "execution-event");
-        item.append(element("strong", "", event.type || "Activity"));
-        const data = event.data && Object.keys(event.data).length
-          ? JSON.stringify(event.data, null, 2)
-          : "";
-        if (data) item.append(element("pre", "", data));
-        details.append(item);
-      });
-      return details;
     }
 
     function showNotice(title, message, isError) {
@@ -932,38 +860,19 @@ export function renderHtml() {
       );
       lane.dataset.sessionId = laneState.session.id;
 
-      const header = element(
-        "div",
-        "lane-header" +
-          (laneState.sourceCheckpoint ? " branch-entry" : "") +
-          (laneState.sourceCheckpoint && laneState.turns.length === 0
-            ? " pending"
-            : ""),
-      );
       if (laneState.sourceCheckpoint) {
-        header.dataset.parentSessionId = laneState.sourceCheckpoint.sessionId;
-        header.dataset.sourceTurnId = laneState.sourceCheckpoint.turnId;
-      }
-      const heading = element("div", "lane-heading");
-      heading.append(element("h2", "", laneState.session.title));
-      if (laneState.session.current) {
-        heading.append(element("span", "lane-badge", "Current Session"));
-      }
-      header.append(heading);
-
-      const details = [];
-      if (laneState.session.summary && laneState.session.summary !== laneState.session.title) {
-        details.push(laneState.session.summary);
-      }
-      if (laneState.session.modifiedTime) {
-        const modified = new Date(laneState.session.modifiedTime);
-        if (!Number.isNaN(modified.valueOf())) details.push("Modified " + modified.toLocaleString());
-      }
-      if (!laneState.session.available) details.push("Session unavailable");
-      if (details.length) header.append(element("p", "lane-meta", details.join(" · ")));
-
-      const actions = element("div", "lane-actions");
-      if (laneState.sourceCheckpoint) {
+        const isVirtual = laneState.turns.length === 0;
+        const entry = element(
+          isVirtual ? "article" : "div",
+          isVirtual
+            ? "turn virtual branch-entry pending"
+            : "lane-actions branch-entry",
+        );
+        entry.dataset.parentSessionId = laneState.sourceCheckpoint.sessionId;
+        entry.dataset.sourceTurnId = laneState.sourceCheckpoint.turnId;
+        const actions = isVirtual
+          ? element("div", "lane-actions")
+          : entry;
         const checkpoint = element(
           "button",
           "checkpoint-link",
@@ -978,16 +887,19 @@ export function renderHtml() {
           focusCheckpoint(laneState.sourceCheckpoint),
         );
         actions.append(checkpoint);
-      }
-      if (!laneState.session.current) {
         const openButton = element("button", "open-chat", "Open Chat");
         openButton.type = "button";
         openButton.disabled = !laneState.session.available;
         openButton.addEventListener("click", () => openChat(laneState.session.id));
         actions.append(openButton);
+        if (isVirtual) {
+          entry.append(
+            element("p", "virtual-copy", "No conversation turns yet."),
+            actions,
+          );
+        }
+        lane.append(entry);
       }
-      if (actions.childElementCount) header.append(actions);
-      lane.append(header);
 
       if (laneState.turns.length === 0 && !laneState.sourceCheckpoint) {
         lane.append(
@@ -1013,10 +925,6 @@ export function renderHtml() {
         body.append(renderMessage("You", turn.userContent, "user", 3));
         body.append(renderMessage("Copilot", turn.assistantContent, "assistant", 8));
         article.append(body);
-        if (turn.executionDetails?.length) {
-          article.append(renderExecutionDetails(turn.executionDetails));
-        }
-
         if (completed && laneState.session.available) {
           const branchButton = element("button", "branch-button", "+ Fork");
           branchButton.type = "button";
