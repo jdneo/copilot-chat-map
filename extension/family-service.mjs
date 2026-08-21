@@ -356,7 +356,7 @@ function incrementalEvents(childEvents, parentEvents, member, checkpoint) {
         if (Array.isArray(parentEvents)) {
             validateSharedPrefix(
                 childEvents.slice(0, markerIndex),
-                sharedParentEvents(parentEvents, member, checkpoint),
+                parentEvents.slice(0, markerIndex),
                 member,
             );
         }

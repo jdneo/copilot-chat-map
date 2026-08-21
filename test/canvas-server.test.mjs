@@ -68,9 +68,9 @@ test("opens an existing family session through the authenticated canvas API", as
         getSession: () => ({
             rpc: {
                 commands: {
-                    enqueue: async (params) => {
+                    execute: async (params) => {
                         commands.push(params);
-                        return { queued: true };
+                        return {};
                     },
                 },
             },
@@ -102,10 +102,82 @@ test("opens an existing family session through the authenticated canvas API", as
         });
         assert.deepEqual(commands, [
             {
-                command:
-                    "/resume 22222222-2222-4222-8222-222222222222",
+                commandName: "resume",
+                args: "22222222-2222-4222-8222-222222222222",
             },
         ]);
+    } finally {
+        await closeServer(entry.server);
+    }
+});
+
+test("explains the Copilot App navigation limitation", async () => {
+    const service = createOpenSessionService({
+        getSession: () => ({
+            rpc: {
+                commands: {
+                    execute: async () => {
+                        throw new Error(
+                            "No client found for command: resume",
+                        );
+                    },
+                },
+            },
+        }),
+        loadSnapshot: async () => navigationSnapshot(),
+    });
+    const result = await service.openSession({
+        sessionId: "22222222-2222-4222-8222-222222222222",
+    });
+
+    assert.equal(result.kind, "navigation_failed");
+    assert.match(
+        result.message,
+        /automatic Chat View switching is not supported/i,
+    );
+    assert.doesNotMatch(result.message, /no client found/i);
+});
+
+test("surfaces a synchronous host navigation error", async () => {
+    const service = createOpenSessionService({
+        getSession: () => ({
+            rpc: {
+                commands: {
+                    execute: async () => ({
+                        error: "The host could not resume this session.",
+                    }),
+                },
+            },
+        }),
+        loadSnapshot: async () => navigationSnapshot(),
+    });
+    const entry = await startCanvasServer({
+        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
+        forkFromTurn: async () => ({ kind: "fork_failed" }),
+        openSession: service.openSession,
+    });
+
+    try {
+        const url = new URL(entry.url);
+        url.pathname = "/api/open-session";
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                sessionId: "22222222-2222-4222-8222-222222222222",
+            }),
+        });
+
+        assert.equal(response.status, 502);
+        const result = await response.json();
+        assert.match(
+            result.message,
+            /host could not resume this session/i,
+        );
+        assert.match(
+            result.message,
+            /\/resume 22222222-2222-4222-8222-222222222222/,
+        );
     } finally {
         await closeServer(entry.server);
     }
@@ -138,7 +210,7 @@ test("returns a clear manual fallback when host navigation is unavailable", asyn
             kind: "navigation_failed",
             sessionId: "22222222-2222-4222-8222-222222222222",
             message:
-                "Could not open this chat. Host navigation is unavailable. Open it manually from the session list.",
+                "Could not open this chat. Host navigation is unavailable. Run /resume 22222222-2222-4222-8222-222222222222 in Chat to open it.",
         });
     } finally {
         await closeServer(entry.server);

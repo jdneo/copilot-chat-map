@@ -54,12 +54,19 @@ export function renderHtml() {
     #status { color: var(--text-color-muted, #8b949e); }
     main { padding: 24px; }
     #notice {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      z-index: 4;
+      width: min(680px, calc(100vw - 32px));
       max-width: 680px;
-      margin: 0 auto 20px;
+      margin: 0;
       padding: 12px 14px;
       border: 1px solid var(--border-color-default, #30363d);
       border-radius: 8px;
       background: var(--background-color-muted, #161b22);
+      box-shadow: 0 6px 24px rgb(0 0 0 / 35%);
+      transform: translateX(-50%);
     }
     #notice.error { border-color: var(--danger-color-emphasis, #f85149); }
     #notice strong { display: block; margin-bottom: 4px; }
@@ -72,6 +79,7 @@ export function renderHtml() {
       background: var(--background-color-muted, #161b22);
     }
     .family {
+      position: relative;
       display: flex;
       align-items: flex-start;
       gap: 48px;
@@ -81,6 +89,7 @@ export function renderHtml() {
     }
     .lane {
       position: relative;
+      z-index: 1;
       width: min(340px, 100%);
       min-width: min(340px, calc(100vw - 48px));
     }
@@ -96,6 +105,33 @@ export function renderHtml() {
     }
     .lane.current > .lane-header {
       border-color: var(--true-color-blue, #58a6ff);
+    }
+    .branch-entry {
+      border-color: var(--true-color-blue, #58a6ff);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--true-color-blue, #58a6ff) 20%, transparent);
+    }
+    .branch-entry.pending {
+      border-style: dashed;
+      box-shadow: none;
+    }
+    .branch-connections {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .branch-connection {
+      fill: none;
+      stroke: var(--border-color-default, #30363d);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+    .branch-connection.pending {
+      stroke-dasharray: 6 5;
     }
     .lane-heading {
       display: flex;
@@ -162,7 +198,8 @@ export function renderHtml() {
       border-color: var(--border-color-default, #30363d);
       border-style: dashed;
     }
-    .turn + .turn::before {
+    .turn + .turn::before,
+    .branch-entry + .turn::before {
       position: absolute;
       top: -19px;
       left: 50%;
@@ -348,6 +385,17 @@ export function renderHtml() {
         if (result.kind === "created") {
           blockedTurns.add(turn.id);
           showNotice("Branch created", "Opening " + result.name + "...", false);
+          await refresh();
+          requestAnimationFrame(() => {
+            const childLane = Array.from(document.querySelectorAll(".lane")).find(
+              (lane) => lane.dataset.sessionId === result.childSessionId,
+            );
+            childLane?.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+              inline: "center",
+            });
+          });
           setTimeout(() => {
             blockedTurns.delete(turn.id);
             operationIdsByTurn.delete(turn.id);
@@ -427,6 +475,117 @@ export function renderHtml() {
       turn.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
     }
 
+    function drawConnections(family) {
+      const svg = family.querySelector(".branch-connections");
+      if (!svg) return;
+      svg.replaceChildren();
+      const entries = Array.from(document.querySelectorAll(".branch-entry"));
+      document.querySelectorAll(".lane").forEach((lane) => {
+        lane.style.paddingTop = "0px";
+      });
+
+      let familyRect = family.getBoundingClientRect();
+      entries.forEach((entry) => {
+        const source = findSourceTurn(entry);
+        if (!source) return;
+        const sourceRect = source.getBoundingClientRect();
+        const lane = entry.parentElement;
+        const branchTop =
+          sourceRect.top +
+          sourceRect.height / 2 -
+          familyRect.top +
+          family.scrollTop +
+          48;
+        lane.style.paddingTop = branchTop + "px";
+      });
+
+      familyRect = family.getBoundingClientRect();
+      const width = Math.max(family.scrollWidth, familyRect.width);
+      const height = Math.max(family.scrollHeight, familyRect.height);
+      svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+      svg.setAttribute("width", String(width));
+      svg.setAttribute("height", String(height));
+      svg.style.width = width + "px";
+      svg.style.height = height + "px";
+
+      const groups = new Map();
+      entries.forEach((entry) => {
+        const key =
+          entry.dataset.parentSessionId + ":" + entry.dataset.sourceTurnId;
+        const group = groups.get(key) || [];
+        group.push(entry);
+        groups.set(key, group);
+      });
+
+      groups.forEach((group) => {
+        const source = findSourceTurn(group[0]);
+        if (!source) return;
+
+        const sourceRect = source.getBoundingClientRect();
+        const startX = sourceRect.right - familyRect.left + family.scrollLeft;
+        const busY =
+          sourceRect.top + sourceRect.height / 2 - familyRect.top + family.scrollTop;
+        const targets = group.map((entry) => {
+          const rect = entry.getBoundingClientRect();
+          return {
+            entry,
+            x: rect.left + rect.width / 2 - familyRect.left + family.scrollLeft,
+            y: rect.top - familyRect.top + family.scrollTop,
+          };
+        });
+        const busEndX = Math.max(...targets.map((target) => target.x));
+        const bus = svgLine(startX, busY, busEndX, busY);
+        bus.setAttribute(
+          "class",
+          "branch-connection branch-bus" +
+            (group.every((entry) => entry.classList.contains("pending"))
+              ? " pending"
+              : ""),
+        );
+        svg.append(bus);
+
+        targets.forEach(({ entry, x, y }) => {
+          const stem = svgRoundedStem(x, busY, y);
+          stem.setAttribute(
+            "class",
+            "branch-connection branch-stem" +
+              (entry.classList.contains("pending") ? " pending" : ""),
+          );
+          svg.append(stem);
+        });
+      });
+    }
+
+    function findSourceTurn(entry) {
+      return Array.from(document.querySelectorAll(".turn")).find(
+        (turn) =>
+          turn.dataset.sessionId === entry.dataset.parentSessionId &&
+          turn.dataset.turnId === entry.dataset.sourceTurnId,
+      );
+    }
+
+    function svgLine(x1, y1, x2, y2) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", String(x1));
+      line.setAttribute("y1", String(y1));
+      line.setAttribute("x2", String(x2));
+      line.setAttribute("y2", String(y2));
+      return line;
+    }
+
+    function svgRoundedStem(x, busY, targetY) {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      const radius = Math.min(12, Math.max(0, (targetY - busY) / 2));
+      path.setAttribute(
+        "d",
+        "M " + (x - radius) + " " + busY +
+          " Q " + x + " " + busY +
+          " " + x + " " + (busY + radius) +
+          " V " + targetY,
+      );
+      return path;
+    }
+
     function renderLane(state, laneState) {
       const lane = element(
         "section",
@@ -434,7 +593,18 @@ export function renderHtml() {
       );
       lane.dataset.sessionId = laneState.session.id;
 
-      const header = element("div", "lane-header");
+      const header = element(
+        "div",
+        "lane-header" +
+          (laneState.sourceCheckpoint ? " branch-entry" : "") +
+          (laneState.sourceCheckpoint && laneState.turns.length === 0
+            ? " pending"
+            : ""),
+      );
+      if (laneState.sourceCheckpoint) {
+        header.dataset.parentSessionId = laneState.sourceCheckpoint.sessionId;
+        header.dataset.sourceTurnId = laneState.sourceCheckpoint.turnId;
+      }
       const heading = element("div", "lane-heading");
       heading.append(element("h2", "", laneState.session.title));
       if (laneState.session.current) {
@@ -480,7 +650,7 @@ export function renderHtml() {
       if (actions.childElementCount) header.append(actions);
       lane.append(header);
 
-      if (laneState.turns.length === 0) {
+      if (laneState.turns.length === 0 && !laneState.sourceCheckpoint) {
         lane.append(
           element(
             "div",
@@ -514,6 +684,10 @@ export function renderHtml() {
           const expanded = !body.classList.toggle("collapsed");
           toggle.textContent = expanded ? "Show less" : "Show more";
           toggle.setAttribute("aria-expanded", String(expanded));
+          requestAnimationFrame(() => {
+            const family = document.querySelector(".family");
+            if (family) drawConnections(family);
+          });
         });
         article.append(toggle);
         requestAnimationFrame(() => {
@@ -543,6 +717,13 @@ export function renderHtml() {
       currentState = state;
       availabilityError = "";
       const family = element("section", "family");
+      const connections = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg",
+      );
+      connections.setAttribute("class", "branch-connections");
+      connections.setAttribute("aria-hidden", "true");
+      family.append(connections);
       const lanes = state.lanes || [{
         session: { ...state.session, current: true, available: true },
         sourceCheckpoint: null,
@@ -551,6 +732,7 @@ export function renderHtml() {
       }];
       lanes.forEach((lane) => family.append(renderLane(state, lane)));
       content.replaceChildren(family);
+      requestAnimationFrame(() => drawConnections(family));
       if (focusedSessionId !== state.currentSessionId) {
         focusedSessionId = state.currentSessionId;
         requestAnimationFrame(() => {
@@ -593,6 +775,10 @@ export function renderHtml() {
     }
 
     refreshButton.addEventListener("click", refresh);
+    window.addEventListener?.("resize", () => {
+      const family = document.querySelector(".family");
+      if (family) requestAnimationFrame(() => drawConnections(family));
+    });
     setInterval(refreshForkAvailability, 2500);
     refresh();
   </script>

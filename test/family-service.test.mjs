@@ -340,6 +340,64 @@ test("keeps a final-turn fork valid after the parent continues", async () => {
     }
 });
 
+test("uses the child marker when the parent records fork events before continuing", async () => {
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-family-parent-fork-events-"),
+    );
+    const lineageStore = createLineageStore({
+        filePath: path.join(temporaryRoot, "lineage-v1.json"),
+    });
+    await lineageStore.recordFork({
+        ...forkRecord(),
+        toEventId: null,
+    });
+    const parentWithForkEvents = [
+        ...parentEvents().slice(0, 3),
+        {
+            id: "16161616-1616-4616-8616-161616161616",
+            type: "session.canvas.recorded",
+            data: {},
+        },
+        {
+            id: "17171717-1717-4717-8717-171717171717",
+            type: "session.info",
+            data: { infoType: "fork", message: "Forked session" },
+        },
+        {
+            id: "18181818-1818-4818-8818-181818181818",
+            type: "session.model_change",
+            data: {},
+        },
+        ...parentEvents().slice(3),
+    ];
+    const childWithForkEvents = [
+        ...childEvents().slice(0, 3),
+        {
+            id: "16161616-1616-4616-8616-161616161616",
+            type: "session.canvas.recorded",
+            data: {},
+        },
+        childEvents()[3],
+    ];
+
+    try {
+        const state = await loadCurrentSessionMap(testSession(PARENT_ID), {
+            lineageStore,
+            readEvents: async (sessionId) =>
+                sessionId === PARENT_ID
+                    ? parentWithForkEvents
+                    : childWithForkEvents,
+            listSessions: async () => sessionMetadata(),
+            checkInUse: async () => new Set(),
+        });
+
+        assert.equal(state.kind, "ready", state.message);
+        assert.deepEqual(state.lanes[1].turns, []);
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
 function testSession(sessionId) {
     return {
         sessionId,

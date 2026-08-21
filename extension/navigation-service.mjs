@@ -44,14 +44,26 @@ export function createOpenSessionService({
             await navigate(getSession(), sessionId);
             return { kind: "opened", sessionId, navigation: "requested" };
         } catch (error) {
-            const detail = error instanceof Error ? ` ${error.message}` : "";
+            const detail = navigationFailureDetail(error);
             return {
                 kind: "navigation_failed",
                 sessionId,
-                message: `Could not open this chat.${detail} Open it manually from the session list.`,
+                message:
+                    `Could not open this chat.${detail} ` +
+                    `Run /resume ${sessionId} in Chat to open it.`,
             };
         }
     }
 
     return { openSession };
+}
+
+function navigationFailureDetail(error) {
+    if (
+        error instanceof Error &&
+        /no client found for command:\s*resume/i.test(error.message)
+    ) {
+        return " Automatic Chat View switching is not supported by this Copilot App host.";
+    }
+    return error instanceof Error ? ` ${error.message}` : "";
 }
