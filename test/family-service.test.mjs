@@ -9,6 +9,9 @@ import { createLineageStore } from "../extension/lineage-store.mjs";
 
 const PARENT_ID = "11111111-1111-4111-8111-111111111111";
 const CHILD_ID = "22222222-2222-4222-8222-222222222222";
+const SIBLING_ID = "33333333-3333-4333-8333-333333333333";
+const GRANDCHILD_ID = "44444444-4444-4444-8444-444444444444";
+const LATE_SIBLING_ID = "45454545-4545-4545-8545-454545454545";
 const SOURCE_USER_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const SOURCE_ASSISTANT_ID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const CHILD_MARKER_ID = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
@@ -97,6 +100,119 @@ test("reopens the same Conversation Family from its child and focuses it", async
                     id: CHILD_ID,
                     current: true,
                     turns: ["Child-only prompt"],
+                },
+            ],
+        );
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
+test("reconstructs stable siblings and deep descendants from any nested member", async () => {
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-family-nested-"),
+    );
+    const lineageStore = createLineageStore({
+        filePath: path.join(temporaryRoot, "lineage-v1.json"),
+    });
+    await lineageStore.recordFork(nestedForkRecord(CHILD_ID, 1, "01"));
+    await lineageStore.recordFork({
+        ...nestedForkRecord(SIBLING_ID, 2, "03"),
+        childForkMarkerEventId: "55555555-5555-4555-8555-555555555555",
+    });
+    await lineageStore.recordFork({
+        parentSessionId: CHILD_ID,
+        childSessionId: GRANDCHILD_ID,
+        sourceUserEventId: "66666666-6666-4666-8666-666666666666",
+        sourceAssistantEventId: "77777777-7777-4777-8777-777777777777",
+        toEventId: "88888888-8888-4888-8888-888888888888",
+        childForkMarkerEventId: "99999999-9999-4999-8999-999999999999",
+        siblingOrdinal: 1,
+        createdAt: "2026-08-21T02:00:00.000Z",
+    });
+    await lineageStore.recordFork({
+        parentSessionId: PARENT_ID,
+        childSessionId: LATE_SIBLING_ID,
+        sourceUserEventId: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+        sourceAssistantEventId: "12121212-3434-4212-8212-121212121212",
+        toEventId: null,
+        childForkMarkerEventId: "46464646-4646-4646-8646-464646464646",
+        siblingOrdinal: 1,
+        createdAt: "2026-08-21T04:00:00.000Z",
+    });
+
+    try {
+        const state = await loadCurrentSessionMap(testSession(GRANDCHILD_ID), {
+            lineageStore,
+            readEvents: async (sessionId) => nestedEvents(sessionId),
+            listSessions: async () =>
+                [
+                    PARENT_ID,
+                    CHILD_ID,
+                    SIBLING_ID,
+                    GRANDCHILD_ID,
+                    LATE_SIBLING_ID,
+                ].map((sessionId, index) => ({
+                        sessionId,
+                        name: `Lane ${index + 1}`,
+                        summary: "",
+                        modifiedTime: `2026-08-21T0${9 - index}:00:00.000Z`,
+                        isRemote: false,
+                    })),
+            checkInUse: async () => new Set([GRANDCHILD_ID]),
+        });
+
+        assert.equal(state.kind, "ready", state.message);
+        assert.equal(state.currentSessionId, GRANDCHILD_ID);
+        assert.deepEqual(
+            state.lanes.map((lane) => ({
+                id: lane.session.id,
+                current: lane.session.current,
+                parentSessionId: lane.parentSessionId,
+                sourceSessionId: lane.sourceCheckpoint?.sessionId || null,
+                inheritedTurnCount: lane.inheritedTurnCount,
+                turns: lane.turns.map((turn) => turn.userContent),
+            })),
+            [
+                {
+                    id: PARENT_ID,
+                    current: false,
+                    parentSessionId: null,
+                    sourceSessionId: null,
+                    inheritedTurnCount: 0,
+                    turns: ["Shared prompt", "Root-only prompt"],
+                },
+                {
+                    id: CHILD_ID,
+                    current: false,
+                    parentSessionId: PARENT_ID,
+                    sourceSessionId: PARENT_ID,
+                    inheritedTurnCount: 1,
+                    turns: ["First child prompt", "Later child prompt"],
+                },
+                {
+                    id: GRANDCHILD_ID,
+                    current: true,
+                    parentSessionId: CHILD_ID,
+                    sourceSessionId: CHILD_ID,
+                    inheritedTurnCount: 2,
+                    turns: ["Grandchild-only prompt"],
+                },
+                {
+                    id: SIBLING_ID,
+                    current: false,
+                    parentSessionId: PARENT_ID,
+                    sourceSessionId: PARENT_ID,
+                    inheritedTurnCount: 1,
+                    turns: ["Sibling-only prompt"],
+                },
+                {
+                    id: LATE_SIBLING_ID,
+                    current: false,
+                    parentSessionId: PARENT_ID,
+                    sourceSessionId: PARENT_ID,
+                    inheritedTurnCount: 2,
+                    turns: ["Later sibling prompt"],
                 },
             ],
         );
@@ -476,6 +592,96 @@ function childEvents() {
         user("12121212-1212-4212-8212-121212121212", "Child-only prompt"),
         assistant("13131313-1313-4313-8313-131313131313", "Child-only answer"),
         turnEnd("14141414-1414-4414-8414-141414141414"),
+    ];
+}
+
+function nestedForkRecord(childSessionId, siblingOrdinal, hour) {
+    return {
+        ...forkRecord(),
+        childSessionId,
+        siblingOrdinal,
+        createdAt: `2026-08-21T${hour}:00:00.000Z`,
+    };
+}
+
+function nestedEvents(sessionId) {
+    const shared = [
+        user(SOURCE_USER_ID, "Shared prompt"),
+        assistant(SOURCE_ASSISTANT_ID, "Shared answer"),
+        turnEnd("10101010-1010-4010-8010-101010101010"),
+    ];
+    const firstChild = [
+        user("66666666-6666-4666-8666-666666666666", "First child prompt"),
+        assistant("77777777-7777-4777-8777-777777777777", "First child answer"),
+        turnEnd("11111111-2222-4111-8111-111111111111"),
+    ];
+    if (sessionId === PARENT_ID) {
+        return [
+            ...shared,
+            user("dddddddd-dddd-4ddd-8ddd-dddddddddddd", "Root-only prompt"),
+            assistant("12121212-3434-4212-8212-121212121212", "Root-only answer"),
+            turnEnd("13131313-3434-4313-8313-131313131313"),
+        ];
+    }
+    if (sessionId === CHILD_ID) {
+        return [
+            ...shared,
+            {
+                id: CHILD_MARKER_ID,
+                type: "session.info",
+                data: { infoType: "fork", message: "Forked session" },
+            },
+            ...firstChild,
+            user("88888888-8888-4888-8888-888888888888", "Later child prompt"),
+            assistant("14141414-3434-4414-8414-141414141414", "Later child answer"),
+            turnEnd("15151515-3434-4515-8515-151515151515"),
+        ];
+    }
+    if (sessionId === SIBLING_ID) {
+        return [
+            ...shared,
+            {
+                id: "55555555-5555-4555-8555-555555555555",
+                type: "session.info",
+                data: { infoType: "fork", message: "Forked session" },
+            },
+            user("16161616-3434-4616-8616-161616161616", "Sibling-only prompt"),
+            assistant("17171717-3434-4717-8717-171717171717", "Sibling answer"),
+            turnEnd("18181818-3434-4818-8818-181818181818"),
+        ];
+    }
+    if (sessionId === LATE_SIBLING_ID) {
+        return [
+            ...shared,
+            user("dddddddd-dddd-4ddd-8ddd-dddddddddddd", "Root-only prompt"),
+            assistant("12121212-3434-4212-8212-121212121212", "Root-only answer"),
+            turnEnd("13131313-3434-4313-8313-131313131313"),
+            {
+                id: "46464646-4646-4646-8646-464646464646",
+                type: "session.info",
+                data: { infoType: "fork", message: "Forked session" },
+            },
+            user("47474747-4747-4747-8747-474747474747", "Later sibling prompt"),
+            assistant("48484848-4848-4848-8848-484848484848", "Later answer"),
+            turnEnd("49494949-4949-4949-8949-494949494949"),
+        ];
+    }
+    return [
+        ...shared,
+        {
+            id: CHILD_MARKER_ID,
+            type: "session.info",
+            data: { infoType: "fork", message: "Forked session" },
+        },
+        ...firstChild,
+        {
+            id: "99999999-9999-4999-8999-999999999999",
+            type: "session.info",
+            data: { infoType: "fork", message: "Forked session" },
+        },
+        user("19191919-3434-4919-8919-191919191919", "Grandchild-only prompt"),
+        assistant("20202020-3434-4020-8020-202020202020", "Grandchild answer"),
+        turnEnd("21212121-3434-4121-8121-212121212121"),
     ];
 }
 

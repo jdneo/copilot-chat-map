@@ -298,8 +298,8 @@ export function renderHtml() {
     const status = document.querySelector("#status");
     const notice = document.querySelector("#notice");
     const token = new URLSearchParams(window.location.search).get("token") || "";
-    const operationIdsByTurn = new Map();
-    const blockedTurns = new Set();
+    const operationIdsByCheckpoint = new Map();
+    const blockedCheckpoints = new Set();
     let currentState;
     let forkPending = false;
     let availabilityError = "";
@@ -310,6 +310,10 @@ export function renderHtml() {
       if (className) node.className = className;
       if (text !== undefined) node.textContent = text;
       return node;
+    }
+
+    function checkpointKey(sessionId, turnId) {
+      return sessionId + ":" + turnId;
     }
 
     function renderMessage(role, text, className) {
@@ -339,10 +343,13 @@ export function renderHtml() {
 
     function updateBranchControls() {
       document.querySelectorAll(".branch-button").forEach((button) => {
+        const isCurrentSession =
+          button.dataset.sessionId === currentState?.session.id;
         button.disabled =
-          !currentState?.canFork ||
+          !currentState ||
+          (isCurrentSession && !currentState.canFork) ||
           forkPending ||
-          blockedTurns.has(button.dataset.turnId);
+          blockedCheckpoints.has(button.dataset.checkpointKey);
       });
     }
 
@@ -350,7 +357,7 @@ export function renderHtml() {
       status.hidden = !availabilityError && currentState?.canFork !== false;
       status.textContent = availabilityError ||
         (currentState?.canFork === false
-          ? "Branching is disabled while the agent is working."
+          ? "Forking the current session is disabled while the agent is working."
           : "");
       updateBranchControls();
     }
@@ -383,11 +390,19 @@ export function renderHtml() {
       }
     }
 
-    async function createBranch(turn) {
-      if (forkPending || blockedTurns.has(turn.id) || !currentState?.canFork) return;
+    async function createBranch(sessionId, turn) {
+      const key = checkpointKey(sessionId, turn.id);
+      const isCurrentSession = sessionId === currentState?.session.id;
+      if (
+        forkPending ||
+        blockedCheckpoints.has(key) ||
+        !currentState ||
+        (isCurrentSession && !currentState.canFork)
+      ) return;
       forkPending = true;
-      const operationId = operationIdsByTurn.get(turn.id) || crypto.randomUUID();
-      operationIdsByTurn.set(turn.id, operationId);
+      const operationId =
+        operationIdsByCheckpoint.get(key) || crypto.randomUUID();
+      operationIdsByCheckpoint.set(key, operationId);
       updateBranchControls();
       showNotice("Creating branch", "Creating a child session at this checkpoint...", false);
 
@@ -397,13 +412,13 @@ export function renderHtml() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             operationId,
-            sessionId: currentState.session.id,
+            sessionId,
             turnId: turn.id,
           }),
         });
         const result = await response.json();
         if (result.kind === "created") {
-          blockedTurns.add(turn.id);
+          blockedCheckpoints.add(key);
           showNotice("Branch created", "Opening " + result.name + "...", false);
           await refresh();
           requestAnimationFrame(() => {
@@ -417,15 +432,15 @@ export function renderHtml() {
             });
           });
           setTimeout(() => {
-            blockedTurns.delete(turn.id);
-            operationIdsByTurn.delete(turn.id);
+            blockedCheckpoints.delete(key);
+            operationIdsByCheckpoint.delete(key);
             updateBranchControls();
           }, 10000);
         } else if (result.kind === "lineage_failed") {
-          blockedTurns.add(turn.id);
+          blockedCheckpoints.add(key);
           showNotice("Branch created without lineage", result.message, true);
         } else if (result.kind === "navigation_failed") {
-          blockedTurns.add(turn.id);
+          blockedCheckpoints.add(key);
           showNotice(
             "Branch ready",
             result.message ||
@@ -433,7 +448,7 @@ export function renderHtml() {
             true,
           );
         } else {
-          operationIdsByTurn.delete(turn.id);
+          operationIdsByCheckpoint.delete(key);
           showNotice("Could not create branch", result.message || "The fork request failed.", true);
           await refreshForkAvailability();
         }
@@ -714,13 +729,18 @@ export function renderHtml() {
           toggle.hidden = body.scrollHeight <= body.clientHeight + 1;
         });
 
-        if (completed && laneState.session.current) {
+        if (completed && laneState.session.available) {
           const branchButton = element("button", "branch-button", "+ Fork");
           branchButton.type = "button";
+          branchButton.dataset.sessionId = laneState.session.id;
           branchButton.dataset.turnId = turn.id;
+          branchButton.dataset.checkpointKey = checkpointKey(
+            laneState.session.id,
+            turn.id,
+          );
           branchButton.addEventListener("click", (event) => {
             event.stopPropagation();
-            createBranch(turn);
+            createBranch(laneState.session.id, turn);
           });
           article.append(branchButton);
         }

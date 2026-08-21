@@ -14,7 +14,7 @@ export function createForkService({
     const partialResultsByCheckpoint = new Map();
 
     function forkFromTurn(request) {
-        validateRequest(request, session.sessionId);
+        validateRequest(request);
         const checkpointKey = `${request.sessionId}:${request.turnId}`;
         const partialResult = partialResultsByCheckpoint.get(checkpointKey);
         if (partialResult) return Promise.resolve(partialResult);
@@ -67,7 +67,25 @@ export function createForkService({
         let lineageDurable = false;
 
         try {
-            const activity = await session.rpc.metadata.isProcessing();
+            if (
+                request.sessionId !== session.sessionId &&
+                !(await isFamilyMemberSource(
+                    lineageStore,
+                    session.sessionId,
+                    request.sessionId,
+                ))
+            ) {
+                return {
+                    kind: "fork_failed",
+                    message:
+                        "The selected session is not an available member of this Conversation Family.",
+                };
+            }
+
+            const activity =
+                request.sessionId === session.sessionId
+                    ? await session.rpc.metadata.isProcessing()
+                    : { processing: false };
             if (activity.processing) {
                 return {
                     kind: "fork_failed",
@@ -216,7 +234,7 @@ async function readForkMarker(readEvents, childSessionId) {
     );
 }
 
-function validateRequest(request, currentSessionId) {
+function validateRequest(request) {
     if (!request || typeof request !== "object") {
         throw new TypeError("Fork request must be an object.");
     }
@@ -225,9 +243,20 @@ function validateRequest(request, currentSessionId) {
             throw new TypeError(`Fork request ${field} must be a non-empty string.`);
         }
     }
-    if (request.sessionId !== currentSessionId) {
-        throw new TypeError("Fork requests are limited to the current session.");
-    }
+}
+
+async function isFamilyMemberSource(
+    lineageStore,
+    currentSessionId,
+    sourceSessionId,
+) {
+    const lineage = await lineageStore.read();
+    const currentFamilyId = lineage.sessionToFamily[currentSessionId];
+    return (
+        typeof currentFamilyId === "string" &&
+        lineage.sessionToFamily[sourceSessionId] === currentFamilyId &&
+        Boolean(lineage.families[currentFamilyId]?.members[sourceSessionId])
+    );
 }
 
 function errorMessage(message, error) {

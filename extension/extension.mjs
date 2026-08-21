@@ -68,7 +68,7 @@ const canvas = createCanvas({
         {
             name: "fork_from_turn",
             description:
-                "Fork the current local session from a completed Turn Node and enter its child chat.",
+                "Fork an available local family session from a completed Turn Node and enter its child chat.",
             inputSchema: {
                 type: "object",
                 additionalProperties: false,
@@ -81,7 +81,7 @@ const canvas = createCanvas({
                     },
                     sessionId: {
                         type: "string",
-                        description: "The current local session ID.",
+                        description: "The source local family session ID.",
                     },
                     turnId: {
                         type: "string",

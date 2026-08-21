@@ -151,6 +151,73 @@ test("refreshes the family after a branch is created", async () => {
     assert.equal(document.querySelectorAll(".branch-bus.pending").length, 0);
 });
 
+test("forks a completed turn directly from a non-current family lane", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const parentId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const childTurn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Fork this child turn",
+        assistantContent: "Ready.",
+        status: "completed",
+    };
+    const document = fakeDocument();
+    const forkRequests = [];
+    const context = vm.createContext({
+        console,
+        crypto: { randomUUID: () => "nested-operation" },
+        document,
+        fetch: async (url, options = {}) => {
+            if (url.startsWith("/api/state")) {
+                return jsonResponse(
+                    readyState(parentId, [
+                        lane(parentId, true, []),
+                        lane(childId, false, [childTurn]),
+                    ]),
+                );
+            }
+            if (url.startsWith("/api/fork")) {
+                forkRequests.push(JSON.parse(options.body));
+                return jsonResponse({
+                    kind: "created",
+                    childSessionId:
+                        "33333333-3333-4333-8333-333333333333",
+                    name: "Fork this child turn · Branch 1",
+                    navigation: "requested",
+                });
+            }
+            throw new Error(`Unexpected request: ${url}`);
+        },
+        requestAnimationFrame: (callback) => callback(),
+        setInterval: () => 0,
+        setTimeout: () => 0,
+        URLSearchParams,
+        window: { location: { search: "?token=<REDACTED>" } },
+    });
+    new vm.Script(script).runInContext(context);
+    await settle();
+
+    const childLane = document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === childId);
+    const childForkButton = childLane?.querySelector(".branch-button");
+    assert.ok(childForkButton);
+    childLane.querySelector(".turn").click();
+    childForkButton.click();
+    await settle();
+
+    assert.deepEqual(forkRequests, [
+        {
+            operationId: "nested-operation",
+            sessionId: childId,
+            turnId: childTurn.id,
+        },
+    ]);
+});
+
 function readyState(currentSessionId, lanes) {
     const currentLane = lanes.find((candidate) => candidate.session.current);
     return {

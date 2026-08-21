@@ -1,10 +1,15 @@
 import assert from "node:assert/strict";
+import { mkdtemp, rm } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 
 import {
     closeServer,
     startCanvasServer,
 } from "../extension/canvas-server.mjs";
+import { createForkService } from "../extension/fork-service.mjs";
+import { createLineageStore } from "../extension/lineage-store.mjs";
 import { createOpenSessionService } from "../extension/navigation-service.mjs";
 
 test("creates a child through the authenticated canvas API", async () => {
@@ -59,6 +64,106 @@ test("creates a child through the authenticated canvas API", async () => {
         ]);
     } finally {
         await closeServer(entry.server);
+    }
+});
+
+test("creates a nested child from a non-current family lane through the canvas API", async () => {
+    const rootId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const grandchildId = "33333333-3333-4333-8333-333333333333";
+    const childTurnId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-non-current-api-"),
+    );
+    const lineageStore = createLineageStore({
+        filePath: path.join(temporaryRoot, "lineage-v1.json"),
+    });
+    await lineageStore.recordFork({
+        parentSessionId: rootId,
+        childSessionId: childId,
+        sourceUserEventId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        sourceAssistantEventId: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        toEventId: null,
+        childForkMarkerEventId: null,
+        siblingOrdinal: 1,
+        createdAt: "2026-08-21T01:00:00.000Z",
+    });
+    const forkCalls = [];
+    const service = createForkService({
+        session: {
+            sessionId: rootId,
+            rpc: {
+                metadata: {
+                    isProcessing: async () => ({ processing: false }),
+                },
+                sessions: {
+                    fork: async (params) => {
+                        forkCalls.push(params);
+                        return { sessionId: grandchildId, name: params.name };
+                    },
+                },
+                commands: {
+                    enqueue: async () => ({ queued: true }),
+                },
+            },
+        },
+        lineageStore,
+        readEvents: async (sessionId) =>
+            sessionId === childId
+                ? [
+                      {
+                          id: childTurnId,
+                          type: "user.message",
+                          data: { content: "Continue here", source: "user" },
+                      },
+                      {
+                          id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+                          type: "assistant.message",
+                          data: { content: "Ready." },
+                      },
+                      {
+                          id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+                          type: "assistant.turn_end",
+                          data: {},
+                      },
+                  ]
+                : [],
+        now: () => new Date("2026-08-21T02:00:00.000Z"),
+    });
+    const entry = await startCanvasServer({
+        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
+        forkFromTurn: service.forkFromTurn,
+        openSession: async () => ({ kind: "unavailable" }),
+    });
+
+    try {
+        const url = new URL(entry.url);
+        url.pathname = "/api/fork";
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                operationId: "nested-operation",
+                sessionId: childId,
+                turnId: childTurnId,
+            }),
+        });
+
+        assert.equal(response.status, 201);
+        assert.deepEqual(forkCalls, [
+            {
+                sessionId: childId,
+                name: "Continue here · Branch 1",
+            },
+        ]);
+        const lineage = await lineageStore.read();
+        assert.equal(
+            lineage.families[rootId].members[grandchildId].parentSessionId,
+            childId,
+        );
+    } finally {
+        await closeServer(entry.server);
+        await rm(temporaryRoot, { recursive: true, force: true });
     }
 });
 

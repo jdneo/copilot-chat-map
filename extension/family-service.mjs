@@ -174,6 +174,7 @@ export async function loadCurrentSessionMap(
         );
 
         const turnsById = new Map();
+        const inheritedTurnCountById = new Map();
         const lanes = members.map((member) => {
             const sessionMetadata = metadataById.get(member.sessionId);
             const events = eventsById.get(member.sessionId);
@@ -205,7 +206,9 @@ export async function loadCurrentSessionMap(
             }
             const inheritedTurnCount =
                 member.parentSessionId && checkpointIndex >= 0
-                    ? checkpointIndex + 1
+                    ? (inheritedTurnCountById.get(member.parentSessionId) || 0) +
+                      checkpointIndex +
+                      1
                     : 0;
             const laneEvents =
                 events && member.parentSessionId
@@ -224,6 +227,10 @@ export async function loadCurrentSessionMap(
                   })
                 : [];
             turnsById.set(member.sessionId, turns);
+            inheritedTurnCountById.set(
+                member.sessionId,
+                inheritedTurnCount,
+            );
 
             return {
                 session: {
@@ -314,8 +321,8 @@ function orderedMembers(family) {
             .filter((member) => member.parentSessionId === parentSessionId)
             .sort(
                 (left, right) =>
-                    left.siblingOrdinal - right.siblingOrdinal ||
                     left.createdAt.localeCompare(right.createdAt) ||
+                    left.siblingOrdinal - right.siblingOrdinal ||
                     left.sessionId.localeCompare(right.sessionId),
             )
             .forEach((member) => {
