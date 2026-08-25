@@ -1,26 +1,26 @@
 export function canForkSession(session) {
     return (
-        typeof session.rpc.sessions?.fork === "function" ||
+        typeof session.rpc?.sessions?.fork === "function" ||
         typeof session.connection?.sendRequest === "function"
     );
 }
 
 export function canListSessions(session) {
     return (
-        typeof session.rpc.sessions?.list === "function" ||
+        typeof session.rpc?.sessions?.list === "function" ||
         typeof session.connection?.sendRequest === "function"
     );
 }
 
 export function canCheckSessionsInUse(session) {
     return (
-        typeof session.rpc.sessions?.checkInUse === "function" ||
+        typeof session.rpc?.sessions?.checkInUse === "function" ||
         typeof session.connection?.sendRequest === "function"
     );
 }
 
 export function forkSession(session, params) {
-    if (typeof session.rpc.sessions?.fork === "function") {
+    if (typeof session.rpc?.sessions?.fork === "function") {
         return session.rpc.sessions.fork(params);
     }
     // CLI 1.0.80 keeps server-scoped RPCs on the joined session connection.
@@ -50,16 +50,7 @@ export async function checkSessionsInUse(session, sessionIds) {
 }
 
 export async function navigateToSession(session, sessionId) {
-    if (typeof session.rpc.commands?.execute === "function") {
-        const result = await session.rpc.commands.execute({
-            commandName: "resume",
-            args: sessionId,
-        });
-        if (result?.error) throw new Error(result.error);
-        return { executed: true };
-    }
-
-    if (typeof session.rpc.commands?.enqueue !== "function") {
+    if (typeof session.rpc?.commands?.enqueue !== "function") {
         throw new Error("Host navigation is unavailable.");
     }
 
@@ -75,7 +66,7 @@ export async function navigateToSession(session, sessionId) {
 }
 
 function serverRequest(session, rpcMethod, wireMethod, params) {
-    if (typeof session.rpc.sessions?.[rpcMethod] === "function") {
+    if (typeof session.rpc?.sessions?.[rpcMethod] === "function") {
         return session.rpc.sessions[rpcMethod](params);
     }
     if (typeof session.connection?.sendRequest === "function") {

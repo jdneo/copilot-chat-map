@@ -12,6 +12,122 @@ import { createForkService } from "../extension/fork-service.mjs";
 import { createLineageStore } from "../extension/lineage-store.mjs";
 import { createOpenSessionService } from "../extension/navigation-service.mjs";
 
+test("binds to loopback with a high-entropy instance token and strict CSP", async () => {
+    const entry = await startCanvasServer({
+        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
+        forkFromTurn: async () => ({ kind: "fork_failed" }),
+        openSession: async () => ({ kind: "unavailable" }),
+    });
+
+    try {
+        const address = entry.server.address();
+        assert.ok(address && typeof address === "object");
+        assert.equal(address.address, "127.0.0.1");
+
+        const url = new URL(entry.url);
+        assert.match(url.searchParams.get("token"), /^[0-9a-f]{64}$/);
+        const response = await fetch(url);
+        assert.equal(response.status, 200);
+        assert.equal(
+            response.headers.get("content-security-policy"),
+            [
+                "default-src 'none'",
+                "script-src 'unsafe-inline'",
+                "style-src 'unsafe-inline'",
+                "connect-src 'self'",
+                "img-src https:",
+                "base-uri 'none'",
+                "form-action 'none'",
+            ].join("; "),
+        );
+        assert.equal(response.headers.get("referrer-policy"), "no-referrer");
+    } finally {
+        await closeServer(entry.server);
+    }
+});
+
+test("requires the instance token before invoking any canvas handler", async () => {
+    let handlerCalls = 0;
+    const entry = await startCanvasServer({
+        loadSnapshot: async () => {
+            handlerCalls += 1;
+            return { kind: "ready", lanes: [] };
+        },
+        forkFromTurn: async () => {
+            handlerCalls += 1;
+            return { kind: "fork_failed" };
+        },
+        openSession: async () => {
+            handlerCalls += 1;
+            return { kind: "unavailable" };
+        },
+    });
+
+    try {
+        const url = new URL(entry.url);
+        url.pathname = "/api/state";
+        url.search = "";
+        const response = await fetch(url);
+
+        assert.equal(response.status, 403);
+        assert.equal(handlerCalls, 0);
+    } finally {
+        await closeServer(entry.server);
+    }
+});
+
+test("rejects mutation bodies above the fixed request limit", async () => {
+    const entry = await startCanvasServer({
+        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
+        forkFromTurn: async () => ({ kind: "fork_failed" }),
+        openSession: async () => ({ kind: "unavailable" }),
+    });
+
+    try {
+        const url = new URL(entry.url);
+        url.pathname = "/api/fork";
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payload: "x".repeat(4_096) }),
+        });
+
+        assert.equal(response.status, 400);
+        assert.deepEqual(await response.json(), {
+            kind: "error",
+            message: "Fork request exceeds 4096 bytes.",
+        });
+    } finally {
+        await closeServer(entry.server);
+    }
+});
+
+test("rejects non-POST mutation requests with an explicit method contract", async () => {
+    const entry = await startCanvasServer({
+        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
+        forkFromTurn: async () => ({ kind: "fork_failed" }),
+        openSession: async () => ({ kind: "unavailable" }),
+        setSubtreeHidden: async () => ({ kind: "updated" }),
+    });
+
+    try {
+        for (const pathname of [
+            "/api/fork",
+            "/api/open-session",
+            "/api/hidden-subtree",
+        ]) {
+            const url = new URL(entry.url);
+            url.pathname = pathname;
+            const response = await fetch(url);
+
+            assert.equal(response.status, 405);
+            assert.equal(response.headers.get("allow"), "POST");
+        }
+    } finally {
+        await closeServer(entry.server);
+    }
+});
+
 test("creates a child through the authenticated canvas API", async () => {
     const requests = [];
     const entry = await startCanvasServer({
@@ -178,9 +294,12 @@ test("opens an existing family session through the authenticated canvas API", as
         getSession: () => ({
             rpc: {
                 commands: {
-                    execute: async (params) => {
+                    execute: async () => {
+                        throw new Error("Open Chat must use queued navigation.");
+                    },
+                    enqueue: async (params) => {
                         commands.push(params);
-                        return {};
+                        return { queued: true };
                     },
                 },
             },
@@ -212,8 +331,8 @@ test("opens an existing family session through the authenticated canvas API", as
         });
         assert.deepEqual(commands, [
             {
-                commandName: "resume",
-                args: "22222222-2222-4222-8222-222222222222",
+                command:
+                    "/resume 22222222-2222-4222-8222-222222222222",
             },
         ]);
     } finally {
@@ -226,7 +345,7 @@ test("explains the Copilot App navigation limitation", async () => {
         getSession: () => ({
             rpc: {
                 commands: {
-                    execute: async () => {
+                    enqueue: async () => {
                         throw new Error(
                             "No client found for command: resume",
                         );
@@ -253,9 +372,11 @@ test("surfaces a synchronous host navigation error", async () => {
         getSession: () => ({
             rpc: {
                 commands: {
-                    execute: async () => ({
-                        error: "The host could not resume this session.",
-                    }),
+                    enqueue: async () => {
+                        throw new Error(
+                            "The host could not resume this session.",
+                        );
+                    },
                 },
             },
         }),

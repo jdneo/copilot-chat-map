@@ -14,10 +14,34 @@ import path from "node:path";
 import test from "node:test";
 
 import {
+    assertReadableEventLogRoot,
     EventLogReadError,
     readSessionEvents,
     resolveEventLogPath,
 } from "../extension/event-reader.mjs";
+
+test("accepts only a readable Copilot session-state directory", async () => {
+    const copilotHome = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-readable-root-"),
+    );
+    try {
+        await mkdir(path.join(copilotHome, "session-state"));
+        await assertReadableEventLogRoot({
+            env: { COPILOT_HOME: copilotHome },
+        });
+
+        await assert.rejects(
+            assertReadableEventLogRoot({
+                env: {
+                    COPILOT_HOME: path.join(copilotHome, "missing"),
+                },
+            }),
+            { code: "ENOENT" },
+        );
+    } finally {
+        await rm(copilotHome, { recursive: true, force: true });
+    }
+});
 
 test("resolves the Windows event log below the default Copilot home", () => {
     assert.equal(
@@ -55,6 +79,22 @@ test("resolves macOS and Linux event logs with default and overridden homes", ()
             homedir: "/Users/octocat",
         }),
         `/Users/octocat/.copilot/session-state/${sessionId}/events.jsonl`,
+    );
+    assert.equal(
+        resolveEventLogPath(sessionId, {
+            platform: "darwin",
+            env: { COPILOT_HOME: "/opt/copilot" },
+            homedir: "/Users/ignored",
+        }),
+        `/opt/copilot/session-state/${sessionId}/events.jsonl`,
+    );
+    assert.equal(
+        resolveEventLogPath(sessionId, {
+            platform: "linux",
+            env: {},
+            homedir: "/home/octocat",
+        }),
+        `/home/octocat/.copilot/session-state/${sessionId}/events.jsonl`,
     );
     assert.equal(
         resolveEventLogPath(sessionId, {

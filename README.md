@@ -27,11 +27,20 @@ pwsh -File .\scripts\install-user-extension.ps1
 
 Reload extensions after installation. `COPILOT_HOME` is respected when set;
 otherwise the extension is installed below `$HOME/.copilot/extensions`.
+The installer replaces stale top-level implementation files and removes legacy
+prototype snapshots while preserving the current `lineage-v1.json` index. It
+never reads, writes, or removes anything below the native `session-state`
+directory.
 
 The extension requires Copilot 1.0.80 or newer. It reads the current local
 session's native `events.jsonl` without modifying it. Structured lineage is
 created lazily after the first successful fork and stored under the extension's
 local `artifacts` directory.
+
+Before presenting a working map, the provider verifies Canvas rendering, local
+session identity, fork and metadata RPCs, occupancy checks, queued navigation,
+and a readable local event-log root. Missing requirements are reported as a
+specific unsupported state instead of an empty map.
 
 Session names, summaries, modification times, and availability are read from
 current local session metadata whenever the map refreshes. Corrupt lineage is

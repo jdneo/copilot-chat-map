@@ -1,4 +1,8 @@
-import { readSessionEvents } from "./event-reader.mjs";
+import {
+    assertReadableEventLogRoot,
+    isValidLocalSessionId,
+    readSessionEvents,
+} from "./event-reader.mjs";
 import { createLineageStore } from "./lineage-store.mjs";
 import {
     canCheckSessionsInUse,
@@ -41,35 +45,52 @@ import { groupTurns } from "./transcript.mjs";
 /** @typedef {ReadyMap | UnavailableMap} CurrentSessionMap */
 
 /** @type {Array<[string, (session: JoinedSession) => boolean]>} */
-const REQUIRED_CAPABILITIES = [
-    ["Canvas renderer", (session) => session.capabilities.ui?.canvases === true],
+const CANVAS_CAPABILITIES = [
     [
-        "canvas.open",
-        (session) => typeof session.rpc.canvas?.open === "function",
+        "Canvas renderer",
+        (session) => session.capabilities?.ui?.canvases === true,
     ],
     [
+        "canvas.open",
+        (session) => typeof session.rpc?.canvas?.open === "function",
+    ],
+];
+
+/** @type {Array<[string, (session: JoinedSession) => boolean]>} */
+const REQUIRED_CAPABILITIES = [
+    ...CANVAS_CAPABILITIES,
+    [
         "metadata.snapshot",
-        (session) => typeof session.rpc.metadata?.snapshot === "function",
+        (session) => typeof session.rpc?.metadata?.snapshot === "function",
     ],
     [
         "metadata.isProcessing",
-        (session) => typeof session.rpc.metadata?.isProcessing === "function",
+        (session) => typeof session.rpc?.metadata?.isProcessing === "function",
     ],
     [
         "name.get",
-        (session) => typeof session.rpc.name?.get === "function",
+        (session) => typeof session.rpc?.name?.get === "function",
     ],
     [
         "sessions.fork",
         (session) => canForkSession(session),
     ],
+    [
+        "commands.enqueue",
+        (session) => typeof session.rpc?.commands?.enqueue === "function",
+    ],
 ];
+
+export function missingCanvasCapabilities(session) {
+    return missingCapabilities(CANVAS_CAPABILITIES, session);
+}
 
 /**
  * @param {JoinedSession} session
  * @param {{
  *   lineageStore?: ReturnType<typeof createLineageStore>,
  *   readEvents?: typeof readSessionEvents,
+ *   checkEventLogRoot?: () => Promise<void>,
  *   listSessions?: () => Promise<object[]>,
  *   checkInUse?: (sessionIds: string[]) => Promise<Set<string>>
  * }} [dependencies]
@@ -85,9 +106,12 @@ export async function loadCurrentSessionMap(
         listSessions = () => listLocalSessions(session),
         checkInUse = (sessionIds) => checkSessionsInUse(session, sessionIds),
     } = dependencies;
-    const missingCapabilities = REQUIRED_CAPABILITIES.filter(
-        ([, isAvailable]) => !isAvailable(session),
-    ).map(([name]) => name);
+    const checkEventLogRoot =
+        dependencies.checkEventLogRoot ||
+        (dependencies.readEvents
+            ? async () => undefined
+            : assertReadableEventLogRoot);
+    const missingCapabilities = missingCapabilitiesForSession(session);
     if (!dependencies.listSessions && !canListSessions(session)) {
         missingCapabilities.push("sessions.list");
     }
@@ -103,13 +127,42 @@ export async function loadCurrentSessionMap(
     }
 
     let metadata;
+    try {
+        metadata = await session.rpc.metadata.snapshot();
+    } catch (error) {
+        return errorState("Could not restore the Conversation Family.", error);
+    }
+    if (metadata.isRemote) {
+        return {
+            kind: "unsupported",
+            message:
+                "Conversation Fork Map supports local Copilot sessions only.",
+        };
+    }
+
+    if (!isValidLocalSessionId(session.sessionId)) {
+        return {
+            kind: "unsupported",
+            message:
+                "Conversation Fork Map requires a valid local Copilot session identity.",
+        };
+    }
+    try {
+        await checkEventLogRoot();
+    } catch {
+        return {
+            kind: "unsupported",
+            message:
+                "Conversation Fork Map cannot read the local Copilot event-log root. Check COPILOT_HOME and file permissions.",
+        };
+    }
+
     let name;
     let activity;
     let lineage;
     let listedSessions;
     try {
-        [metadata, name, activity, lineage, listedSessions] = await Promise.all([
-            session.rpc.metadata.snapshot(),
+        [name, activity, lineage, listedSessions] = await Promise.all([
             session.rpc.name.get(),
             session.rpc.metadata.isProcessing(),
             lineageStore.read(),
@@ -117,14 +170,6 @@ export async function loadCurrentSessionMap(
         ]);
     } catch (error) {
         return errorState("Could not restore the Conversation Family.", error);
-    }
-
-    if (metadata.isRemote) {
-        return {
-            kind: "unsupported",
-            message:
-                "Conversation Fork Map supports local Copilot sessions only.",
-        };
     }
 
     try {
@@ -322,6 +367,16 @@ export async function loadCurrentSessionMap(
 
         return errorState("Could not read the current session event log.", error);
     }
+}
+
+function missingCapabilitiesForSession(session) {
+    return missingCapabilities(REQUIRED_CAPABILITIES, session);
+}
+
+function missingCapabilities(capabilities, session) {
+    return capabilities
+        .filter(([, isAvailable]) => !isAvailable(session))
+        .map(([name]) => name);
 }
 
 function untrackedFamily(sessionId) {

@@ -14,6 +14,11 @@ const CONTENT_SECURITY_POLICY = [
     "form-action 'none'",
 ].join("; ");
 const MAX_REQUEST_BODY_BYTES = 4_096;
+const MUTATION_PATHS = new Set([
+    "/api/fork",
+    "/api/hidden-subtree",
+    "/api/open-session",
+]);
 const serverResources = new WeakMap();
 
 /**
@@ -80,6 +85,15 @@ export async function startCanvasServer({
                 response.write("retry: 1000\n\n");
                 eventClients.add(response);
                 request.once("close", () => eventClients.delete(response));
+                return;
+            }
+
+            if (
+                MUTATION_PATHS.has(url.pathname) &&
+                request.method !== "POST"
+            ) {
+                response.setHeader("Allow", "POST");
+                sendText(response, 405, "Method not allowed");
                 return;
             }
 

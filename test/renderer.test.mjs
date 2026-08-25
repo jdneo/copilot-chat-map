@@ -1,8 +1,23 @@
 import assert from "node:assert/strict";
+import { mkdtemp, rm } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
 
 import { renderHtml } from "../extension/renderer.mjs";
+import { runProcess } from "./fixtures/run-process.mjs";
+
+const repositoryRoot = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "..",
+);
+const installScript = path.join(
+    repositoryRoot,
+    "scripts",
+    "install-user-extension.ps1",
+);
 
 test("renders selectable checkpoint controls and the fork API workflow", () => {
     const html = renderHtml();
@@ -56,6 +71,30 @@ test("renders family lanes with explicit chat and checkpoint navigation", () => 
     assert.doesNotMatch(
         html,
         /article\.addEventListener\("click",\s*\(\)\s*=>\s*openChat/,
+    );
+});
+
+test("renders a precise unsupported state instead of an empty family", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+    const document = fakeDocument();
+    const message =
+        "Conversation Fork Map requires Copilot 1.0.80+ with commands.enqueue.";
+    const context = browserContext(document, {
+        kind: "unsupported",
+        message,
+    });
+
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    assert.match(textIn(document.querySelector("#content")), /Unavailable/);
+    assert.ok(textIn(document.querySelector("#content")).includes(message));
+    assert.equal(document.querySelectorAll(".lane").length, 0);
+    assert.equal(
+        document.querySelector("#status").textContent,
+        "Unsupported session",
     );
 });
 
@@ -293,8 +332,28 @@ test("Focus current reopens a collapsed path to the Current Session", async () =
     assert.equal(document.querySelector(".lane.current").scrollIntoViewCount, 1);
 });
 
-test("keeps rich DOM bounded for a 50-session 5,000-turn family", async () => {
-    const html = renderHtml();
+test("keeps rich DOM bounded in the packaged 50-session 5,000-turn build", async (testContext) => {
+    const copilotHome = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-map-scale-"),
+    );
+    testContext.after(() => rm(copilotHome, { recursive: true, force: true }));
+    const install = await runProcess(
+        "pwsh",
+        ["-NoLogo", "-NoProfile", "-File", installScript],
+        { COPILOT_HOME: copilotHome },
+    );
+    assert.equal(install.code, 0, install.stderr);
+    const packagedRenderer = await import(
+        pathToFileURL(
+            path.join(
+                copilotHome,
+                "extensions",
+                "chat-fork-map",
+                "renderer.mjs",
+            ),
+        ).href
+    );
+    const html = packagedRenderer.renderHtml();
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
     assert.ok(script);
 

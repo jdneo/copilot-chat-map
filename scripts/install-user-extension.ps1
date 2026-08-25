@@ -1,30 +1,36 @@
 [CmdletBinding()]
 param()
 
-$source = Join-Path $PSScriptRoot "..\extension"
+$source = Join-Path (Split-Path -Parent $PSScriptRoot) "extension"
 $copilotHome = if ($env:COPILOT_HOME) {
     $env:COPILOT_HOME
 } else {
     Join-Path $HOME ".copilot"
 }
-$destination = Join-Path $copilotHome "extensions\chat-fork-map"
+$extensionsRoot = Join-Path $copilotHome "extensions"
+$destination = Join-Path $extensionsRoot "chat-fork-map"
 
 if (-not (Test-Path (Join-Path $source "extension.mjs") -PathType Leaf)) {
     throw "Conversation Fork Map source was not found at $source"
 }
 
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
-Get-ChildItem -Path $source -File | ForEach-Object {
+$sourceFiles = @(Get-ChildItem -Path $source -File)
+$sourceFiles | ForEach-Object {
     Copy-Item -Path $_.FullName -Destination $destination -Force
 }
+$managedNames = @($sourceFiles | ForEach-Object { $_.Name })
+Get-ChildItem -LiteralPath $destination -File -Force |
+    Where-Object { $_.Name -notin $managedNames } |
+    ForEach-Object { Remove-Item -LiteralPath $_.FullName -Force }
+Get-ChildItem -LiteralPath $destination -Directory -Force |
+    Where-Object { $_.Name -ne "artifacts" } |
+    ForEach-Object { Remove-Item -LiteralPath $_.FullName -Recurse -Force }
 
-$legacyStorage = Join-Path $destination "storage.mjs"
-$legacyGraph = Join-Path $destination "artifacts\fork-graph.json"
-$legacyTranscripts = Join-Path $destination "artifacts\transcripts"
+$artifacts = Join-Path $destination "artifacts"
+$legacyGraph = Join-Path $artifacts "fork-graph.json"
+$legacyTranscripts = Join-Path $artifacts "transcripts"
 
-if (Test-Path $legacyStorage -PathType Leaf) {
-    Remove-Item -LiteralPath $legacyStorage -Force
-}
 if (Test-Path $legacyGraph -PathType Leaf) {
     Remove-Item -LiteralPath $legacyGraph -Force
 }

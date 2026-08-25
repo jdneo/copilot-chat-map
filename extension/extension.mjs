@@ -2,7 +2,10 @@ import { createCanvas, joinSession } from "@github/copilot-sdk/extension";
 
 import { closeServer, startCanvasServer } from "./canvas-server.mjs";
 import { readSessionEvents } from "./event-reader.mjs";
-import { loadCurrentSessionMap } from "./family-service.mjs";
+import {
+    loadCurrentSessionMap,
+    missingCanvasCapabilities,
+} from "./family-service.mjs";
 import { createForkService } from "./fork-service.mjs";
 import { createLineageStore } from "./lineage-store.mjs";
 import { createOpenSessionService } from "./navigation-service.mjs";
@@ -193,6 +196,14 @@ session = await joinSession({
             name: "fork-map",
             description: "Open the Conversation Fork Map for this session",
             handler: async () => {
+                const missingCapabilities = missingCanvasCapabilities(
+                    currentSession(),
+                );
+                if (missingCapabilities.length > 0) {
+                    throw new Error(
+                        `Conversation Fork Map requires Copilot 1.0.80+ with ${missingCapabilities.join(", ")}.`,
+                    );
+                }
                 await currentSession().rpc.canvas.open({
                     canvasId: CANVAS_ID,
                     instanceId: CURRENT_MAP_INSTANCE_ID,

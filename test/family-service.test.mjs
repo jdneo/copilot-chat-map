@@ -16,6 +16,44 @@ const SOURCE_USER_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const SOURCE_ASSISTANT_ID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const CHILD_MARKER_ID = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
 
+test("reports every missing critical 1.0.80 capability before opening", async () => {
+    const state = await loadCurrentSessionMap({
+        sessionId: PARENT_ID,
+        capabilities: {},
+    });
+
+    assert.deepEqual(state, {
+        kind: "unsupported",
+        message:
+            "Conversation Fork Map requires Copilot 1.0.80+ with Canvas renderer, canvas.open, metadata.snapshot, metadata.isProcessing, name.get, sessions.fork, commands.enqueue, sessions.list, sessions.checkInUse.",
+    });
+});
+
+test("guards the map when the current session is remote", async () => {
+    const session = testSession(PARENT_ID);
+    session.rpc.metadata.snapshot = async () => ({ isRemote: true });
+
+    const state = await loadCurrentSessionMap(session, {
+        checkEventLogRoot: async () => {
+            throw new Error("Remote sessions have no local event-log root.");
+        },
+        readEvents: async () => {
+            throw new Error("Remote session logs must not be read.");
+        },
+        listSessions: async () => {
+            throw new Error("Remote sessions must not list local sessions.");
+        },
+        checkInUse: async () => {
+            throw new Error("Remote sessions must not check local occupancy.");
+        },
+    });
+
+    assert.deepEqual(state, {
+        kind: "unsupported",
+        message: "Conversation Fork Map supports local Copilot sessions only.",
+    });
+});
+
 test("reopens a two-session Conversation Family from its parent", async () => {
     const temporaryRoot = await mkdtemp(
         path.join(os.tmpdir(), "chat-fork-family-parent-"),
@@ -424,7 +462,7 @@ test("reads live local metadata through the joined session runtime", async () =>
     }
 });
 
-test("restores the family when host navigation is unavailable", async () => {
+test("guards the map when queued Chat View navigation is unavailable", async () => {
     const temporaryRoot = await mkdtemp(
         path.join(os.tmpdir(), "chat-fork-family-no-navigation-"),
     );
@@ -441,10 +479,49 @@ test("restores the family when host navigation is unavailable", async () => {
             checkInUse: async () => new Set(),
         });
 
-        assert.equal(state.kind, "ready", state.message);
+        assert.deepEqual(state, {
+            kind: "unsupported",
+            message:
+                "Conversation Fork Map requires Copilot 1.0.80+ with commands.enqueue.",
+        });
     } finally {
         await rm(temporaryRoot, { recursive: true, force: true });
     }
+});
+
+test("guards the map when the host provides no valid local session identity", async () => {
+    const state = await loadCurrentSessionMap(testSession("not-a-session-id"), {
+        readEvents: async () => {
+            throw new Error("Event logs must not be read without a local identity.");
+        },
+        listSessions: async () => [],
+        checkInUse: async () => new Set(),
+    });
+
+    assert.deepEqual(state, {
+        kind: "unsupported",
+        message:
+            "Conversation Fork Map requires a valid local Copilot session identity.",
+    });
+});
+
+test("guards the map when the local event-log root is unreadable", async () => {
+    const state = await loadCurrentSessionMap(testSession(PARENT_ID), {
+        checkEventLogRoot: async () => {
+            throw Object.assign(new Error("Access denied"), { code: "EACCES" });
+        },
+        readEvents: async () => {
+            throw new Error("Session events must not be read from an unreadable root.");
+        },
+        listSessions: async () => [],
+        checkInUse: async () => new Set(),
+    });
+
+    assert.deepEqual(state, {
+        kind: "unsupported",
+        message:
+            "Conversation Fork Map cannot read the local Copilot event-log root. Check COPILOT_HOME and file permissions.",
+    });
 });
 
 test("surfaces corrupt Conversation Family trees instead of rendering them", async () => {

@@ -1,5 +1,5 @@
-import { createReadStream } from "node:fs";
-import { open, realpath, stat } from "node:fs/promises";
+import { constants, createReadStream } from "node:fs";
+import { access, open, realpath, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -65,6 +65,34 @@ function resolveSessionStateRoot({ platform, env, homedir }) {
     const pathApi = pathApiFor(platform);
     const copilotHome = env.COPILOT_HOME || pathApi.join(homedir, ".copilot");
     return pathApi.resolve(copilotHome, "session-state");
+}
+
+/**
+ * @param {EnvironmentOptions} [options]
+ * @returns {Promise<void>}
+ */
+export async function assertReadableEventLogRoot({
+    platform = process.platform,
+    env = process.env,
+    homedir = os.homedir(),
+} = {}) {
+    const sessionStateRoot = resolveSessionStateRoot({
+        platform,
+        env,
+        homedir,
+    });
+    const [, rootStat] = await Promise.all([
+        access(sessionStateRoot, constants.R_OK),
+        stat(sessionStateRoot),
+        realpath(sessionStateRoot),
+    ]);
+    if (!rootStat.isDirectory()) {
+        const error = new Error(
+            `Copilot session-state root is not a directory: ${sessionStateRoot}`,
+        );
+        error.code = "ENOTDIR";
+        throw error;
+    }
 }
 
 /**
