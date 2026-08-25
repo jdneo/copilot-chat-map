@@ -90,6 +90,64 @@ test("keeps ephemeral, subagent, and injected events out of top-level turns", ()
     assert.equal(turns[0].assistantContent, "Visible response");
 });
 
+test("keeps an attachment-only host context in the active Turn Node", () => {
+    const events = [
+        {
+            id: "11111111-1111-4111-8111-111111111111",
+            type: "user.message",
+            data: {
+                content:
+                    "Fit all shrinks this map even though there is room.",
+                source: "user",
+            },
+        },
+        {
+            id: "22222222-2222-4222-8222-222222222222",
+            type: "abort",
+            data: { reason: "Waiting for user input" },
+        },
+        {
+            id: "33333333-3333-4333-8333-333333333333",
+            type: "user.message",
+            data: {
+                content: [
+                    "<canvas-context>",
+                    '- name="extension:chat-fork-map-current"',
+                    "</canvas-context>",
+                    "<system_notification>",
+                    "Host-only instructions",
+                    "</system_notification>",
+                ].join("\n"),
+                attachments: [{ displayName: "Screenshot", type: "file" }],
+            },
+        },
+        {
+            id: "44444444-4444-4444-8444-444444444444",
+            type: "assistant.message",
+            data: { content: "Fixed the Fit all measurement." },
+        },
+        {
+            id: "55555555-5555-4555-8555-555555555555",
+            type: "assistant.turn_end",
+            data: { turnId: "turn-1" },
+        },
+    ];
+
+    assert.deepEqual(groupTurns(events), [
+        {
+            id: "11111111-1111-4111-8111-111111111111",
+            userEventId: "11111111-1111-4111-8111-111111111111",
+            assistantEventId: "44444444-4444-4444-8444-444444444444",
+            toEventId: null,
+            userContent:
+                "Fit all shrinks this map even though there is room.",
+            assistantContent: "Fixed the Fit all measurement.",
+            status: "completed",
+            executionDetails: [],
+        },
+    ]);
+});
+
 test("owns tool, permission, and subagent activity as execution details of the visible turn", () => {
     const events = [
         {

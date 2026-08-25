@@ -43,6 +43,8 @@ test("renders selectable checkpoint controls and the fork API workflow", () => {
     assert.match(html, /#refresh \{[\s\S]+background: #1f6feb;/);
     assert.match(html, /#refresh svg \{[\s\S]+stroke: #fff;/);
     assert.match(html, /\.minimap \{[\s\S]*?bottom: 16px;/);
+    assert.match(html, /"minimap-label", "Minimap"/);
+    assert.doesNotMatch(html, /Family minimap/);
     assert.match(html, /#notice \{[\s\S]+position: fixed;/);
 
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
@@ -112,7 +114,7 @@ test("keeps a zoomed large family scrollable and recoverable", () => {
     assert.match(html, /id="zoom-out"[^>]+aria-label="Zoom out"/);
     assert.match(html, /id="zoom-in"[^>]+aria-label="Zoom in"/);
     assert.match(html, />Fit all<\/button>/);
-    assert.match(html, />Focus current<\/button>/);
+    assert.match(html, />Focus root<\/button>/);
     assert.match(html, /family\.style\.transform = "scale\(" \+ view\.scale \+ "\)"/);
     assert.match(html, /viewport\.addEventListener\("pointerdown"/);
 });
@@ -210,13 +212,43 @@ test("Fit all can frame a family wider than the interactive zoom range", async (
 
     const viewport = document.querySelector(".map-viewport");
     const family = document.querySelector(".family");
+    const currentLane = document.querySelector(".lane");
     viewport.clientWidth = 800;
     viewport.clientHeight = 600;
-    family.scrollWidth = 40_000;
-    family.scrollHeight = 1_000;
+    family.getBoundingClientRect = () => rect(0, 0, 800, 600);
+    currentLane.getBoundingClientRect = () => rect(0, 0, 40_000, 1_000);
     document.querySelector("#fit-all").click();
 
     assert.equal(document.querySelector("#zoom-level").textContent, "2%");
+});
+
+test("Fit all ignores stretched family and stale connector bounds", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const sessionId = "11111111-1111-4111-8111-111111111111";
+    const document = fakeDocument();
+    const context = browserContext(
+        document,
+        readyState(sessionId, [lane(sessionId, true, [])]),
+    );
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const viewport = document.querySelector(".map-viewport");
+    const family = document.querySelector(".family");
+    const currentLane = document.querySelector(".lane");
+    viewport.clientWidth = 1_000;
+    viewport.clientHeight = 1_500;
+    family.scrollWidth = 2_000;
+    family.scrollHeight = 2_400;
+    family.getBoundingClientRect = () => rect(0, 0, 2_000, 2_400);
+    currentLane.getBoundingClientRect = () => rect(2, 2, 340, 1_000);
+
+    document.querySelector("#fit-all").click();
+
+    assert.equal(document.querySelector("#zoom-level").textContent, "100%");
 });
 
 test("collapses and restores descendants while the minimap keeps map state", async () => {
@@ -284,7 +316,7 @@ test("collapses and restores descendants while the minimap keeps map state", asy
     assert.ok(document.querySelector(".minimap-selection"));
 });
 
-test("Focus current reopens a collapsed path to the Current Session", async () => {
+test("Focus root centers the Root Session without reopening descendants", async () => {
     const html = renderHtml();
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
     assert.ok(script);
@@ -312,10 +344,9 @@ test("Focus current reopens a collapsed path to the Current Session", async () =
         },
     };
     const document = fakeDocument();
-    const context = browserContext(
-        document,
-        readyState(childId, [rootLane, childLane]),
-    );
+    const state = readyState(childId, [rootLane, childLane]);
+    state.family.rootSessionId = rootId;
+    const context = browserContext(document, state);
     new vm.Script(script).runInContext(vm.createContext(context));
     await settle();
 
@@ -326,10 +357,12 @@ test("Focus current reopens a collapsed path to the Current Session", async () =
         .click();
     assert.equal(document.querySelectorAll(".lane").length, 1);
 
-    document.querySelector("#focus-current").click();
+    const visibleRoot = document.querySelector(".lane");
+    document.querySelector("#focus-root").click();
 
-    assert.equal(document.querySelectorAll(".lane").length, 2);
-    assert.equal(document.querySelector(".lane.current").scrollIntoViewCount, 1);
+    assert.equal(document.querySelectorAll(".lane").length, 1);
+    assert.equal(visibleRoot.dataset.sessionId, rootId);
+    assert.equal(visibleRoot.scrollIntoViewCount, 1);
 });
 
 test("keeps rich DOM bounded in the packaged 50-session 5,000-turn build", async (testContext) => {
@@ -426,10 +459,15 @@ test("keeps rich DOM bounded in the packaged 50-session 5,000-turn build", async
     document.querySelector("#zoom-in").click();
     assert.equal(document.querySelector("#zoom-level").textContent, "120%");
     document.querySelector("#fit-all").click();
-    const currentLane = document.querySelector(".lane.current");
-    const focusCount = currentLane.scrollIntoViewCount;
-    document.querySelector("#focus-current").click();
-    assert.equal(currentLane.scrollIntoViewCount, focusCount + 1);
+    const rootLane = document
+        .querySelectorAll(".lane")
+        .find(
+            (candidate) =>
+                candidate.dataset.sessionId === rootId,
+        );
+    const focusCount = rootLane.scrollIntoViewCount;
+    document.querySelector("#focus-root").click();
+    assert.equal(rootLane.scrollIntoViewCount, focusCount + 1);
 
     document.querySelector(".subtree-toggle").click();
     assert.equal(document.querySelectorAll(".lane").length, 1);
@@ -1276,7 +1314,7 @@ function fakeDocument() {
         ["zoom-in", new FakeElement("button")],
         ["zoom-level", new FakeElement("span")],
         ["fit-all", new FakeElement("button")],
-        ["focus-current", new FakeElement("button")],
+        ["focus-root", new FakeElement("button")],
     ]);
     return {
         createElement: (tag) => new FakeElement(tag),

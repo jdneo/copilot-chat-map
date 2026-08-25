@@ -13,6 +13,9 @@
  * }} data
  */
 
+const HOST_CONTEXT_BLOCK =
+    /<(canvas-context|system_notification|system_reminder)>[\s\S]*?<\/\1>/g;
+
 /**
  * @typedef {object} TurnNode
  * @property {string} id
@@ -65,6 +68,13 @@ export function groupTurns(events, { isProcessing = false } = {}) {
 
         if (event.type === "user.message") {
             if (event.data.source && event.data.source !== "user") {
+                continue;
+            }
+            if (isHostContextOnly(event.data.content)) {
+                if (currentTurn) {
+                    turnEnded = false;
+                    turnAborted = false;
+                }
                 continue;
             }
 
@@ -129,6 +139,13 @@ export function groupTurns(events, { isProcessing = false } = {}) {
     }
 
     return turns;
+}
+
+function isHostContextOnly(content) {
+    return (
+        typeof content === "string" &&
+        content.replace(HOST_CONTEXT_BLOCK, "").trim() === ""
+    );
 }
 
 /** @param {SessionEvent} event */

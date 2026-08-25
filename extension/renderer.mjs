@@ -402,7 +402,7 @@ export function renderHtml() {
     <span id="zoom-level" aria-live="polite">100%</span>
     <button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">+</button>
     <button id="fit-all" type="button">Fit all</button>
-    <button id="focus-current" type="button">Focus current</button>
+    <button id="focus-root" type="button">Focus root</button>
     <button id="show-hidden" type="button" hidden>Show hidden</button>
     <button id="refresh" type="button" aria-label="Refresh" title="Refresh">
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
@@ -421,7 +421,7 @@ export function renderHtml() {
     const zoomInButton = document.querySelector("#zoom-in");
     const zoomLevel = document.querySelector("#zoom-level");
     const fitAllButton = document.querySelector("#fit-all");
-    const focusCurrentButton = document.querySelector("#focus-current");
+    const focusRootButton = document.querySelector("#focus-root");
     const showHiddenButton = document.querySelector("#show-hidden");
     const token = new URLSearchParams(window.location.search).get("token") || "";
     const operationIdsByCheckpoint = new Map();
@@ -436,6 +436,8 @@ export function renderHtml() {
       fitMinScale: 0.02,
       maxScale: 2,
     };
+    const familyEndPadding = 90;
+    const familyBottomPadding = 2;
     let currentState;
     let forkPending = false;
     let availabilityError = "";
@@ -470,15 +472,8 @@ export function renderHtml() {
       if (!map) return;
       const { viewport, stage, family } = map;
       family.style.transform = "scale(" + view.scale + ")";
-      const familyRect = family.getBoundingClientRect();
-      const unscaledWidth = Math.max(
-        family.scrollWidth,
-        familyRect.width / view.scale,
-      );
-      const unscaledHeight = Math.max(
-        family.scrollHeight,
-        familyRect.height / view.scale,
-      );
+      const { width: unscaledWidth, height: unscaledHeight } =
+        measureFamilyContent(family);
       stage.style.width =
         Math.max(viewport.clientWidth || 0, Math.ceil(unscaledWidth * view.scale) + 114) +
         "px";
@@ -487,6 +482,36 @@ export function renderHtml() {
         "px";
       zoomLevel.textContent = Math.round(view.scale * 100) + "%";
       updateMinimapViewport();
+    }
+
+    function measureFamilyContent(family) {
+      const familyRect = family.getBoundingClientRect();
+      const lanes = Array.from(family.querySelectorAll(".lane"));
+      if (lanes.length === 0) {
+        return {
+          width: Math.max(1, familyRect.width / view.scale),
+          height: Math.max(1, familyRect.height / view.scale),
+        };
+      }
+      let right = 0;
+      let bottom = 0;
+      lanes.forEach((lane) => {
+        const laneRect = lane.getBoundingClientRect();
+        const left = Number.isFinite(lane.offsetLeft)
+          ? lane.offsetLeft
+          : (laneRect.left - familyRect.left) / view.scale;
+        const top = Number.isFinite(lane.offsetTop)
+          ? lane.offsetTop
+          : (laneRect.top - familyRect.top) / view.scale;
+        const width = lane.offsetWidth || laneRect.width / view.scale;
+        const height = lane.offsetHeight || laneRect.height / view.scale;
+        right = Math.max(right, left + width);
+        bottom = Math.max(bottom, top + height);
+      });
+      return {
+        width: Math.max(1, right + familyEndPadding),
+        height: Math.max(1, bottom + familyBottomPadding),
+      };
     }
 
     function setScale(nextScale, anchorX, anchorY) {
@@ -518,11 +543,9 @@ export function renderHtml() {
       const map = currentMap();
       if (!map) return;
       const { viewport, family } = map;
-      const familyRect = family.getBoundingClientRect();
-      const width = Math.max(family.scrollWidth, familyRect.width / view.scale);
-      const height = Math.max(family.scrollHeight, familyRect.height / view.scale);
-      const availableWidth = Math.max(1, (viewport.clientWidth || familyRect.width) - 48);
-      const availableHeight = Math.max(1, (viewport.clientHeight || familyRect.height) - 48);
+      const { width, height } = measureFamilyContent(family);
+      const availableWidth = Math.max(1, (viewport.clientWidth || width) - 48);
+      const availableHeight = Math.max(1, (viewport.clientHeight || height) - 48);
       view.scale = Math.min(
         1,
         Math.max(
@@ -536,29 +559,14 @@ export function renderHtml() {
       drawConnections(family);
     }
 
-    function focusCurrent() {
-      const scrollToCurrent = () =>
-        document.querySelector(".lane.current")?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-          inline: "center",
-        });
-      if (document.querySelector(".lane.current") || !currentState?.lanes) {
-        scrollToCurrent();
-        return;
-      }
-      const byId = new Map(
-        currentState.lanes.map((lane) => [lane.session.id, lane]),
-      );
-      let parentId = byId.get(currentState.currentSessionId)?.parentSessionId;
-      let reopened = false;
-      while (parentId) {
-        reopened = collapsedSessionIds.delete(parentId) || reopened;
-        parentId = byId.get(parentId)?.parentSessionId || null;
-      }
-      if (!reopened) return;
-      renderReady(currentState);
-      requestAnimationFrame(scrollToCurrent);
+    function focusRoot() {
+      const rootSessionId = currentState?.family?.rootSessionId;
+      if (!rootSessionId) return;
+      laneElementsById.get(rootSessionId)?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
     }
 
     function enableMapNavigation(viewport) {
@@ -673,7 +681,7 @@ export function renderHtml() {
         minimap.setAttribute("aria-label", "Conversation family minimap");
         content.append(minimap);
       }
-      const label = element("span", "minimap-label", "Family minimap");
+      const label = element("span", "minimap-label", "Minimap");
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       const width = Math.max(24, lanes.length * 14 + 10);
       const maxTurns = Math.max(1, ...lanes.map((lane) => lane.turns.length));
@@ -1265,8 +1273,7 @@ export function renderHtml() {
       });
 
       familyRect = family.getBoundingClientRect();
-      const width = Math.max(family.scrollWidth, familyRect.width / scale);
-      const height = Math.max(family.scrollHeight, familyRect.height / scale);
+      const { width, height } = measureFamilyContent(family);
       svg.setAttribute("viewBox", "0 0 " + width + " " + height);
       svg.setAttribute("width", String(width));
       svg.setAttribute("height", String(height));
@@ -1715,7 +1722,7 @@ export function renderHtml() {
     zoomOutButton.addEventListener("click", () => zoomBy(1 / 1.2));
     zoomInButton.addEventListener("click", () => zoomBy(1.2));
     fitAllButton.addEventListener("click", fitAll);
-    focusCurrentButton.addEventListener("click", focusCurrent);
+    focusRootButton.addEventListener("click", focusRoot);
     showHiddenButton?.addEventListener("click", async () => {
       const hiddenSessionIds = currentState?.family?.hiddenSessionIds || [];
       await Promise.all(
