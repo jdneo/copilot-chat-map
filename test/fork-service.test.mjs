@@ -421,6 +421,67 @@ test("rejects every checkpoint while the foreground agent is active", async () =
     }
 });
 
+test("rejects occupied and unavailable non-current source lanes", async () => {
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-source-state-"),
+    );
+    const lineageStore = createLineageStore({
+        filePath: path.join(temporaryRoot, "lineage-v1.json"),
+    });
+    await lineageStore.recordFork({
+        parentSessionId: PARENT_ID,
+        childSessionId: CHILD_ID,
+        sourceUserEventId: FIRST_USER_ID,
+        sourceAssistantEventId: FIRST_ASSISTANT_ID,
+        toEventId: NEXT_USER_ID,
+        childForkMarkerEventId: null,
+        siblingOrdinal: 1,
+        createdAt: "2026-08-21T01:00:00.000Z",
+    });
+    let sourceAvailable = true;
+    let sourceOccupied = true;
+    let forkCount = 0;
+    const service = createForkService({
+        session: testSession({
+            fork: async () => {
+                forkCount += 1;
+                return { sessionId: "33333333-3333-4333-8333-333333333333" };
+            },
+        }),
+        lineageStore,
+        readEvents: async () => completedTurns(),
+        listSessions: async () =>
+            sourceAvailable
+                ? [{ sessionId: CHILD_ID, isRemote: false }]
+                : [],
+        checkInUse: async () =>
+            sourceOccupied ? new Set([CHILD_ID]) : new Set(),
+    });
+
+    try {
+        const occupied = await service.forkFromTurn({
+            operationId: "occupied-source",
+            sessionId: CHILD_ID,
+            turnId: FIRST_USER_ID,
+        });
+        sourceOccupied = false;
+        sourceAvailable = false;
+        const unavailable = await service.forkFromTurn({
+            operationId: "unavailable-source",
+            sessionId: CHILD_ID,
+            turnId: FIRST_USER_ID,
+        });
+
+        assert.equal(occupied.kind, "fork_failed");
+        assert.match(occupied.message, /occupied/);
+        assert.equal(unavailable.kind, "fork_failed");
+        assert.match(unavailable.message, /unavailable/);
+        assert.equal(forkCount, 0);
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
 test("forks through the server request exposed by a 1.0.80 joined session", async () => {
     const temporaryRoot = await mkdtemp(
         path.join(os.tmpdir(), "chat-fork-server-rpc-"),

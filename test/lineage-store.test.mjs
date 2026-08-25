@@ -108,6 +108,43 @@ test("recovers a lineage lock left by a terminated process", async () => {
     }
 });
 
+test("persists hidden unavailable subtree roots without rewriting lineage", async () => {
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-hidden-"),
+    );
+    const store = createLineageStore({
+        filePath: path.join(temporaryRoot, "lineage-v1.json"),
+    });
+    const childId = "22222222-2222-4222-8222-222222222222";
+
+    try {
+        await store.recordFork(record(childId, 1));
+        await store.setSessionHidden({
+            currentSessionId: ROOT_ID,
+            targetSessionId: childId,
+            hidden: true,
+        });
+        let lineage = await store.read();
+        assert.equal(lineage.revision, 2);
+        assert.deepEqual(lineage.families[ROOT_ID].hiddenSessionIds, [childId]);
+        assert.equal(
+            lineage.families[ROOT_ID].members[childId].parentSessionId,
+            ROOT_ID,
+        );
+
+        await store.setSessionHidden({
+            currentSessionId: ROOT_ID,
+            targetSessionId: childId,
+            hidden: false,
+        });
+        lineage = await store.read();
+        assert.equal(lineage.revision, 3);
+        assert.deepEqual(lineage.families[ROOT_ID].hiddenSessionIds, []);
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
 function record(childSessionId, siblingOrdinal) {
     return {
         parentSessionId: ROOT_ID,

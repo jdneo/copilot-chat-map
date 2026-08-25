@@ -3,8 +3,10 @@ import {
     appendFile,
     mkdir,
     mkdtemp,
+    rename,
     rm,
     symlink,
+    truncate,
     writeFile,
 } from "node:fs/promises";
 import os from "node:os";
@@ -12,6 +14,7 @@ import path from "node:path";
 import test from "node:test";
 
 import {
+    EventLogReadError,
     readSessionEvents,
     resolveEventLogPath,
 } from "../extension/event-reader.mjs";
@@ -159,3 +162,136 @@ test("retains the parsed prefix when new session events are appended", async () 
         await rm(temporaryRoot, { recursive: true, force: true });
     }
 });
+
+test("defers and later recovers a partially written final JSONL record", async () => {
+    const fixture = await eventLogFixture("chat-fork-map-partial-");
+    try {
+        await writeFile(
+            fixture.eventLogPath,
+            '{"id":"event-1","type":"user.message","data":{}}\n{"id":"event-2"',
+        );
+
+        assert.deepEqual(
+            (await readSessionEvents(fixture.sessionId, fixture.options)).map(
+                (event) => event.id,
+            ),
+            ["event-1"],
+        );
+
+        await appendFile(
+            fixture.eventLogPath,
+            ',"type":"assistant.message","data":{}}\n',
+        );
+        assert.deepEqual(
+            (await readSessionEvents(fixture.sessionId, fixture.options)).map(
+                (event) => event.id,
+            ),
+            ["event-1", "event-2"],
+        );
+    } finally {
+        await fixture.cleanup();
+    }
+});
+
+test("resets the incremental cache after truncation and replacement", async () => {
+    const fixture = await eventLogFixture("chat-fork-map-reset-");
+    try {
+        await writeFile(
+            fixture.eventLogPath,
+            '{"id":"old-1","type":"user.message","data":{}}\n{"id":"old-2","type":"assistant.message","data":{}}\n',
+        );
+        await readSessionEvents(fixture.sessionId, fixture.options);
+
+        await truncate(fixture.eventLogPath, 0);
+        await appendFile(
+            fixture.eventLogPath,
+            '{"id":"truncated","type":"user.message","data":{}}\n',
+        );
+        assert.deepEqual(
+            (await readSessionEvents(fixture.sessionId, fixture.options)).map(
+                (event) => event.id,
+            ),
+            ["truncated"],
+        );
+
+        const replacement = `${fixture.eventLogPath}.replacement`;
+        await writeFile(
+            replacement,
+            '{"id":"replacement","type":"user.message","data":{}}\n',
+        );
+        await rm(fixture.eventLogPath);
+        await rename(replacement, fixture.eventLogPath);
+        assert.deepEqual(
+            (await readSessionEvents(fixture.sessionId, fixture.options)).map(
+                (event) => event.id,
+            ),
+            ["replacement"],
+        );
+
+        await truncate(fixture.eventLogPath, 0);
+        await appendFile(
+            fixture.eventLogPath,
+            `${JSON.stringify({
+                id: "regrown",
+                type: "user.message",
+                data: { content: "x".repeat(256) },
+            })}\n`,
+        );
+        assert.deepEqual(
+            (await readSessionEvents(fixture.sessionId, fixture.options)).map(
+                (event) => event.id,
+            ),
+            ["regrown"],
+        );
+    } finally {
+        await fixture.cleanup();
+    }
+});
+
+test("reports interior corruption with the last trustworthy events", async () => {
+    const fixture = await eventLogFixture("chat-fork-map-corrupt-");
+    try {
+        await writeFile(
+            fixture.eventLogPath,
+            '{"id":"trusted","type":"user.message","data":{}}\nnot-json\n{"id":"ignored","type":"assistant.message","data":{}}\n',
+        );
+
+        await assert.rejects(
+            readSessionEvents(fixture.sessionId, fixture.options),
+            (error) => {
+                assert.ok(error instanceof EventLogReadError);
+                assert.match(error.message, /line 2/);
+                assert.deepEqual(
+                    error.events.map((event) => event.id),
+                    ["trusted"],
+                );
+                return true;
+            },
+        );
+    } finally {
+        await fixture.cleanup();
+    }
+});
+
+async function eventLogFixture(prefix) {
+    const sessionId = "4bc4d926-f2d2-48ec-81fb-aafb579e671a";
+    const temporaryRoot = await mkdtemp(path.join(os.tmpdir(), prefix));
+    const copilotHome = path.join(temporaryRoot, ".copilot");
+    const sessionDirectory = path.join(
+        copilotHome,
+        "session-state",
+        sessionId,
+    );
+    const eventLogPath = path.join(sessionDirectory, "events.jsonl");
+    await mkdir(sessionDirectory, { recursive: true });
+    return {
+        sessionId,
+        eventLogPath,
+        options: {
+            platform: process.platform,
+            env: { COPILOT_HOME: copilotHome },
+            homedir: os.homedir(),
+        },
+        cleanup: () => rm(temporaryRoot, { recursive: true, force: true }),
+    };
+}

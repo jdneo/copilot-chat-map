@@ -206,6 +206,16 @@ export function renderHtml() {
       color: var(--text-color-muted, #8b949e);
       font-size: 11px;
     }
+    .hide-subtree {
+      padding: 4px 8px;
+      color: var(--danger-color-emphasis, #f85149);
+      font-size: 11px;
+    }
+    .lane-error {
+      margin-bottom: 18px;
+      border-color: var(--danger-color-emphasis, #f85149);
+      color: var(--text-color-muted, #8b949e);
+    }
     .branch-connections {
       position: absolute;
       top: 0;
@@ -393,6 +403,7 @@ export function renderHtml() {
     <button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">+</button>
     <button id="fit-all" type="button">Fit all</button>
     <button id="focus-current" type="button">Focus current</button>
+    <button id="show-hidden" type="button" hidden>Show hidden</button>
     <button id="refresh" type="button" aria-label="Refresh" title="Refresh">
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
         <path d="M20 11a8 8 0 1 0-2.34 5.66" stroke-width="2" stroke-linecap="round"/>
@@ -411,6 +422,7 @@ export function renderHtml() {
     const zoomLevel = document.querySelector("#zoom-level");
     const fitAllButton = document.querySelector("#fit-all");
     const focusCurrentButton = document.querySelector("#focus-current");
+    const showHiddenButton = document.querySelector("#show-hidden");
     const token = new URLSearchParams(window.location.search).get("token") || "";
     const operationIdsByCheckpoint = new Map();
     const blockedCheckpoints = new Set();
@@ -432,6 +444,8 @@ export function renderHtml() {
     let turnObserver;
     let initializedFamilyId = "";
     let initializedCurrentSessionId = "";
+    let refreshPromise;
+    let refreshQueued = false;
 
     function element(tag, className, text) {
       const node = document.createElement(tag);
@@ -591,11 +605,16 @@ export function renderHtml() {
     function visibleLaneStates(state) {
       const lanes = state.lanes || [];
       const byId = new Map(lanes.map((lane) => [lane.session.id, lane]));
+      const hiddenIds = new Set(state.family?.hiddenSessionIds || []);
       return lanes.filter((lane) => {
-        let parentId = lane.parentSessionId;
-        while (parentId) {
-          if (collapsedSessionIds.has(parentId)) return false;
-          parentId = byId.get(parentId)?.parentSessionId || null;
+        let sessionId = lane.session.id;
+        while (sessionId) {
+          if (hiddenIds.has(sessionId)) return false;
+          if (
+            sessionId !== lane.session.id &&
+            collapsedSessionIds.has(sessionId)
+          ) return false;
+          sessionId = byId.get(sessionId)?.parentSessionId || null;
         }
         return true;
       });
@@ -1162,6 +1181,7 @@ export function renderHtml() {
           showNotice("Opening chat", "The host is switching to the selected session.", false);
           return;
         }
+
         showNotice(
           "Could not open chat",
           result.message || "Open this session manually from the session list.",
@@ -1172,6 +1192,30 @@ export function renderHtml() {
           "Could not open chat",
           (error instanceof Error ? error.message + " " : "") +
             "Open this session manually from the session list.",
+          true,
+        );
+      }
+    }
+
+    async function setSubtreeHidden(sessionId, hidden) {
+      try {
+        const response = await fetch(
+          "/api/hidden-subtree?token=" + encodeURIComponent(token),
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionId, hidden }),
+          },
+        );
+        const result = await response.json();
+        if (!response.ok || result.kind !== "updated") {
+          throw new Error(result.message || "Hidden subtree update failed.");
+        }
+        await refresh();
+      } catch (error) {
+        showNotice(
+          "Could not update hidden subtree",
+          error instanceof Error ? error.message : "Unknown hidden subtree error.",
           true,
         );
       }
@@ -1332,7 +1376,12 @@ export function renderHtml() {
         ),
       );
       article.replaceChildren(body);
-      if (turn.status === "completed" && laneState.session.available) {
+      if (
+        turn.status === "completed" &&
+        laneState.session.available &&
+        !laneState.error &&
+        (!laneState.session.inUse || laneState.session.current)
+      ) {
         const branchButton = element("button", "branch-button", "+ Fork");
         branchButton.type = "button";
         branchButton.dataset.sessionId = laneState.session.id;
@@ -1395,35 +1444,54 @@ export function renderHtml() {
         "lane" + (laneState.session.current ? " current" : ""),
       );
       lane.dataset.sessionId = laneState.session.id;
-      if (hasChildren) {
+      if (
+        hasChildren ||
+        (!laneState.session.available && !laneState.session.current)
+      ) {
         const tools = element("div", "lane-tools");
-        const toggle = element(
-          "button",
-          "subtree-toggle",
-          collapsedSessionIds.has(laneState.session.id)
-            ? "Expand subtree"
-            : "Collapse subtree",
-        );
-        toggle.type = "button";
-        toggle.setAttribute(
-          "aria-expanded",
-          String(!collapsedSessionIds.has(laneState.session.id)),
-        );
-        toggle.addEventListener("click", (event) => {
-          event.stopPropagation();
-          if (collapsedSessionIds.has(laneState.session.id)) {
-            collapsedSessionIds.delete(laneState.session.id);
-          } else {
-            collapsedSessionIds.add(laneState.session.id);
-          }
-          renderReady(currentState);
-        });
-        tools.append(toggle);
+        if (hasChildren) {
+          const toggle = element(
+            "button",
+            "subtree-toggle",
+            collapsedSessionIds.has(laneState.session.id)
+              ? "Expand subtree"
+              : "Collapse subtree",
+          );
+          toggle.type = "button";
+          toggle.setAttribute(
+            "aria-expanded",
+            String(!collapsedSessionIds.has(laneState.session.id)),
+          );
+          toggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            if (collapsedSessionIds.has(laneState.session.id)) {
+              collapsedSessionIds.delete(laneState.session.id);
+            } else {
+              collapsedSessionIds.add(laneState.session.id);
+            }
+            renderReady(currentState);
+          });
+          tools.append(toggle);
+        }
+        if (!laneState.session.available && !laneState.session.current) {
+          const hide = element(
+            "button",
+            "hide-subtree",
+            "Hide unavailable subtree",
+          );
+          hide.type = "button";
+          hide.addEventListener("click", () =>
+            setSubtreeHidden(laneState.session.id, true),
+          );
+          tools.append(hide);
+        }
         lane.append(tools);
       }
 
       if (laneState.sourceCheckpoint) {
-        const isVirtual = laneState.turns.length === 0;
+        const isVirtual =
+          laneState.turns.length === 0 ||
+          !laneState.sourceCheckpoint.available;
         const entry = element(
           isVirtual ? "article" : "div",
           isVirtual
@@ -1437,10 +1505,12 @@ export function renderHtml() {
           const checkpoint = element(
             "button",
             "checkpoint-link",
-            laneState.inheritedTurnCount +
-              " inherited " +
-              (laneState.inheritedTurnCount === 1 ? "turn" : "turns") +
-              " · Fork Checkpoint",
+            laneState.sourceCheckpoint.available
+              ? laneState.inheritedTurnCount +
+                  " inherited " +
+                  (laneState.inheritedTurnCount === 1 ? "turn" : "turns") +
+                  " · Fork Checkpoint"
+              : "Fork checkpoint unavailable",
           );
           checkpoint.type = "button";
           checkpoint.disabled = !laneState.sourceCheckpoint.available;
@@ -1456,7 +1526,15 @@ export function renderHtml() {
           );
           actions.append(openButton);
           entry.append(
-            element("p", "virtual-copy", "No conversation turns yet."),
+            element(
+              "p",
+              "virtual-copy",
+              !laneState.session.available
+                ? "Session unavailable."
+                : !laneState.sourceCheckpoint.available
+                  ? "Fork checkpoint unavailable."
+                : laneState.error || "No conversation turns yet.",
+            ),
             actions,
           );
         } else {
@@ -1501,6 +1579,9 @@ export function renderHtml() {
 
         lane.append(article);
       });
+      if (laneState.error && laneState.turns.length > 0) {
+        lane.append(element("div", "state lane-error", laneState.error));
+      }
       return lane;
     }
 
@@ -1511,6 +1592,12 @@ export function renderHtml() {
         : { left: 0, top: 0 };
       currentState = state;
       availabilityError = "";
+      const hiddenSessionIds = state.family?.hiddenSessionIds || [];
+      if (showHiddenButton) {
+        showHiddenButton.hidden = hiddenSessionIds.length === 0;
+        showHiddenButton.textContent =
+          "Show hidden (" + hiddenSessionIds.length + ")";
+      }
       const viewport = element("div", "map-viewport");
       const stage = element("div", "map-stage");
       const family = element("section", "family");
@@ -1596,19 +1683,32 @@ export function renderHtml() {
       status.textContent = state.kind === "unsupported" ? "Unsupported session" : "Load error";
     }
 
-    async function refresh() {
-      refreshButton.disabled = true;
-      status.hidden = false;
-      status.textContent = "Refreshing...";
-      try {
-        const response = await fetch("/api/state?token=" + encodeURIComponent(token), { cache: "no-store" });
-        if (!response.ok) throw new Error("State request failed with status " + response.status);
-        renderState(await response.json());
-      } catch (error) {
-        renderState({ kind: "error", message: error instanceof Error ? error.message : "Unknown refresh error." });
-      } finally {
-        refreshButton.disabled = false;
+    function refresh() {
+      if (refreshPromise) {
+        refreshQueued = true;
+        return refreshPromise;
       }
+      refreshPromise = (async () => {
+        refreshButton.disabled = true;
+        status.hidden = false;
+        status.textContent = "Refreshing...";
+        try {
+          const response = await fetch("/api/state?token=" + encodeURIComponent(token), { cache: "no-store" });
+          if (!response.ok) throw new Error("State request failed with status " + response.status);
+          renderState(await response.json());
+        } catch (error) {
+          renderState({ kind: "error", message: error instanceof Error ? error.message : "Unknown refresh error." });
+        } finally {
+          refreshButton.disabled = false;
+        }
+      })().finally(() => {
+        refreshPromise = undefined;
+        if (refreshQueued) {
+          refreshQueued = false;
+          refresh();
+        }
+      });
+      return refreshPromise;
     }
 
     refreshButton.addEventListener("click", refresh);
@@ -1616,12 +1716,24 @@ export function renderHtml() {
     zoomInButton.addEventListener("click", () => zoomBy(1.2));
     fitAllButton.addEventListener("click", fitAll);
     focusCurrentButton.addEventListener("click", focusCurrent);
+    showHiddenButton?.addEventListener("click", async () => {
+      const hiddenSessionIds = currentState?.family?.hiddenSessionIds || [];
+      await Promise.all(
+        hiddenSessionIds.map((sessionId) => setSubtreeHidden(sessionId, false)),
+      );
+    });
     window.addEventListener?.("resize", applyViewTransform);
     window.addEventListener?.("resize", () => {
       const family = document.querySelector(".family");
       if (family) requestAnimationFrame(() => drawConnections(family));
     });
     setInterval(refreshForkAvailability, 2500);
+    if (typeof EventSource === "function") {
+      const events = new EventSource(
+        "/api/events?token=" + encodeURIComponent(token),
+      );
+      events.addEventListener("invalidate", refresh);
+    }
     refresh();
   </script>
 </body>

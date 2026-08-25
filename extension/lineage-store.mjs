@@ -77,7 +77,11 @@ export function createLineageStore({
         return withLock((transaction) => transaction.recordFork(record));
     }
 
-    return { read, recordFork, withLock };
+    async function setSessionHidden(record) {
+        return withLock((transaction) => transaction.setSessionHidden(record));
+    }
+
+    return { read, recordFork, setSessionHidden, withLock };
 }
 
 function createTransaction(filePath, initialIndex) {
@@ -107,6 +111,43 @@ function createTransaction(filePath, initialIndex) {
         },
         async recordFork(record) {
             index = addFork(index, record);
+            await writeIndex(filePath, index);
+            return structuredClone(index);
+        },
+        async setSessionHidden({
+            currentSessionId,
+            targetSessionId,
+            hidden,
+        }) {
+            if (typeof hidden !== "boolean") {
+                throw new TypeError("Hidden session state must be a boolean.");
+            }
+            const familyId = index.sessionToFamily[currentSessionId];
+            const family = familyId ? index.families[familyId] : null;
+            if (
+                !family ||
+                index.sessionToFamily[targetSessionId] !== familyId ||
+                !family.members[targetSessionId]
+            ) {
+                throw new TypeError(
+                    "The selected session is not a member of this Conversation Family.",
+                );
+            }
+            const hiddenIds = new Set(family.hiddenSessionIds);
+            if (hidden) hiddenIds.add(targetSessionId);
+            else hiddenIds.delete(targetSessionId);
+            const nextHiddenIds = [...hiddenIds];
+            if (
+                nextHiddenIds.length === family.hiddenSessionIds.length &&
+                nextHiddenIds.every(
+                    (sessionId, index) =>
+                        sessionId === family.hiddenSessionIds[index],
+                )
+            ) {
+                return structuredClone(index);
+            }
+            family.hiddenSessionIds = nextHiddenIds;
+            index.revision += 1;
             await writeIndex(filePath, index);
             return structuredClone(index);
         },

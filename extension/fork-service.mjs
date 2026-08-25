@@ -1,4 +1,8 @@
-import { forkSession } from "./runtime.mjs";
+import {
+    checkSessionsInUse,
+    forkSession,
+    listLocalSessions,
+} from "./runtime.mjs";
 import { groupTurns } from "./transcript.mjs";
 
 const MAX_BRANCH_STEM_LENGTH = 48;
@@ -7,6 +11,8 @@ export function createForkService({
     session,
     lineageStore,
     readEvents,
+    listSessions = () => listLocalSessions(session),
+    checkInUse = (sessionIds) => checkSessionsInUse(session, sessionIds),
     now = () => new Date(),
 }) {
     const operationsById = new Map();
@@ -80,6 +86,30 @@ export function createForkService({
                     message:
                         "The selected session is not an available member of this Conversation Family.",
                 };
+            }
+
+            if (request.sessionId !== session.sessionId) {
+                const sourceMetadata = (await listSessions()).find(
+                    (entry) => entry.sessionId === request.sessionId,
+                );
+                if (!sourceMetadata || sourceMetadata.isRemote) {
+                    return {
+                        kind: "fork_failed",
+                        message:
+                            "The selected source session is unavailable and cannot be forked.",
+                    };
+                }
+                if (
+                    (await checkInUse([request.sessionId])).has(
+                        request.sessionId,
+                    )
+                ) {
+                    return {
+                        kind: "fork_failed",
+                        message:
+                            "The selected source session is occupied and cannot be forked.",
+                    };
+                }
             }
 
             const activity =

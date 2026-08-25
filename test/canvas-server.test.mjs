@@ -128,6 +128,11 @@ test("creates a nested child from a non-current family lane through the canvas A
                       },
                   ]
                 : [],
+        listSessions: async () => [
+            { sessionId: rootId, isRemote: false },
+            { sessionId: childId, isRemote: false },
+        ],
+        checkInUse: async () => new Set(),
         now: () => new Date("2026-08-21T02:00:00.000Z"),
     });
     const entry = await startCanvasServer({
@@ -356,6 +361,72 @@ test("falls back when the host rejects a session switch request", async () => {
             /host did not accept the session switch request/i,
         );
     } finally {
+        await closeServer(entry.server);
+    }
+});
+
+test("updates hidden subtree state through the authenticated canvas API", async () => {
+    const requests = [];
+    const entry = await startCanvasServer({
+        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
+        forkFromTurn: async () => ({ kind: "fork_failed" }),
+        openSession: async () => ({ kind: "unavailable" }),
+        setSubtreeHidden: async (request) => {
+            requests.push(request);
+            return { kind: "updated", ...request };
+        },
+    });
+
+    try {
+        const url = new URL(entry.url);
+        url.pathname = "/api/hidden-subtree";
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                sessionId: "22222222-2222-4222-8222-222222222222",
+                hidden: true,
+            }),
+        });
+
+        assert.equal(response.status, 200);
+        assert.deepEqual(requests, [
+            {
+                sessionId: "22222222-2222-4222-8222-222222222222",
+                hidden: true,
+            },
+        ]);
+    } finally {
+        await closeServer(entry.server);
+    }
+});
+
+test("pushes live invalidation events over SSE", async () => {
+    let invalidate;
+    const entry = await startCanvasServer({
+        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
+        forkFromTurn: async () => ({ kind: "fork_failed" }),
+        openSession: async () => ({ kind: "unavailable" }),
+        createLiveSync: ({ onInvalidate }) => {
+            invalidate = onInvalidate;
+            return { update() {}, close() {} };
+        },
+    });
+    const controller = new AbortController();
+
+    try {
+        const url = new URL(entry.url);
+        url.pathname = "/api/events";
+        const response = await fetch(url, { signal: controller.signal });
+        const reader = response.body.getReader();
+        await reader.read();
+        invalidate("events");
+        const message = new TextDecoder().decode((await reader.read()).value);
+        assert.match(message, /event: invalidate/);
+        assert.match(message, /"reason":"events"/);
+        await reader.cancel();
+    } finally {
+        controller.abort();
         await closeServer(entry.server);
     }
 });

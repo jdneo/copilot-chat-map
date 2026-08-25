@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { createServer } from "node:http";
 
 import { renderHtml } from "./renderer.mjs";
+import { createFamilyLiveSync } from "./live-sync.mjs";
 
 const CONTENT_SECURITY_POLICY = [
     "default-src 'none'",
@@ -13,12 +14,15 @@ const CONTENT_SECURITY_POLICY = [
     "form-action 'none'",
 ].join("; ");
 const MAX_REQUEST_BODY_BYTES = 4_096;
+const serverResources = new WeakMap();
 
 /**
  * @param {{
  *   loadSnapshot: () => Promise<object>,
  *   forkFromTurn: (request: object) => Promise<object>,
- *   openSession: (request: object) => Promise<object>
+ *   openSession: (request: object) => Promise<object>,
+ *   setSubtreeHidden?: (request: object) => Promise<object>,
+ *   createLiveSync?: typeof createFamilyLiveSync
  * }} handlers
  * @returns {Promise<{ server: import("node:http").Server, url: string }>}
  */
@@ -26,8 +30,20 @@ export async function startCanvasServer({
     loadSnapshot,
     forkFromTurn,
     openSession,
+    setSubtreeHidden,
+    createLiveSync = createFamilyLiveSync,
 }) {
     const token = randomBytes(32).toString("hex");
+    const eventClients = new Set();
+    const liveSync = createLiveSync({
+        onInvalidate: (reason) => {
+            for (const response of eventClients) {
+                response.write(
+                    `event: invalidate\ndata: ${JSON.stringify({ reason })}\n\n`,
+                );
+            }
+        },
+    });
     const server = createServer(async (request, response) => {
         setSecurityHeaders(response);
 
@@ -48,10 +64,22 @@ export async function startCanvasServer({
 
             if (request.method === "GET" && url.pathname === "/api/state") {
                 const snapshot = await loadSnapshot();
+                liveSync.update(snapshot);
                 response.writeHead(200, {
                     "Content-Type": "application/json; charset=utf-8",
                 });
                 response.end(JSON.stringify(snapshot));
+                return;
+            }
+
+            if (request.method === "GET" && url.pathname === "/api/events") {
+                response.writeHead(200, {
+                    "Content-Type": "text/event-stream; charset=utf-8",
+                    Connection: "keep-alive",
+                });
+                response.write("retry: 1000\n\n");
+                eventClients.add(response);
+                request.once("close", () => eventClients.delete(response));
                 return;
             }
 
@@ -71,6 +99,36 @@ export async function startCanvasServer({
                     await readJsonBody(request, "Fork"),
                 );
                 sendJson(response, statusForForkResult(result), result);
+                return;
+            }
+
+            if (
+                request.method === "POST" &&
+                url.pathname === "/api/hidden-subtree"
+            ) {
+                if (!setSubtreeHidden) {
+                    sendJson(response, 501, {
+                        kind: "error",
+                        message: "Hidden subtree state is unavailable.",
+                    });
+                    return;
+                }
+                if (
+                    !request.headers["content-type"]
+                        ?.toLowerCase()
+                        .startsWith("application/json")
+                ) {
+                    sendJson(response, 415, {
+                        kind: "error",
+                        message:
+                            "Hidden subtree requests must use application/json.",
+                    });
+                    return;
+                }
+                const result = await setSubtreeHidden(
+                    await readJsonBody(request, "Hidden subtree"),
+                );
+                sendJson(response, 200, result);
                 return;
             }
 
@@ -107,14 +165,21 @@ export async function startCanvasServer({
             sendJson(response, statusCode, { kind: "error", message });
         }
     });
+    serverResources.set(server, { eventClients, liveSync });
 
-    await new Promise((resolve, reject) => {
-        server.once("error", reject);
-        server.listen(0, "127.0.0.1", () => {
-            server.off("error", reject);
-            resolve(undefined);
+    try {
+        await new Promise((resolve, reject) => {
+            server.once("error", reject);
+            server.listen(0, "127.0.0.1", () => {
+                server.off("error", reject);
+                resolve(undefined);
+            });
         });
-    });
+    } catch (error) {
+        serverResources.delete(server);
+        liveSync.close();
+        throw error;
+    }
 
     const address = server.address();
     if (!address || typeof address === "string") {
@@ -133,6 +198,10 @@ export async function startCanvasServer({
  * @returns {Promise<void>}
  */
 export function closeServer(server) {
+    const resources = serverResources.get(server);
+    serverResources.delete(server);
+    resources?.liveSync.close();
+    for (const response of resources?.eventClients || []) response.end();
     return new Promise((resolve, reject) => {
         server.close((error) => {
             if (error) reject(error);

@@ -228,6 +228,7 @@ test("refreshes current metadata and availability for every family lane", async 
     const lineageStore = createLineageStore({
         filePath: path.join(temporaryRoot, "lineage-v1.json"),
     });
+
     await lineageStore.recordFork(forkRecord());
     let childAvailable = true;
 
@@ -275,6 +276,116 @@ test("refreshes current metadata and availability for every family lane", async 
             inUse: false,
             current: false,
         });
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
+test("keeps a deleted parent as a Tombstone with its child attached", async () => {
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-family-tombstone-"),
+    );
+    const lineageStore = createLineageStore({
+        filePath: path.join(temporaryRoot, "lineage-v1.json"),
+    });
+    await lineageStore.recordFork(forkRecord());
+
+    try {
+        const state = await loadCurrentSessionMap(testSession(CHILD_ID), {
+            lineageStore,
+            readEvents: async (sessionId) => {
+                if (sessionId === PARENT_ID) {
+                    throw Object.assign(new Error("Deleted"), { code: "ENOENT" });
+                }
+                return childEvents();
+            },
+            listSessions: async () =>
+                sessionMetadata().filter(
+                    (entry) => entry.sessionId === CHILD_ID,
+                ),
+            checkInUse: async () => new Set(),
+        });
+
+        assert.equal(state.kind, "ready", state.message);
+        assert.equal(state.lanes[0].session.available, false);
+        assert.equal(state.lanes[0].session.title, "Session unavailable");
+        assert.equal(state.lanes[1].parentSessionId, PARENT_ID);
+        assert.equal(state.lanes[1].sourceCheckpoint.available, false);
+        assert.deepEqual(
+            state.lanes[1].turns.map((turn) => turn.userContent),
+            ["Child-only prompt"],
+        );
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
+test("keeps a missing source turn as an unavailable checkpoint anchor", async () => {
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-family-missing-checkpoint-"),
+    );
+    const lineageStore = createLineageStore({
+        filePath: path.join(temporaryRoot, "lineage-v1.json"),
+    });
+    await lineageStore.recordFork(forkRecord());
+
+    try {
+        const state = await loadCurrentSessionMap(testSession(PARENT_ID), {
+            lineageStore,
+            readEvents: async (sessionId) =>
+                sessionId === PARENT_ID
+                    ? [
+                          user(
+                              "31313131-3131-4131-8131-313131313131",
+                              "Different history",
+                          ),
+                      ]
+                    : childEvents(),
+            listSessions: async () => sessionMetadata(),
+            checkInUse: async () => new Set(),
+        });
+
+        assert.equal(state.kind, "ready", state.message);
+        assert.deepEqual(state.lanes[1].sourceCheckpoint, {
+            sessionId: PARENT_ID,
+            turnId: SOURCE_USER_ID,
+            available: false,
+        });
+        assert.equal(state.lanes[1].parentSessionId, PARENT_ID);
+    } finally {
+        await rm(temporaryRoot, { recursive: true, force: true });
+    }
+});
+
+test("surfaces event corruption while preserving trustworthy turns", async () => {
+    const trustworthy = parentEvents().slice(0, 3);
+    const temporaryRoot = await mkdtemp(
+        path.join(os.tmpdir(), "chat-fork-family-corrupt-events-"),
+    );
+    try {
+        const state = await loadCurrentSessionMap(testSession(PARENT_ID), {
+            lineageStore: createLineageStore({
+                filePath: path.join(temporaryRoot, "lineage-v1.json"),
+            }),
+            readEvents: async () => {
+                throw Object.assign(
+                    new Error("Invalid Copilot event log JSON at line 4"),
+                    {
+                        code: "EVENT_LOG_CORRUPT",
+                        events: trustworthy,
+                    },
+                );
+            },
+            listSessions: async () => sessionMetadata(),
+            checkInUse: async () => new Set(),
+        });
+
+        assert.equal(state.kind, "ready", state.message);
+        assert.deepEqual(
+            state.lanes[0].turns.map((turn) => turn.userContent),
+            ["Shared prompt"],
+        );
+        assert.match(state.lanes[0].error, /line 4/);
     } finally {
         await rm(temporaryRoot, { recursive: true, force: true });
     }

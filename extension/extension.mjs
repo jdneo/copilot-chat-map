@@ -13,6 +13,7 @@ const servers = new Map();
 /** @type {import("@github/copilot-sdk").CopilotSession | undefined} */
 let session;
 let forkService;
+let snapshotPromise;
 const lineageStore = createLineageStore();
 const openSessionService = createOpenSessionService({
     getSession: currentSession,
@@ -26,8 +27,14 @@ function currentSession() {
     return session;
 }
 
-async function loadSnapshot() {
-    return loadCurrentSessionMap(currentSession(), { lineageStore });
+function loadSnapshot() {
+    if (snapshotPromise) return snapshotPromise;
+    snapshotPromise = loadCurrentSessionMap(currentSession(), {
+        lineageStore,
+    }).finally(() => {
+        snapshotPromise = undefined;
+    });
+    return snapshotPromise;
 }
 
 function forkFromTurn(request) {
@@ -39,6 +46,44 @@ function forkFromTurn(request) {
 
 async function openSession(request) {
     return openSessionService.openSession(request);
+}
+
+async function setSubtreeHidden(request) {
+    if (
+        !request ||
+        typeof request !== "object" ||
+        typeof request.sessionId !== "string" ||
+        typeof request.hidden !== "boolean"
+    ) {
+        throw new TypeError(
+            "Hidden subtree requests require sessionId and hidden.",
+        );
+    }
+    const snapshot = await loadSnapshot();
+    if (snapshot.kind !== "ready") {
+        throw new Error(snapshot.message);
+    }
+    const lane = snapshot.lanes.find(
+        (candidate) => candidate.session.id === request.sessionId,
+    );
+    if (!lane) {
+        throw new TypeError(
+            "The selected session is not in this Conversation Family.",
+        );
+    }
+    if (request.hidden && (lane.session.available || lane.session.current)) {
+        throw new TypeError("Only an unavailable non-current subtree can be hidden.");
+    }
+    await lineageStore.setSessionHidden({
+        currentSessionId: snapshot.currentSessionId,
+        targetSessionId: request.sessionId,
+        hidden: request.hidden,
+    });
+    return {
+        kind: "updated",
+        sessionId: request.sessionId,
+        hidden: request.hidden,
+    };
 }
 
 const canvas = createCanvas({
@@ -116,6 +161,7 @@ const canvas = createCanvas({
                 loadSnapshot,
                 forkFromTurn,
                 openSession,
+                setSubtreeHidden,
             });
             servers.set(context.instanceId, entry);
         }

@@ -159,6 +159,7 @@ export async function loadCurrentSessionMap(
         });
 
         const eventsById = new Map();
+        const readErrorsById = new Map();
         await Promise.all(
             members.map(async (member) => {
                 try {
@@ -167,8 +168,19 @@ export async function loadCurrentSessionMap(
                         await readEvents(member.sessionId),
                     );
                 } catch (error) {
-                    if (!hasCode(error, "ENOENT")) throw error;
-                    eventsById.set(member.sessionId, null);
+                    if (hasCode(error, "ENOENT")) {
+                        eventsById.set(member.sessionId, null);
+                        return;
+                    }
+                    if (
+                        hasCode(error, "EVENT_LOG_CORRUPT") &&
+                        Array.isArray(error.events)
+                    ) {
+                        eventsById.set(member.sessionId, error.events);
+                        readErrorsById.set(member.sessionId, error.message);
+                        return;
+                    }
+                    throw error;
                 }
             }),
         );
@@ -194,9 +206,9 @@ export async function loadCurrentSessionMap(
             if (
                 member.parentSessionId &&
                 eventsById.get(member.parentSessionId) &&
-                (!checkpoint ||
-                    checkpoint.assistantEventId !==
-                        member.sourceAssistantEventId ||
+                checkpoint &&
+                (checkpoint.assistantEventId !==
+                    member.sourceAssistantEventId ||
                     (member.toEventId !== null &&
                         checkpoint.toEventId !== member.toEventId))
             ) {
@@ -210,22 +222,37 @@ export async function loadCurrentSessionMap(
                       checkpointIndex +
                       1
                     : 0;
-            const laneEvents =
-                events && member.parentSessionId
-                    ? incrementalEvents(
-                          events,
-                          eventsById.get(member.parentSessionId),
-                          member,
-                          checkpoint,
-                      )
-                    : events || [];
-            const turns = available
-                ? groupTurns(laneEvents, {
-                      isProcessing:
-                          member.sessionId === session.sessionId &&
-                          activity.processing,
-                  })
-                : [];
+            let contentError = readErrorsById.get(member.sessionId) || null;
+            let laneEvents = events || [];
+            if (events && member.parentSessionId) {
+                try {
+                    laneEvents = incrementalEvents(
+                        events,
+                        eventsById.get(member.parentSessionId),
+                        member,
+                        checkpoint,
+                    );
+                } catch (error) {
+                    if (!isUnavailableBoundary(error)) throw error;
+                    laneEvents = [];
+                    contentError = error.message;
+                }
+            }
+            let turns = [];
+            if (available) {
+                try {
+                    turns = groupTurns(laneEvents, {
+                        isProcessing:
+                            member.sessionId === session.sessionId &&
+                            activity.processing,
+                    });
+                } catch (error) {
+                    contentError =
+                        error instanceof Error
+                            ? error.message
+                            : "Could not parse this session transcript.";
+                }
+            }
             turnsById.set(member.sessionId, turns);
             inheritedTurnCountById.set(
                 member.sessionId,
@@ -254,6 +281,7 @@ export async function loadCurrentSessionMap(
                           available: checkpointIndex >= 0,
                       }
                     : null,
+                error: contentError,
                 turns,
             };
         });
@@ -271,6 +299,7 @@ export async function loadCurrentSessionMap(
             family: {
                 id: family.familyId,
                 rootSessionId: family.rootSessionId,
+                hiddenSessionIds: family.hiddenSessionIds || [],
             },
             session: currentLane.session,
             lanes,
@@ -360,7 +389,7 @@ function incrementalEvents(childEvents, parentEvents, member, checkpoint) {
                 `The fork marker is contradictory for child session ${member.sessionId}.`,
             );
         }
-        if (Array.isArray(parentEvents)) {
+        if (Array.isArray(parentEvents) && checkpoint) {
             validateSharedPrefix(
                 childEvents.slice(0, markerIndex),
                 parentEvents.slice(0, markerIndex),
@@ -370,8 +399,13 @@ function incrementalEvents(childEvents, parentEvents, member, checkpoint) {
         return childEvents.slice(markerIndex + 1);
     }
     if (!Array.isArray(parentEvents)) {
-        throw new TypeError(
+        throw unavailableBoundary(
             `Fork boundary unavailable for child session ${member.sessionId}.`,
+        );
+    }
+    if (!checkpoint) {
+        throw unavailableBoundary(
+            `Fork checkpoint unavailable for child session ${member.sessionId}.`,
         );
     }
 
@@ -387,11 +421,22 @@ function sharedParentEvents(parentEvents, member, checkpoint) {
         ? parentEvents.findIndex((event) => event.id === currentBoundaryEventId)
         : parentEvents.length;
     if (parentBoundary < 0) {
-        throw new TypeError(
+        throw unavailableBoundary(
             `Fork checkpoint boundary is missing for child session ${member.sessionId}.`,
         );
     }
+
     return parentEvents.slice(0, parentBoundary);
+}
+
+function unavailableBoundary(message) {
+    const error = new Error(message);
+    error.code = "FORK_BOUNDARY_UNAVAILABLE";
+    return error;
+}
+
+function isUnavailableBoundary(error) {
+    return hasCode(error, "FORK_BOUNDARY_UNAVAILABLE");
 }
 
 function validateSharedPrefix(childEvents, sharedEvents, member) {

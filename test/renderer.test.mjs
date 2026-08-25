@@ -9,6 +9,8 @@ test("renders selectable checkpoint controls and the fork API workflow", () => {
 
     assert.match(html, /"\+ Fork"/);
     assert.match(html, /\/api\/fork/);
+    assert.match(html, /new EventSource/);
+    assert.match(html, /\/api\/events/);
     assert.match(html, /crypto\.randomUUID\(\)/);
     assert.match(html, /state\.canFork/);
     assert.match(html, /Open it manually from the session list/);
@@ -849,6 +851,106 @@ test("forks a completed turn directly from a non-current family lane", async () 
             turnId: childTurn.id,
         },
     ]);
+});
+
+test("hides an unavailable subtree without changing its lineage", async () => {
+    const rootId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const grandchildId = "33333333-3333-4333-8333-333333333333";
+    const sourceTurn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Source",
+        assistantContent: "Ready.",
+        status: "completed",
+    };
+    const state = readyState(rootId, [
+        lane(rootId, true, [sourceTurn]),
+        {
+            ...lane(childId, false, []),
+            session: {
+                ...lane(childId, false, []).session,
+                available: false,
+                inUse: false,
+            },
+            sourceCheckpoint: {
+                sessionId: rootId,
+                turnId: sourceTurn.id,
+                available: false,
+            },
+        },
+        {
+            ...lane(grandchildId, false, []),
+            parentSessionId: childId,
+            sourceCheckpoint: {
+                sessionId: childId,
+                turnId: "missing-turn",
+                available: false,
+            },
+        },
+    ]);
+    state.family.hiddenSessionIds = [];
+    const requests = [];
+    const document = fakeDocument();
+    const context = browserContext(document, state);
+    context.fetch = async (url, options = {}) => {
+        if (url.startsWith("/api/hidden-subtree")) {
+            const request = JSON.parse(options.body);
+            requests.push(request);
+            state.family.hiddenSessionIds = request.hidden
+                ? [request.sessionId]
+                : [];
+            return jsonResponse({ kind: "updated", ...request });
+        }
+        if (url.startsWith("/api/state")) return jsonResponse(state);
+        throw new Error(`Unexpected request: ${url}`);
+    };
+    const script = /<script>([\s\S]*)<\/script>/.exec(renderHtml())?.[1];
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const childLane = document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === childId);
+    assert.match(textIn(childLane), /Session unavailable/);
+    assert.match(textIn(childLane), /Fork checkpoint unavailable/i);
+    childLane.querySelector(".hide-subtree").click();
+    await settle();
+
+    assert.deepEqual(requests, [{ sessionId: childId, hidden: true }]);
+    assert.deepEqual(
+        document
+            .querySelectorAll(".lane")
+            .map((candidate) => candidate.dataset.sessionId),
+        [rootId],
+    );
+    assert.equal(state.lanes[2].parentSessionId, childId);
+});
+
+test("does not offer Fork on an occupied non-current lane", async () => {
+    const rootId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const turn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Occupied",
+        assistantContent: "Ready.",
+        status: "completed",
+    };
+    const child = lane(childId, false, [turn]);
+    child.session.inUse = true;
+    const document = fakeDocument();
+    const context = browserContext(
+        document,
+        readyState(rootId, [lane(rootId, true, []), child]),
+    );
+    const script = /<script>([\s\S]*)<\/script>/.exec(renderHtml())?.[1];
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const childLane = document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === childId);
+    childLane.querySelector(".turn").click();
+    assert.equal(childLane.querySelector(".branch-button"), null);
 });
 
 test("keeps the Fork control visible beside the rightmost family lane", () => {
