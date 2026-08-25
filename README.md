@@ -9,6 +9,8 @@ checkpoint, and the current session is highlighted. From any completed turn,
 you can create a CLI-only child session and continue it with the generated
 `copilot --resume=<session-id>` command.
 
+![Conversation Fork Map preview](assets/preview.png)
+
 ## Features
 
 - View a complete conversation family without duplicating inherited turns.
@@ -34,13 +36,13 @@ also requires Git and PowerShell 7 (`pwsh`).
 
 ## Installation
 
-### Install the 0.0.1 release
+### Install the 0.0.2 release
 
 Ask Copilot to install the extension from the following GitHub folder and
 choose the **User** scope:
 
 ```text
-https://github.com/jdneo/copilot-chat-map/tree/0.0.1/extension
+https://github.com/jdneo/copilot-chat-map/tree/0.0.2/extension
 ```
 
 Reload extensions in Copilot after installation.
@@ -113,3 +115,7 @@ Run the test suite with:
 ```powershell
 node --test
 ```
+
+## License
+
+Licensed under the [MIT License](LICENSE).
