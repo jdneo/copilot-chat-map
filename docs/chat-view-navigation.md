@@ -3,6 +3,7 @@
 Research date: 2026-08-20
 Issue: [#9 - Research Canvas-to-Chat session navigation in Copilot App](https://github.com/jdneo/copilot-chat-map/issues/9)
 Observed host: GitHub Copilot App / CLI 1.0.80
+Product decision: 2026-08-25
 
 ## Conclusion
 
@@ -10,12 +11,23 @@ The current public Canvas and extension contracts do not provide a supported
 operation that switches the Copilot App Chat View to an arbitrary local runtime
 session.
 
+Conversation Fork Map therefore treats children created through `sessions.fork`
+as CLI-only. It does not expose `Open Chat` or enqueue `/resume`; the empty child
+node shows `copilot --resume=SESSION-ID` as the explicit handoff.
+
+The App does expose an agent tool named `navigate_to`. It can switch to an
+App-visible chat or project session by ID, but Canvas extensions cannot invoke
+App agent tools directly. The extension SDK exposes tool metadata and callbacks,
+not a generic host-tool invocation API.
+
 Canvas-originated messaging is possible only in a narrower form:
 
 - An iframe can call its extension through an authenticated loopback HTTP
   endpoint.
 - The extension can then call `session.send()` to append a user message to the
   runtime session that the extension has already joined.
+- That agent turn may ask the agent to call `navigate_to`, but this is an
+  indirect, model-mediated workaround rather than a Canvas navigation API.
 - This does not navigate the App, and it does not provide a supported way to
   target another local runtime session.
 
@@ -28,7 +40,8 @@ should start another agent turn in the currently joined session.
 | Focus an existing Canvas panel | Supported | Reopen the same `instanceId`. This focuses the Canvas panel, not Chat View.[^canvas] |
 | Open or focus an arbitrary local runtime session in App Chat View | Unsupported | No Canvas host capability or extension API is declared for session navigation.[^canvas-host] |
 | Set the foreground session with `setForegroundSessionId()` | Not applicable to the App host | The SDK limits it to TUI plus `--ui-server`; headless mode rejects it.[^foreground][^foreground-test] |
-| Open an App session with `ghapp://sessions/SESSION_ID` | Supported app deep link, but not a solution yet | The link targets an app-local session. Issue #9 starts with a CLI/runtime session ID, and no public mapping or Canvas invocation contract is available.[^deep-links] |
+| Navigate with the App agent's `navigate_to` tool | Supported for App-visible IDs, but not directly callable by extensions | The tool is available to the agent; the extension SDK has no generic host-tool invocation operation. |
+| Open an App session with `ghapp://sessions/SESSION_ID` | Supported for an App-visible session, but not a Canvas API | App-managed local sessions may use the same ID, but a runtime-only fork may not yet have an App session entry, and Canvas deep-link dispatch is undocumented.[^deep-links] |
 | Send a message to the extension's joined session | Supported | `joinSession()` joins the current foreground session and the returned `CopilotSession` exposes `session.send()`.[^join][^send] |
 | Send directly to an arbitrary other session | Unsupported | `session.send()` binds the request to `this.sessionId`; Canvas context exposes no cross-session messaging operation.[^send][^canvas-context] |
 
@@ -75,8 +88,42 @@ a public contract that commits an App Chat View change:
   not completion of a Chat View transition.
 
 The project must not report successful navigation solely because
-`commands.enqueue` returned `queued: true`. The current manual fallback,
-`/resume SESSION-ID`, remains the supported user path.[^resume]
+`commands.enqueue` returned `queued: true`. The extension does not call this
+RPC; `copilot --resume=SESSION-ID` from a terminal is the supported product
+path.[^resume]
+
+### The App's `navigate_to` tool
+
+The App agent has a `navigate_to({ id })` tool that switches the UI to an
+App-visible project session or chat. This is a real navigation mechanism and is
+more precise than asking the runtime to enqueue `/resume`.
+
+It is not, however, part of `CopilotSession` or the Canvas host context. The
+extension's `session.rpc.tools` namespace can inspect tool metadata and answer
+pending external tool calls, but it cannot invoke an arbitrary App tool.
+Likewise, rendering a `<copilot-ref kind="session" ...>` element inside the
+Canvas iframe does not inherit the Chat renderer's navigation behavior because
+the iframe has no privileged App bridge.
+
+An extension can reach `navigate_to` only indirectly today:
+
+```mermaid
+sequenceDiagram
+    participant UI as Canvas iframe
+    participant EX as Extension
+    participant AGENT as Current session agent
+    participant APP as Copilot App
+
+    UI->>EX: Explicit experimental navigation request
+    EX->>AGENT: session.send("Call navigate_to for ID")
+    AGENT->>APP: navigate_to({ id })
+    APP-->>AGENT: Navigation result
+```
+
+This consumes an agent turn, adds a synthetic user message to the source
+conversation, may wait behind an in-progress turn, and depends on the model
+choosing the requested tool. It is therefore suitable only as an explicitly
+experimental fallback.
 
 ## Deep-link finding
 
@@ -85,10 +132,11 @@ workspace or session.[^deep-links] This is the only newly documented App
 navigation surface that is close to issue #9, but it does not yet close the
 gap:
 
-1. The documented target is an App session, while `sessions.fork` returns a
-   local CLI/runtime session ID.
-2. No public API maps a forked runtime session ID to an App session ID or asks
-   an existing App session to adopt that runtime session.
+1. An App-managed local chat can appear in both the runtime store and the App
+   session catalog under the same ID.
+2. A child created only through `sessions.fork` can exist in the runtime store
+   and lineage index without appearing in the App session catalog. No public API
+   asks the App to adopt that runtime-only child.
 3. The Canvas contract does not expose a host deep-link operation.
 4. Ordinary iframe navigation to a custom scheme is not documented as a Canvas
    capability or security boundary.
@@ -168,14 +216,15 @@ not merely a navigation implementation detail.
 
 ## Recommendation for issue #9
 
-1. Keep the current explicit failure state and manual `/resume SESSION-ID`
-   fallback. Do not return `opened` for queue acceptance alone.
+1. Do not render `Open Chat` or enqueue `/resume`. Label the fork action as
+   CLI-only before creation, then show `copilot --resume=SESSION-ID` in the
+   empty child node.
 2. Do not use `session.send()` as a navigation workaround. It can support a
-   future explicit "send to current chat" feature, but it cannot enter an
-   existing branch.
+   future opt-in experiment that asks the current agent to invoke `navigate_to`,
+   but it is not deterministic host navigation.
 3. Track `ghapp://sessions/SESSION_ID` as a separate prototype only after an App
-   session ID can be obtained for each forked runtime session and Canvas-origin
-   deep-link dispatch is documented.
+   session entry can be obtained for each forked runtime session and
+   Canvas-origin deep-link dispatch is documented.
 4. Request an App-host capability that atomically resolves the runtime session,
    opens or focuses the corresponding App Chat View, and reports UI completion.
 
@@ -201,7 +250,8 @@ Required behavior:
 - Resolve only after the App commits the Chat View change.
 - Return typed `not_found`, `in_use`, `unsupported`, and `denied` failures.
 - Restrict navigation to local sessions visible to the current user.
-- Advertise capability support before the extension renders `Open Chat`.
+- Advertise capability support before the extension renders any App navigation
+  control.
 - Define whether opening a bare runtime session creates an App session record.
 - Keep navigation separate from message sending.
 

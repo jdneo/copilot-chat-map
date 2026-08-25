@@ -16,7 +16,7 @@ const FIRST_USER_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const FIRST_ASSISTANT_ID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const NEXT_USER_ID = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
 
-test("forks after the selected completed turn and opens the durable child", async () => {
+test("forks after the selected completed turn and records the durable child", async () => {
     const temporaryRoot = await mkdtemp(
         path.join(os.tmpdir(), "chat-fork-lineage-"),
     );
@@ -35,12 +35,6 @@ test("forks after the selected completed turn and opens the durable child", asyn
                     fork: async (params) => {
                         calls.push(["fork", params]);
                         return { sessionId: CHILD_ID, name: params.name };
-                    },
-                },
-                commands: {
-                    enqueue: async (params) => {
-                        calls.push(["navigate", params]);
-                        return { queued: true };
                     },
                 },
             },
@@ -70,7 +64,6 @@ test("forks after the selected completed turn and opens the durable child", asyn
             kind: "created",
             childSessionId: CHILD_ID,
             name: "Explain the error · Branch 1",
-            navigation: "requested",
         });
         assert.deepEqual(calls, [
             [
@@ -81,7 +74,6 @@ test("forks after the selected completed turn and opens the durable child", asyn
                     name: "Explain the error · Branch 1",
                 },
             ],
-            ["navigate", { command: `/resume ${CHILD_ID}` }],
         ]);
 
         const lineage = await lineageStore.read();
@@ -191,7 +183,6 @@ test("leaves lineage unchanged when the runtime fork fails", async () => {
     const temporaryRoot = await mkdtemp(
         path.join(os.tmpdir(), "chat-fork-runtime-failure-"),
     );
-    let navigationCount = 0;
     const lineageStore = createLineageStore({
         filePath: path.join(temporaryRoot, "lineage-v1.json"),
     });
@@ -199,10 +190,6 @@ test("leaves lineage unchanged when the runtime fork fails", async () => {
         session: testSession({
             fork: async () => {
                 throw new Error("Runtime unavailable");
-            },
-            enqueue: async () => {
-                navigationCount += 1;
-                return { queued: true };
             },
         }),
         lineageStore,
@@ -220,27 +207,21 @@ test("leaves lineage unchanged when the runtime fork fails", async () => {
             families: {},
             sessionToFamily: {},
         });
-        assert.equal(navigationCount, 0);
     } finally {
         await rm(temporaryRoot, { recursive: true, force: true });
     }
 });
 
-test("reports the child and does not navigate when lineage persistence fails", async () => {
+test("reports the child and CLI recovery when lineage persistence fails", async () => {
     const temporaryRoot = await mkdtemp(
         path.join(os.tmpdir(), "chat-fork-lineage-failure-"),
     );
     const filePath = path.join(temporaryRoot, "lineage-v1.json");
-    let navigationCount = 0;
     const service = createForkService({
         session: testSession({
             fork: async (params) => {
                 await mkdir(filePath);
                 return { sessionId: CHILD_ID, name: params.name };
-            },
-            enqueue: async () => {
-                navigationCount += 1;
-                return { queued: true };
             },
         }),
         lineageStore: createLineageStore({ filePath }),
@@ -253,47 +234,9 @@ test("reports the child and does not navigate when lineage persistence fails", a
 
         assert.equal(result.kind, "lineage_failed");
         assert.equal(result.childSessionId, CHILD_ID);
+        assert.match(result.message, new RegExp(`copilot --resume=${CHILD_ID}`));
         assert.match(result.message, /do not retry this fork/i);
-        assert.equal(navigationCount, 0);
         assert.equal((await stat(filePath)).isDirectory(), true);
-    } finally {
-        await rm(temporaryRoot, { recursive: true, force: true });
-    }
-});
-
-test("preserves durable lineage and reuses the result when navigation fails", async () => {
-    const temporaryRoot = await mkdtemp(
-        path.join(os.tmpdir(), "chat-fork-navigation-failure-"),
-    );
-    let forkCount = 0;
-    const lineageStore = createLineageStore({
-        filePath: path.join(temporaryRoot, "lineage-v1.json"),
-    });
-    const service = createForkService({
-        session: testSession({
-            fork: async (params) => {
-                forkCount += 1;
-                return { sessionId: CHILD_ID, name: params.name };
-            },
-            enqueue: async () => {
-                throw new Error("Host navigation unavailable");
-            },
-        }),
-        lineageStore,
-        readEvents: async (sessionId) =>
-            sessionId === CHILD_ID ? [] : completedTurns(),
-    });
-
-    try {
-        const first = await service.forkFromTurn(defaultRequest());
-        const repeated = await service.forkFromTurn(defaultRequest());
-
-        assert.equal(first.kind, "navigation_failed");
-        assert.equal(first.childSessionId, CHILD_ID);
-        assert.match(first.message, /Open it manually/);
-        assert.deepEqual(repeated, first);
-        assert.equal(forkCount, 1);
-        assert.equal((await lineageStore.read()).revision, 1);
     } finally {
         await rm(temporaryRoot, { recursive: true, force: true });
     }
@@ -537,7 +480,6 @@ function defaultRequest() {
 
 function testSession({
     fork,
-    enqueue = async () => ({ queued: true }),
     processing = false,
 }) {
     return {
@@ -547,7 +489,6 @@ function testSession({
                 isProcessing: async () => ({ processing }),
             },
             sessions: { fork },
-            commands: { enqueue },
         },
     };
 }

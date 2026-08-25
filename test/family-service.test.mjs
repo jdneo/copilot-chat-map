@@ -25,7 +25,7 @@ test("reports every missing critical 1.0.80 capability before opening", async ()
     assert.deepEqual(state, {
         kind: "unsupported",
         message:
-            "Conversation Fork Map requires Copilot 1.0.80+ with Canvas renderer, canvas.open, metadata.snapshot, metadata.isProcessing, name.get, sessions.fork, commands.enqueue, sessions.list, sessions.checkInUse.",
+            "Conversation Fork Map requires Copilot 1.0.80+ with Canvas renderer, canvas.open, metadata.snapshot, metadata.isProcessing, name.get, sessions.fork, sessions.list, sessions.checkInUse.",
     });
 });
 
@@ -462,7 +462,7 @@ test("reads live local metadata through the joined session runtime", async () =>
     }
 });
 
-test("guards the map when queued Chat View navigation is unavailable", async () => {
+test("loads the map without queued Chat View navigation", async () => {
     const temporaryRoot = await mkdtemp(
         path.join(os.tmpdir(), "chat-fork-family-no-navigation-"),
     );
@@ -479,11 +479,7 @@ test("guards the map when queued Chat View navigation is unavailable", async () 
             checkInUse: async () => new Set(),
         });
 
-        assert.deepEqual(state, {
-            kind: "unsupported",
-            message:
-                "Conversation Fork Map requires Copilot 1.0.80+ with commands.enqueue.",
-        });
+        assert.equal(state.kind, "ready", state.message);
     } finally {
         await rm(temporaryRoot, { recursive: true, force: true });
     }

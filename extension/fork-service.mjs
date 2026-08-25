@@ -186,36 +186,17 @@ export function createForkService({
                     childSessionId: child.sessionId,
                     name: name || child.name || "Created child session",
                     message: errorMessage(
-                        `Child session ${child.sessionId} was created, but its lineage could not be recorded. Open it manually from the session list; do not retry this fork.`,
+                        `Child session ${child.sessionId} was created, but its lineage could not be recorded. Run copilot --resume=${child.sessionId} from a terminal; do not retry this fork.`,
                         error,
                     ),
                 };
             }
             return {
-                kind: "navigation_failed",
+                kind: "created",
                 childSessionId: child.sessionId,
                 name,
-                message: errorMessage(
-                    `Child session ${child.sessionId} and its lineage are ready, but navigation was not requested. Open it manually from the session list.`,
-                    error,
-                ),
-            };
-        }
-
-        try {
-            const navigation = await session.rpc.commands.enqueue({
-                command: `/resume ${child.sessionId}`,
-            });
-            if (!navigation?.queued) {
-                throw new Error("The host did not accept the resume command.");
-            }
-        } catch (error) {
-            return {
-                kind: "navigation_failed",
-                childSessionId: child.sessionId,
-                name,
-                message: errorMessage(
-                    `Child session ${child.sessionId} is ready. Open it manually from the session list.`,
+                warning: errorMessage(
+                    `Child session ${child.sessionId} and its lineage are ready, but lineage lock cleanup reported an error. Do not retry this fork.`,
                     error,
                 ),
             };
@@ -225,7 +206,6 @@ export function createForkService({
             kind: "created",
             childSessionId: child.sessionId,
             name,
-            navigation: "requested",
         };
     }
 

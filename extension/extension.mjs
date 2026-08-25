@@ -8,7 +8,6 @@ import {
 } from "./family-service.mjs";
 import { createForkService } from "./fork-service.mjs";
 import { createLineageStore } from "./lineage-store.mjs";
-import { createOpenSessionService } from "./navigation-service.mjs";
 
 const CANVAS_ID = "chat-fork-map";
 const CURRENT_MAP_INSTANCE_ID = "chat-fork-map-current";
@@ -18,10 +17,6 @@ let session;
 let forkService;
 let snapshotPromise;
 const lineageStore = createLineageStore();
-const openSessionService = createOpenSessionService({
-    getSession: currentSession,
-    loadSnapshot,
-});
 
 function currentSession() {
     if (!session) {
@@ -45,10 +40,6 @@ function forkFromTurn(request) {
         throw new Error("Conversation Fork Map fork service is not ready.");
     }
     return forkService.forkFromTurn(request);
-}
-
-async function openSession(request) {
-    return openSessionService.openSession(request);
 }
 
 async function setSubtreeHidden(request) {
@@ -93,7 +84,7 @@ const canvas = createCanvas({
     id: CANVAS_ID,
     displayName: "Conversation Fork Map",
     description:
-        "Visualize a local Conversation Family, fork from completed Turn Nodes, and open any available session; use instance chat-fork-map-current to focus and refresh the same panel.",
+        "Visualize a local Conversation Family and create CLI-only child sessions from completed Turn Nodes; use instance chat-fork-map-current to focus and refresh the same panel.",
     actions: [
         {
             name: "refresh_map",
@@ -116,7 +107,7 @@ const canvas = createCanvas({
         {
             name: "fork_from_turn",
             description:
-                "Fork an available local family session from a completed Turn Node and enter its child chat.",
+                "Fork an available local family session from a completed Turn Node into a CLI-only child session.",
             inputSchema: {
                 type: "object",
                 additionalProperties: false,
@@ -140,22 +131,6 @@ const canvas = createCanvas({
             },
             handler: async (context) => forkFromTurn(context.input),
         },
-        {
-            name: "open_branch",
-            description: "Open an existing available family session in Chat View.",
-            inputSchema: {
-                type: "object",
-                additionalProperties: false,
-                required: ["sessionId"],
-                properties: {
-                    sessionId: {
-                        type: "string",
-                        description: "The local family session ID to open.",
-                    },
-                },
-            },
-            handler: async (context) => openSession(context.input),
-        },
     ],
     open: async (context) => {
         let entry = servers.get(context.instanceId);
@@ -163,7 +138,6 @@ const canvas = createCanvas({
             entry = await startCanvasServer({
                 loadSnapshot,
                 forkFromTurn,
-                openSession,
                 setSubtreeHidden,
             });
             servers.set(context.instanceId, entry);

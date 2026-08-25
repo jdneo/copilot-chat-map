@@ -11,7 +11,6 @@ export function createCanvas(definition) {
 export async function joinSession(configuration) {
     const sessionId = process.env.TEST_SESSION_ID;
     const sessionIds = JSON.parse(process.env.TEST_FAMILY_SESSION_IDS || "[]");
-    const navigationRequests = [];
     const canvasRendererAvailable =
         process.env.TEST_CANVAS_RENDERER !== "missing";
     const canvasOpenAvailable = process.env.TEST_CANVAS_OPEN !== "missing";
@@ -30,12 +29,6 @@ export async function joinSession(configuration) {
             },
             name: {
                 get: async () => ({ name: `Session ${sessionId}` }),
-            },
-            commands: {
-                enqueue: async (request) => {
-                    navigationRequests.push(request);
-                    return { queued: true };
-                },
             },
             sessions: {
                 fork: async (request) => forkSession(request),
@@ -96,7 +89,6 @@ export async function joinSession(configuration) {
                         state,
                         forkResult,
                         stateAfterFork,
-                        navigationRequests,
                     }),
                     "utf8",
                 );

@@ -254,10 +254,6 @@ export function renderHtml() {
       cursor: not-allowed;
       opacity: 1;
     }
-    .open-chat {
-      margin-left: auto;
-      white-space: nowrap;
-    }
     .turn {
       position: relative;
       margin-bottom: 18px;
@@ -290,6 +286,61 @@ export function renderHtml() {
       color: var(--text-color-muted, #8b949e);
     }
     .virtual-copy { font-style: italic; }
+    .turn.virtual.handoff-ready {
+      border-color: var(--true-color-green, #3fb950);
+    }
+    .turn.virtual.handoff-active {
+      border-color: var(--true-color-blue, #58a6ff);
+    }
+    .handoff-copy { font-style: normal; }
+    .handoff-status {
+      display: block;
+      color: var(--true-color-green, #3fb950);
+      font-weight: var(--font-weight-semibold, 600);
+    }
+    .handoff-active .handoff-status {
+      color: var(--true-color-blue, #58a6ff);
+    }
+    .handoff-detail {
+      display: block;
+      margin-top: 4px;
+    }
+    .handoff-command-label {
+      display: block;
+      margin-top: 10px;
+      font-size: 10px;
+      font-weight: var(--font-weight-semibold, 600);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .handoff-command {
+      display: block;
+      margin-top: 4px;
+      padding: 8px 9px;
+      border: 1px solid var(--border-color-default, #30363d);
+      border-radius: 6px;
+      background: var(--background-color-default, #0d1117);
+      color: var(--text-color-default, #f0f6fc);
+      font-family: var(--font-mono, ui-monospace, SFMono-Regular, Consolas, monospace);
+      font-size: 11px;
+      overflow-wrap: anywhere;
+      user-select: text;
+      white-space: normal;
+    }
+    .turn.virtual.handoff-arrival {
+      animation: handoff-arrival 2.2s ease-out;
+    }
+    @keyframes handoff-arrival {
+      0% {
+        border-color: var(--true-color-blue, #58a6ff);
+        box-shadow:
+          0 0 0 4px color-mix(in srgb, var(--true-color-blue, #58a6ff) 30%, transparent),
+          0 0 28px color-mix(in srgb, var(--true-color-blue, #58a6ff) 20%, transparent);
+      }
+      100% {
+        box-shadow: none;
+      }
+    }
     .turn.virtual .lane-actions {
       margin: 10px 0 0;
     }
@@ -1131,34 +1182,50 @@ export function renderHtml() {
         const result = await response.json();
         if (result.kind === "created") {
           blockedCheckpoints.add(key);
-          showNotice("Branch created", "Opening " + result.name + "...", false);
           await refresh();
+          const childLane = Array.from(document.querySelectorAll(".lane")).find(
+            (lane) => lane.dataset.sessionId === result.childSessionId,
+          );
+          const handoffNode = childLane?.querySelector(".turn.virtual");
+          const focusTarget =
+            handoffNode || childLane?.querySelector(".turn") || childLane;
           requestAnimationFrame(() => {
-            const childLane = Array.from(document.querySelectorAll(".lane")).find(
-              (lane) => lane.dataset.sessionId === result.childSessionId,
-            );
-            childLane?.scrollIntoView({
+            handoffNode?.classList.add("handoff-arrival");
+            focusTarget?.scrollIntoView({
               behavior: "smooth",
-              block: "nearest",
+              block: "center",
               inline: "center",
             });
+            if (handoffNode) {
+              setTimeout(
+                () => handoffNode.classList.remove("handoff-arrival"),
+                2200,
+              );
+            }
           });
-          setTimeout(() => {
-            blockedCheckpoints.delete(key);
-            operationIdsByCheckpoint.delete(key);
-            updateBranchControls();
-          }, 10000);
+          if (result.warning) {
+            showNotice("Branch created with a warning", result.warning, true);
+          } else if (!focusTarget) {
+            showNotice(
+              "Branch created",
+              "The new branch is not visible on the map. Run copilot --resume=" +
+                result.childSessionId +
+                " from a terminal; do not retry this fork.",
+              true,
+            );
+          } else {
+            notice.hidden = true;
+          }
+          if (focusTarget && !result.warning) {
+            setTimeout(() => {
+              blockedCheckpoints.delete(key);
+              operationIdsByCheckpoint.delete(key);
+              updateBranchControls();
+            }, 10000);
+          }
         } else if (result.kind === "lineage_failed") {
           blockedCheckpoints.add(key);
           showNotice("Branch created without lineage", result.message, true);
-        } else if (result.kind === "navigation_failed") {
-          blockedCheckpoints.add(key);
-          showNotice(
-            "Branch ready",
-            result.message ||
-              ("Child session " + result.childSessionId + " is ready. Open it manually from the session list."),
-            true,
-          );
         } else {
           operationIdsByCheckpoint.delete(key);
           showNotice("Could not create branch", result.message || "The fork request failed.", true);
@@ -1173,35 +1240,6 @@ export function renderHtml() {
       } finally {
         forkPending = false;
         updateBranchControls();
-      }
-    }
-
-    async function openChat(sessionId) {
-      showNotice("Opening chat", "Requesting a switch to the selected session...", false);
-      try {
-        const response = await fetch("/api/open-session?token=" + encodeURIComponent(token), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId }),
-        });
-        const result = await response.json();
-        if (result.kind === "opened") {
-          showNotice("Opening chat", "The host is switching to the selected session.", false);
-          return;
-        }
-
-        showNotice(
-          "Could not open chat",
-          result.message || "Open this session manually from the session list.",
-          true,
-        );
-      } catch (error) {
-        showNotice(
-          "Could not open chat",
-          (error instanceof Error ? error.message + " " : "") +
-            "Open this session manually from the session list.",
-          true,
-        );
       }
     }
 
@@ -1389,8 +1427,14 @@ export function renderHtml() {
         !laneState.error &&
         (!laneState.session.inUse || laneState.session.current)
       ) {
-        const branchButton = element("button", "branch-button", "+ Fork");
+        const branchButton = element(
+          "button",
+          "branch-button",
+          "+ Fork to CLI",
+        );
         branchButton.type = "button";
+        branchButton.title =
+          "Creates a CLI-only child that will not appear in Copilot App's session list.";
         branchButton.dataset.sessionId = laneState.session.id;
         branchButton.dataset.turnId = turn.id;
         branchButton.dataset.checkpointKey = checkpointKey(
@@ -1443,6 +1487,55 @@ export function renderHtml() {
         { root: viewport, rootMargin: "600px 480px" },
       );
       turns.forEach((turn) => turnObserver.observe(turn));
+    }
+
+    function renderVirtualCopy(laneState) {
+      if (!laneState.session.available) {
+        return element("p", "virtual-copy", "Session unavailable.");
+      }
+      if (!laneState.sourceCheckpoint.available) {
+        return element("p", "virtual-copy", "Fork checkpoint unavailable.");
+      }
+      if (laneState.error) {
+        return element("p", "virtual-copy", laneState.error);
+      }
+
+      const copy = element("p", "virtual-copy handoff-copy");
+      if (laneState.session.inUse) {
+        copy.append(
+          element(
+            "strong",
+            "handoff-status",
+            "Branch active in Copilot CLI",
+          ),
+          element(
+            "span",
+            "handoff-detail",
+            "Continue in the CLI window.",
+          ),
+        );
+        return copy;
+      }
+
+      copy.append(
+        element("strong", "handoff-status", "Branch ready"),
+        element(
+          "span",
+          "handoff-detail",
+          "Due to Copilot App Extension API limitations, this branch can only be opened as a session in Copilot CLI.",
+        ),
+        element(
+          "span",
+          "handoff-command-label",
+          "Continue from a terminal",
+        ),
+        element(
+          "code",
+          "handoff-command",
+          "copilot --resume=" + laneState.session.id,
+        ),
+      );
+      return copy;
     }
 
     function renderLane(state, laneState, hasChildren) {
@@ -1508,6 +1601,15 @@ export function renderHtml() {
         entry.dataset.parentSessionId = laneState.sourceCheckpoint.sessionId;
         entry.dataset.sourceTurnId = laneState.sourceCheckpoint.turnId;
         if (isVirtual) {
+          if (
+            laneState.session.available &&
+            laneState.sourceCheckpoint.available &&
+            !laneState.error
+          ) {
+            entry.classList.add(
+              laneState.session.inUse ? "handoff-active" : "handoff-ready",
+            );
+          }
           const actions = element("div", "lane-actions");
           const checkpoint = element(
             "button",
@@ -1525,25 +1627,7 @@ export function renderHtml() {
             focusCheckpoint(laneState.sourceCheckpoint),
           );
           actions.append(checkpoint);
-          const openButton = element("button", "open-chat", "Open Chat");
-          openButton.type = "button";
-          openButton.disabled = !laneState.session.available;
-          openButton.addEventListener("click", () =>
-            openChat(laneState.session.id),
-          );
-          actions.append(openButton);
-          entry.append(
-            element(
-              "p",
-              "virtual-copy",
-              !laneState.session.available
-                ? "Session unavailable."
-                : !laneState.sourceCheckpoint.available
-                  ? "Fork checkpoint unavailable."
-                : laneState.error || "No conversation turns yet.",
-            ),
-            actions,
-          );
+          entry.append(renderVirtualCopy(laneState), actions);
         } else {
           entry.setAttribute("aria-hidden", "true");
         }

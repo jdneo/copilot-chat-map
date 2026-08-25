@@ -19,16 +19,21 @@ const installScript = path.join(
     "install-user-extension.ps1",
 );
 
-test("renders selectable checkpoint controls and the fork API workflow", () => {
+test("renders selectable checkpoint controls and the CLI fork workflow", () => {
     const html = renderHtml();
 
-    assert.match(html, /"\+ Fork"/);
+    assert.match(html, /"\+ Fork to CLI"/);
     assert.match(html, /\/api\/fork/);
     assert.match(html, /new EventSource/);
     assert.match(html, /\/api\/events/);
     assert.match(html, /crypto\.randomUUID\(\)/);
     assert.match(html, /state\.canFork/);
-    assert.match(html, /Open it manually from the session list/);
+    assert.match(html, /copilot --resume=/);
+    assert.match(
+        html,
+        /Extension API limitations, this branch can only be opened as a session in Copilot CLI/,
+    );
+    assert.doesNotMatch(html, /Open it manually from the session list/);
     assert.doesNotMatch(html, /<header>/);
     assert.doesNotMatch(html, /<h1>Conversation Fork Map<\/h1>/);
     assert.match(
@@ -52,15 +57,15 @@ test("renders selectable checkpoint controls and the fork API workflow", () => {
     assert.doesNotThrow(() => new vm.Script(script));
 });
 
-test("renders family lanes with explicit chat and checkpoint navigation", () => {
+test("renders family lanes with CLI handoff and checkpoint navigation", () => {
     const html = renderHtml();
 
     assert.match(html, /state\.lanes/);
     assert.doesNotMatch(html, /"Current Session"/);
     assert.doesNotMatch(html, /lane-header/);
     assert.doesNotMatch(html, /lane-heading/);
-    assert.match(html, /"Open Chat"/);
-    assert.match(html, /\/api\/open-session/);
+    assert.doesNotMatch(html, /"Open Chat"/);
+    assert.doesNotMatch(html, /\/api\/open-session/);
     assert.match(html, /Fork Checkpoint/);
     assert.match(html, /scrollIntoView/);
     assert.match(html, /article\.dataset\.turnId = turn\.id/);
@@ -82,7 +87,7 @@ test("renders a precise unsupported state instead of an empty family", async () 
     assert.ok(script);
     const document = fakeDocument();
     const message =
-        "Conversation Fork Map requires Copilot 1.0.80+ with commands.enqueue.";
+        "Conversation Fork Map requires Copilot 1.0.80+ with sessions.fork.";
     const context = browserContext(document, {
         kind: "unsupported",
         message,
@@ -700,7 +705,7 @@ test("defaults a large non-current subtree to collapsed without hiding its root"
     );
 });
 
-test("dismisses an Open Chat error notice", async () => {
+test("renders one CLI command in an idle child handoff node", async () => {
     const html = renderHtml();
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
     assert.ok(script);
@@ -713,12 +718,87 @@ test("dismisses an Open Chat error notice", async () => {
         lane(childId, false, []),
     ]);
     const context = browserContext(document, state);
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const childLane = document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === childId);
+    const handoff = childLane.querySelector(".turn.virtual");
+
+    assert.ok(handoff);
+    assert.equal(handoff.classList.contains("handoff-ready"), true);
+    assert.match(textIn(handoff), /Branch ready/);
+    assert.match(
+        textIn(handoff),
+        /Extension API limitations, this branch can only be opened as a session in Copilot CLI/,
+    );
+    assert.equal(
+        handoff.querySelector(".handoff-command").textContent,
+        `copilot --resume=${childId}`,
+    );
+    assert.equal(handoff.querySelector(".open-chat"), null);
+});
+
+test("hides the resume command while an empty child is active in CLI", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const parentId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const childLaneState = lane(childId, false, []);
+    childLaneState.session.inUse = true;
+    const document = fakeDocument();
+    const context = browserContext(
+        document,
+        readyState(parentId, [
+            lane(parentId, true, []),
+            childLaneState,
+        ]),
+    );
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const childLane = document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === childId);
+    const handoff = childLane.querySelector(".turn.virtual");
+
+    assert.ok(handoff);
+    assert.equal(handoff.classList.contains("handoff-active"), true);
+    assert.match(textIn(handoff), /Branch active in Copilot CLI/);
+    assert.match(textIn(handoff), /Continue in the CLI window/);
+    assert.equal(handoff.querySelector(".handoff-command"), null);
+});
+
+test("keeps CLI recovery visible when lineage persistence fails", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const parentId = "11111111-1111-4111-8111-111111111111";
+    const childId = "22222222-2222-4222-8222-222222222222";
+    const turn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Create a child",
+        assistantContent: "Ready.",
+        status: "completed",
+    };
+    const state = readyState(parentId, [
+        lane(parentId, true, [turn]),
+    ]);
+    const document = fakeDocument();
+    const context = browserContext(document, state);
     context.fetch = async (url) => {
         if (url.startsWith("/api/state")) return jsonResponse(state);
-        if (url.startsWith("/api/open-session")) {
+        if (url.startsWith("/api/fork")) {
             return jsonResponse({
-                kind: "navigation_failed",
-                message: "Open this session manually.",
+                kind: "lineage_failed",
+                childSessionId: childId,
+                message:
+                    `Child session ${childId} was created, but its lineage could not be recorded. ` +
+                    `Run copilot --resume=${childId} from a terminal; do not retry this fork.`,
             });
         }
         throw new Error(`Unexpected request: ${url}`);
@@ -726,17 +806,17 @@ test("dismisses an Open Chat error notice", async () => {
     new vm.Script(script).runInContext(vm.createContext(context));
     await settle();
 
-    document.querySelector(".open-chat").click();
+    document.querySelector(".turn").click();
+    const forkButton = document.querySelector(".branch-button");
+    forkButton.click();
     await settle();
 
     const notice = document.querySelector("#notice");
     assert.equal(notice.hidden, false);
-    const closeButton = notice.querySelector(".notice-close");
-    assert.ok(closeButton);
-
-    closeButton.click();
-
-    assert.equal(notice.hidden, true);
+    assert.match(textIn(notice), new RegExp(`copilot --resume=${childId}`));
+    assert.match(textIn(notice), /do not retry this fork/i);
+    assert.ok(notice.querySelector(".notice-close"));
+    assert.equal(forkButton.disabled, true);
 });
 
 test("removes virtual-node information once a child lane has turns", async () => {
@@ -771,7 +851,7 @@ test("removes virtual-node information once a child lane has turns", async () =>
     assert.equal(branchEntry.childElementCount, 0);
     assert.equal(childLane.querySelector(".turn.virtual"), null);
     assert.equal(childLane.querySelector(".checkpoint-link"), null);
-    assert.equal(childLane.querySelector(".open-chat"), null);
+    assert.equal(childLane.querySelector(".handoff-command"), null);
 });
 
 test("refreshes the family after a branch is created", async () => {
@@ -826,7 +906,6 @@ test("refreshes the family after a branch is created", async () => {
                     kind: "created",
                     childSessionId: childId,
                     name: "Create a child · Branch 1",
-                    navigation: "requested",
                 });
             }
             throw new Error(`Unexpected request: ${url}`);
@@ -862,13 +941,14 @@ test("refreshes the family after a branch is created", async () => {
         .map((stem) => Number(/^M ([\d.-]+)/.exec(stem.d)?.[1]));
     assert.equal(Number(bus.x2), Math.max(...stemStartXs));
     assert.equal(document.querySelectorAll(".state").length, 0);
-    assert.equal(
-        document
-            .querySelectorAll(".lane")
-            .find((candidate) => candidate.dataset.sessionId === childId)
-            .scrollIntoViewCount,
-        1,
-    );
+    const createdChildLane = document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === childId);
+    const handoffNode = createdChildLane.querySelector(".turn.virtual");
+    assert.equal(createdChildLane.scrollIntoViewCount, 0);
+    assert.equal(handoffNode.scrollIntoViewCount, 1);
+    assert.equal(handoffNode.classList.contains("handoff-arrival"), true);
+    assert.equal(document.querySelector("#notice").hidden, true);
 
     document.querySelector("#refresh").click();
     await settle();
@@ -917,7 +997,6 @@ test("forks a completed turn directly from a non-current family lane", async () 
                     childSessionId:
                         "33333333-3333-4333-8333-333333333333",
                     name: "Fork this child turn · Branch 1",
-                    navigation: "requested",
                 });
             }
             throw new Error(`Unexpected request: ${url}`);

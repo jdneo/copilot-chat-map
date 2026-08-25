@@ -10,13 +10,11 @@ import {
 } from "../extension/canvas-server.mjs";
 import { createForkService } from "../extension/fork-service.mjs";
 import { createLineageStore } from "../extension/lineage-store.mjs";
-import { createOpenSessionService } from "../extension/navigation-service.mjs";
 
 test("binds to loopback with a high-entropy instance token and strict CSP", async () => {
     const entry = await startCanvasServer({
         loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
         forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: async () => ({ kind: "unavailable" }),
     });
 
     try {
@@ -57,10 +55,6 @@ test("requires the instance token before invoking any canvas handler", async () 
             handlerCalls += 1;
             return { kind: "fork_failed" };
         },
-        openSession: async () => {
-            handlerCalls += 1;
-            return { kind: "unavailable" };
-        },
     });
 
     try {
@@ -80,7 +74,6 @@ test("rejects mutation bodies above the fixed request limit", async () => {
     const entry = await startCanvasServer({
         loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
         forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: async () => ({ kind: "unavailable" }),
     });
 
     try {
@@ -106,14 +99,12 @@ test("rejects non-POST mutation requests with an explicit method contract", asyn
     const entry = await startCanvasServer({
         loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
         forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: async () => ({ kind: "unavailable" }),
         setSubtreeHidden: async () => ({ kind: "updated" }),
     });
 
     try {
         for (const pathname of [
             "/api/fork",
-            "/api/open-session",
             "/api/hidden-subtree",
         ]) {
             const url = new URL(entry.url);
@@ -143,11 +134,7 @@ test("creates a child through the authenticated canvas API", async () => {
                 kind: "created",
                 childSessionId: "22222222-2222-4222-8222-222222222222",
                 name: "Explain the error · Branch 1",
-                navigation: "requested",
             };
-        },
-        openSession: async () => {
-            throw new Error("Open Chat should not be called by the fork route.");
         },
     });
 
@@ -169,7 +156,6 @@ test("creates a child through the authenticated canvas API", async () => {
             kind: "created",
             childSessionId: "22222222-2222-4222-8222-222222222222",
             name: "Explain the error · Branch 1",
-            navigation: "requested",
         });
         assert.deepEqual(requests, [
             {
@@ -218,9 +204,6 @@ test("creates a nested child from a non-current family lane through the canvas A
                         return { sessionId: grandchildId, name: params.name };
                     },
                 },
-                commands: {
-                    enqueue: async () => ({ queued: true }),
-                },
             },
         },
         lineageStore,
@@ -254,7 +237,6 @@ test("creates a nested child from a non-current family lane through the canvas A
     const entry = await startCanvasServer({
         loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
         forkFromTurn: service.forkFromTurn,
-        openSession: async () => ({ kind: "unavailable" }),
     });
 
     try {
@@ -288,210 +270,11 @@ test("creates a nested child from a non-current family lane through the canvas A
     }
 });
 
-test("opens an existing family session through the authenticated canvas API", async () => {
-    const commands = [];
-    const service = createOpenSessionService({
-        getSession: () => ({
-            rpc: {
-                commands: {
-                    execute: async () => {
-                        throw new Error("Open Chat must use queued navigation.");
-                    },
-                    enqueue: async (params) => {
-                        commands.push(params);
-                        return { queued: true };
-                    },
-                },
-            },
-        }),
-        loadSnapshot: async () => navigationSnapshot(),
-    });
-    const entry = await startCanvasServer({
-        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
-        forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: service.openSession,
-    });
-
-    try {
-        const url = new URL(entry.url);
-        url.pathname = "/api/open-session";
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                sessionId: "22222222-2222-4222-8222-222222222222",
-            }),
-        });
-
-        assert.equal(response.status, 200);
-        assert.deepEqual(await response.json(), {
-            kind: "opened",
-            sessionId: "22222222-2222-4222-8222-222222222222",
-            navigation: "requested",
-        });
-        assert.deepEqual(commands, [
-            {
-                command:
-                    "/resume 22222222-2222-4222-8222-222222222222",
-            },
-        ]);
-    } finally {
-        await closeServer(entry.server);
-    }
-});
-
-test("explains the Copilot App navigation limitation", async () => {
-    const service = createOpenSessionService({
-        getSession: () => ({
-            rpc: {
-                commands: {
-                    enqueue: async () => {
-                        throw new Error(
-                            "No client found for command: resume",
-                        );
-                    },
-                },
-            },
-        }),
-        loadSnapshot: async () => navigationSnapshot(),
-    });
-    const result = await service.openSession({
-        sessionId: "22222222-2222-4222-8222-222222222222",
-    });
-
-    assert.equal(result.kind, "navigation_failed");
-    assert.match(
-        result.message,
-        /automatic Chat View switching is not supported/i,
-    );
-    assert.doesNotMatch(result.message, /no client found/i);
-});
-
-test("surfaces a synchronous host navigation error", async () => {
-    const service = createOpenSessionService({
-        getSession: () => ({
-            rpc: {
-                commands: {
-                    enqueue: async () => {
-                        throw new Error(
-                            "The host could not resume this session.",
-                        );
-                    },
-                },
-            },
-        }),
-        loadSnapshot: async () => navigationSnapshot(),
-    });
-    const entry = await startCanvasServer({
-        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
-        forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: service.openSession,
-    });
-
-    try {
-        const url = new URL(entry.url);
-        url.pathname = "/api/open-session";
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                sessionId: "22222222-2222-4222-8222-222222222222",
-            }),
-        });
-
-        assert.equal(response.status, 502);
-        const result = await response.json();
-        assert.match(
-            result.message,
-            /host could not resume this session/i,
-        );
-        assert.match(
-            result.message,
-            /\/resume 22222222-2222-4222-8222-222222222222/,
-        );
-    } finally {
-        await closeServer(entry.server);
-    }
-});
-
-test("returns a clear manual fallback when host navigation is unavailable", async () => {
-    const service = createOpenSessionService({
-        getSession: () => ({ rpc: {} }),
-        loadSnapshot: async () => navigationSnapshot(),
-    });
-    const entry = await startCanvasServer({
-        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
-        forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: service.openSession,
-    });
-
-    try {
-        const url = new URL(entry.url);
-        url.pathname = "/api/open-session";
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                sessionId: "22222222-2222-4222-8222-222222222222",
-            }),
-        });
-
-        assert.equal(response.status, 502);
-        assert.deepEqual(await response.json(), {
-            kind: "navigation_failed",
-            sessionId: "22222222-2222-4222-8222-222222222222",
-            message:
-                "Could not open this chat. Host navigation is unavailable. Run /resume 22222222-2222-4222-8222-222222222222 in Chat to open it.",
-        });
-    } finally {
-        await closeServer(entry.server);
-    }
-});
-
-test("falls back when the host rejects a session switch request", async () => {
-    const service = createOpenSessionService({
-        getSession: () => ({
-            rpc: {
-                commands: {
-                    enqueue: async () => ({ queued: false }),
-                },
-            },
-        }),
-        loadSnapshot: async () => navigationSnapshot(),
-    });
-    const entry = await startCanvasServer({
-        loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
-        forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: service.openSession,
-    });
-
-    try {
-        const url = new URL(entry.url);
-        url.pathname = "/api/open-session";
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                sessionId: "22222222-2222-4222-8222-222222222222",
-            }),
-        });
-
-        assert.equal(response.status, 502);
-        assert.match(
-            (await response.json()).message,
-            /host did not accept the session switch request/i,
-        );
-    } finally {
-        await closeServer(entry.server);
-    }
-});
-
 test("updates hidden subtree state through the authenticated canvas API", async () => {
     const requests = [];
     const entry = await startCanvasServer({
         loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
         forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: async () => ({ kind: "unavailable" }),
         setSubtreeHidden: async (request) => {
             requests.push(request);
             return { kind: "updated", ...request };
@@ -527,7 +310,6 @@ test("pushes live invalidation events over SSE", async () => {
     const entry = await startCanvasServer({
         loadSnapshot: async () => ({ kind: "ready", lanes: [] }),
         forkFromTurn: async () => ({ kind: "fork_failed" }),
-        openSession: async () => ({ kind: "unavailable" }),
         createLiveSync: ({ onInvalidate }) => {
             invalidate = onInvalidate;
             return { update() {}, close() {} };
@@ -551,25 +333,3 @@ test("pushes live invalidation events over SSE", async () => {
         await closeServer(entry.server);
     }
 });
-
-function navigationSnapshot() {
-    return {
-        kind: "ready",
-        lanes: [
-            {
-                session: {
-                    id: "11111111-1111-4111-8111-111111111111",
-                    current: true,
-                    available: true,
-                },
-            },
-            {
-                session: {
-                    id: "22222222-2222-4222-8222-222222222222",
-                    current: false,
-                    available: true,
-                },
-            },
-        ],
-    };
-}

@@ -17,7 +17,6 @@ const MAX_REQUEST_BODY_BYTES = 4_096;
 const MUTATION_PATHS = new Set([
     "/api/fork",
     "/api/hidden-subtree",
-    "/api/open-session",
 ]);
 const serverResources = new WeakMap();
 
@@ -25,7 +24,6 @@ const serverResources = new WeakMap();
  * @param {{
  *   loadSnapshot: () => Promise<object>,
  *   forkFromTurn: (request: object) => Promise<object>,
- *   openSession: (request: object) => Promise<object>,
  *   setSubtreeHidden?: (request: object) => Promise<object>,
  *   createLiveSync?: typeof createFamilyLiveSync
  * }} handlers
@@ -34,7 +32,6 @@ const serverResources = new WeakMap();
 export async function startCanvasServer({
     loadSnapshot,
     forkFromTurn,
-    openSession,
     setSubtreeHidden,
     createLiveSync = createFamilyLiveSync,
 }) {
@@ -146,28 +143,6 @@ export async function startCanvasServer({
                 return;
             }
 
-            if (
-                request.method === "POST" &&
-                url.pathname === "/api/open-session"
-            ) {
-                if (
-                    !request.headers["content-type"]
-                        ?.toLowerCase()
-                        .startsWith("application/json")
-                ) {
-                    sendJson(response, 415, {
-                        kind: "error",
-                        message: "Open Chat requests must use application/json.",
-                    });
-                    return;
-                }
-                const result = await openSession(
-                    await readJsonBody(request, "Open Chat"),
-                );
-                sendJson(response, statusForOpenResult(result), result);
-                return;
-            }
-
             sendText(response, 404, "Not found");
         } catch (error) {
             const message =
@@ -276,24 +251,9 @@ function statusForForkResult(result) {
             return 201;
         case "fork_failed":
             return 409;
-        case "navigation_failed":
-            return 502;
         case "lineage_failed":
             return 500;
         default:
             throw new TypeError("Fork service returned an unknown result.");
-    }
-}
-
-function statusForOpenResult(result) {
-    switch (result?.kind) {
-        case "opened":
-            return 200;
-        case "navigation_failed":
-            return 502;
-        case "unavailable":
-            return 409;
-        default:
-            throw new TypeError("Open Chat service returned an unknown result.");
     }
 }

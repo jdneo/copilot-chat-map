@@ -75,10 +75,6 @@ const REQUIRED_CAPABILITIES = [
         "sessions.fork",
         (session) => canForkSession(session),
     ],
-    [
-        "commands.enqueue",
-        (session) => typeof session.rpc?.commands?.enqueue === "function",
-    ],
 ];
 
 export function missingCanvasCapabilities(session) {

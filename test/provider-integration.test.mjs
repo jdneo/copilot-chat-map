@@ -61,7 +61,6 @@ test("reconnects the packaged user provider to each foreground family session", 
                 actionNames: [
                     "refresh_map",
                     "fork_from_turn",
-                    "open_branch",
                 ],
             });
             assert.deepEqual(capture.openRequest, {
@@ -112,11 +111,7 @@ test("completes the packaged first fork and reopens from its child", async () =>
             kind: "created",
             childSessionId: CHILD_ID,
             name: "Shared prompt · Branch 1",
-            navigation: "requested",
         });
-        assert.deepEqual(rootCapture.navigationRequests, [
-            { command: `/resume ${CHILD_ID}` },
-        ]);
         assert.equal(rootCapture.stateAfterFork.kind, "ready");
         assert.equal(rootCapture.stateAfterFork.lanes.length, 2);
 
