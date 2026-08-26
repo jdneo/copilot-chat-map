@@ -22,7 +22,16 @@ const installScript = path.join(
 test("renders selectable checkpoint controls and the CLI fork workflow", () => {
     const html = renderHtml();
 
-    assert.match(html, /"\+ Fork to CLI"/);
+    assert.match(html, /"branch-button",\s*"\+"/);
+    assert.doesNotMatch(html, /"branch-button",\s*"\+ Fork to CLI"/);
+    assert.match(
+        html,
+        /branchButton\.setAttribute\("aria-label", "Fork to CLI"\)/,
+    );
+    assert.match(
+        html,
+        /Fork to CLI\. Creates a CLI-only child that will not appear in Copilot App's session list\./,
+    );
     assert.match(html, /\/api\/fork/);
     assert.match(html, /new EventSource/);
     assert.match(html, /\/api\/events/);
@@ -1129,16 +1138,26 @@ test("does not offer Fork on an occupied non-current lane", async () => {
     assert.equal(childLane.querySelector(".branch-button"), null);
 });
 
-test("keeps the Fork control visible beside the rightmost family lane", () => {
+test("embeds the compact Fork control in the selected Turn Node border", () => {
     const html = renderHtml();
 
     assert.match(
         html,
-        /\.family \{[\s\S]*?padding: 2px 90px 2px 2px;[\s\S]*?\}/,
+        /\.family \{[\s\S]*?gap: 48px;[\s\S]*?\}/,
     );
     assert.match(
         html,
-        /\.branch-button \{[\s\S]*?top: 50%;[\s\S]*?left: calc\(100% \+ 10px\);[\s\S]*?transform: translateY\(-50%\);[\s\S]*?\}/,
+        /\.branch-button \{[\s\S]*?top: 50%;[\s\S]*?left: 100%;[\s\S]*?width: 28px;[\s\S]*?height: 28px;[\s\S]*?transform: translate\(-50%, -50%\);[\s\S]*?border: 2px solid var\(--true-color-blue, #58a6ff\);[\s\S]*?border-radius: 50%;[\s\S]*?\}/,
+    );
+    assert.match(
+        html,
+        /\.message \{ padding: 9px 20px 10px;/,
+    );
+    assert.doesNotMatch(html, /\.turn\.selected \.message/);
+    assert.doesNotMatch(html, /left: calc\(100% \+ 10px\)/);
+    assert.match(
+        html,
+        /\.branch-button:disabled \{[\s\S]*?opacity: 1;[\s\S]*?\}/,
     );
     assert.match(
         html,

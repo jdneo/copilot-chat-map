@@ -70,8 +70,8 @@ Open a local Copilot session, reload extensions, and run:
 ```
 
 You can also ask Copilot to open the Conversation Fork Map. Select a completed
-turn and choose **+ Fork to CLI**. After the child is created, run the displayed
-command in a terminal:
+turn, then choose the circular **+** on its right border (tooltip: **Fork to
+CLI**). After the child is created, run the displayed command in a terminal:
 
 ```text
 copilot --resume=<session-id>

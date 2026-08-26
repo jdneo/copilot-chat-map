@@ -112,14 +112,15 @@ flowchart LR
 ### 4.4 选择与分叉
 
 - 点击完整轮次节点将其选为检查点。
-- 选中后，节点右侧显示带文字的悬浮胶囊按钮：`+ Fork to CLI`。
-- 按钮 tooltip 明确说明 child 是 CLI-only，不会出现在 Copilot App session list。
+- 选中后，节点右边框中点显示一个 28px 圆形描边 `+` 按钮；按钮中心与边框重合，不显示常驻文字标签，悬停时使用蓝色填充。
+- 所有 Turn Node 的消息区域固定保留 20px 左右边距，选择前后正文宽度和换行保持不变。
+- 按钮的无障碍名称为 `Fork to CLI`，tooltip 同时明确说明 child 是 CLI-only，不会出现在 Copilot App session list。
 - 未选中节点不显示该按钮。
 - 当前前台会话处于 agent turn 运行状态时，所有分叉按钮禁用。
 - 进行中、中断或缺少最终回复的轮次仍显示，但不可分叉。
 - 墓碑会话和缺失检查点不可分叉。
 
-点击 `+ Fork to CLI` 后：
+点击圆形 `+` 后：
 
 1. 禁用按钮，防止重复提交。
 2. 从该轮次之后的事件边界调用 `sessions.fork`。
@@ -367,7 +368,7 @@ copilot --resume=<sessionId>
 | 父会话缺失但后代存在 | 保留父墓碑和原连接 |
 | 来源轮次找不到 | 显示 `Fork checkpoint unavailable` 占位锚点 |
 | 会话被外部重命名 | 下次刷新采用最新名称 |
-| 当前会话正在运行 | 所有 `+ Fork to CLI` 按钮禁用 |
+| 当前会话正在运行 | 所有分叉 `+` 按钮禁用，并以不透明的中性色显示 |
 | 非当前来源会话被占用 | 该泳道分叉按钮禁用 |
 | 空 child 可用且未占用 | 显示 success handoff 和唯一 CLI resume 命令 |
 | 空 child 已被 CLI 占用 | 显示 `Branch active in Copilot CLI` 并隐藏命令 |
@@ -481,7 +482,7 @@ iframe 中的可点击控件调用本地 HTTP endpoint；Canvas actions 不会�
 1. 未追踪会话打开画布时不写入索引。
 2. 一个完整轮次显示为一个节点，内部区分 You 与 Copilot。
 3. 所有控件文字为英文，消息正文保持原文。
-4. 只有已完成轮次可显示 `+ Fork to CLI`。
+4. 只有选中且已完成的轮次可显示右边框上的圆形分叉 `+` 按钮。
 5. 可从任意可用泳道的完整轮次创建分支。
 6. fork 精确包含所选轮次并排除后续轮次。
 7. 分支名称不调用模型。

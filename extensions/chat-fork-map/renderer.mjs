@@ -355,7 +355,7 @@ export function renderHtml() {
       background: var(--border-color-default, #30363d);
       content: "";
     }
-    .message { padding: 9px 12px 10px; border-top: 1px solid var(--border-color-default, #30363d); }
+    .message { padding: 9px 20px 10px; border-top: 1px solid var(--border-color-default, #30363d); }
     .message:first-child { border-top: 0; border-radius: 9px 9px 0 0; }
     .message:last-child { border-radius: 0 0 9px 9px; }
     .message.user { background: color-mix(in srgb, var(--true-color-blue, #58a6ff) 6%, transparent); }
@@ -434,12 +434,33 @@ export function renderHtml() {
     .branch-button {
       position: absolute;
       top: 50%;
-      left: calc(100% + 10px);
-      width: max-content;
-      transform: translateY(-50%);
-      border-radius: 999px;
+      left: 100%;
+      z-index: 1;
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      padding: 0;
+      transform: translate(-50%, -50%);
+      border: 2px solid var(--true-color-blue, #58a6ff);
+      border-radius: 50%;
+      background: var(--background-color-default, #0d1117);
+      color: var(--true-color-blue, #58a6ff);
+      box-shadow: 0 2px 6px rgb(0 0 0 / 18%);
+      font-size: 18px;
+      line-height: 1;
+      transition: background-color 120ms ease, color 120ms ease;
+    }
+    .branch-button:hover:not(:disabled) {
       background: var(--true-color-blue, #1f6feb);
       color: #fff;
+    }
+    .branch-button:disabled {
+      border-color: var(--border-color-default, #30363d);
+      background: var(--background-color-muted, #21262d);
+      color: var(--text-color-muted, #8b949e);
+      box-shadow: none;
+      opacity: 1;
     }
     .turn:not(.selected) > .branch-button { display: none; }
     .empty { color: var(--text-color-muted, #8b949e); font-style: italic; }
@@ -1430,11 +1451,12 @@ export function renderHtml() {
         const branchButton = element(
           "button",
           "branch-button",
-          "+ Fork to CLI",
+          "+",
         );
         branchButton.type = "button";
+        branchButton.setAttribute("aria-label", "Fork to CLI");
         branchButton.title =
-          "Creates a CLI-only child that will not appear in Copilot App's session list.";
+          "Fork to CLI. Creates a CLI-only child that will not appear in Copilot App's session list.";
         branchButton.dataset.sessionId = laneState.session.id;
         branchButton.dataset.turnId = turn.id;
         branchButton.dataset.checkpointKey = checkpointKey(
