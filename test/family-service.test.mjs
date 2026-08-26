@@ -4,8 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { loadCurrentSessionMap } from "../extension/family-service.mjs";
-import { createLineageStore } from "../extension/lineage-store.mjs";
+import { loadCurrentSessionMap } from "../extensions/chat-fork-map/family-service.mjs";
+import { createLineageStore } from "../extensions/chat-fork-map/lineage-store.mjs";
 
 const PARENT_ID = "11111111-1111-4111-8111-111111111111";
 const CHILD_ID = "22222222-2222-4222-8222-222222222222";

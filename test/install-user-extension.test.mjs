@@ -24,6 +24,11 @@ const installScript = path.join(
     "scripts",
     "install-user-extension.ps1",
 );
+const extensionSource = path.join(
+    repositoryRoot,
+    "extensions",
+    "chat-fork-map",
+);
 
 test("replaces managed user extension files without touching native sessions", async () => {
     const copilotHome = await mkdtemp(
@@ -99,15 +104,11 @@ test("replaces managed user extension files without touching native sessions", a
             await readFile(path.join(destination, "extension.mjs"), "utf8"),
             /createCanvas/,
         );
-        const sourceFiles = await readdir(
-            path.join(repositoryRoot, "extension"),
-        );
+        const sourceFiles = await readdir(extensionSource);
         for (const fileName of sourceFiles) {
             assert.deepEqual(
                 await readFile(path.join(destination, fileName)),
-                await readFile(
-                    path.join(repositoryRoot, "extension", fileName),
-                ),
+                await readFile(path.join(extensionSource, fileName)),
             );
         }
     } finally {

@@ -7,8 +7,8 @@ import test from "node:test";
 import {
     branchName,
     createForkService,
-} from "../extension/fork-service.mjs";
-import { createLineageStore } from "../extension/lineage-store.mjs";
+} from "../extensions/chat-fork-map/fork-service.mjs";
+import { createLineageStore } from "../extensions/chat-fork-map/lineage-store.mjs";
 
 const PARENT_ID = "11111111-1111-4111-8111-111111111111";
 const CHILD_ID = "22222222-2222-4222-8222-222222222222";

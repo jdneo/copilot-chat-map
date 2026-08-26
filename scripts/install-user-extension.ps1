@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param()
 
-$source = Join-Path (Split-Path -Parent $PSScriptRoot) "extension"
+$repositoryRoot = Split-Path -Parent $PSScriptRoot
+$source = Join-Path (Join-Path $repositoryRoot "extensions") "chat-fork-map"
 $copilotHome = if ($env:COPILOT_HOME) {
     $env:COPILOT_HOME
 } else {

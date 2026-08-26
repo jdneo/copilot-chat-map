@@ -174,7 +174,7 @@ sequenceDiagram
 ```
 
 For this repository, the iframe-to-extension portion matches the existing
-authenticated loopback pattern in `extension/canvas-server.mjs`. A Canvas action
+authenticated loopback pattern in `extensions/chat-fork-map/canvas-server.mjs`. A Canvas action
 handler could call the same service, but Canvas actions are agent-invocable
 runtime actions; iframe buttons are not wired to them automatically.[^canvas-action]
 

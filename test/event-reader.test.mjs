@@ -18,7 +18,7 @@ import {
     EventLogReadError,
     readSessionEvents,
     resolveEventLogPath,
-} from "../extension/event-reader.mjs";
+} from "../extensions/chat-fork-map/event-reader.mjs";
 
 test("accepts only a readable Copilot session-state directory", async () => {
     const copilotHome = await mkdtemp(

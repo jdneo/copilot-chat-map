@@ -6,7 +6,7 @@ import test from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
 
-import { renderHtml } from "../extension/renderer.mjs";
+import { renderHtml } from "../extensions/chat-fork-map/renderer.mjs";
 import { runProcess } from "./fixtures/run-process.mjs";
 
 const repositoryRoot = path.resolve(

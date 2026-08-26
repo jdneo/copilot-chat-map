@@ -36,13 +36,13 @@ also requires Git and PowerShell 7 (`pwsh`).
 
 ## Installation
 
-### Install the 0.0.2 release
+### Install the 0.0.3 release
 
 Ask Copilot to install the extension from the following GitHub folder and
 choose the **User** scope:
 
 ```text
-https://github.com/jdneo/copilot-chat-map/tree/0.0.2/extension
+https://github.com/jdneo/copilot-chat-map/tree/0.0.3/extensions/chat-fork-map
 ```
 
 Reload extensions in Copilot after installation.

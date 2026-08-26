@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { createLineageStore } from "../extension/lineage-store.mjs";
+import { createLineageStore } from "../extensions/chat-fork-map/lineage-store.mjs";
 
 const ROOT_ID = "11111111-1111-4111-8111-111111111111";
 
