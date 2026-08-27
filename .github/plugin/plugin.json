@@ -1,7 +1,7 @@
 {
   "name": "chat-fork-map",
   "description": "Visualize local Copilot conversation lineage and fork completed turns into CLI sessions.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": {
     "name": "jdneo",
     "url": "https://github.com/jdneo"
