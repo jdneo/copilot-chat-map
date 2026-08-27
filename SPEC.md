@@ -126,7 +126,7 @@ flowchart LR
 2. 从该轮次之后的事件边界调用 `sessions.fork`。
 3. 使用本地字符串处理生成名称，不调用模型。
 4. 成功记录血缘后刷新画布。
-5. 自动滚动并短暂高亮新 child 的既有空节点，不显示重复 success toast。
+5. 自动滚动到新 child 的既有空节点，不播放进入动画，也不显示重复 success toast。
 6. 在节点内显示 `copilot --resume=<childSessionId>`，由用户在终端继续。
 
 自动名称格式：
@@ -321,7 +321,7 @@ sequenceDiagram
     EX->>FS: Read child fork marker
     EX->>FS: Atomically persist lineage
     EX-->>UI: Created(childSessionId)
-    UI->>UI: Refresh, focus, and highlight empty child node
+    UI->>UI: Incrementally refresh and focus empty child node
     UI-->>USER: copilot --resume=<childSessionId>
     USER->>CLI: Run resume command
     CLI->>RT: Resume child session
@@ -348,15 +348,17 @@ copilot --resume=<sessionId>
 画布打开期间：
 
 - 监听已知会话目录中的 `events.jsonl`。
-- 文件变化后防抖增量读取。
+- 文件变化后按固定时间窗节流，连续写入期间不会无限推迟刷新，并在最后一次变化后完成补刷。
 - 使用 Server-Sent Events 通知 iframe 重新获取状态。
+- iframe 继续获取完整状态快照，但按稳定的 Session/Turn ID 原位协调 DOM；首次加载后不替换 viewport、stage 或 family 容器。
+- 自动同步静默执行并保留缩放、平移、滚动、选择和展开状态；失败时保留最后成功的 Map 并显示错误。
 - 提供 `Refresh`。
 - 低频轮询校准文件监听漏报。
 - 检测会话名称、删除状态和占用状态变化。
 
 建议参数：
 
-- 文件变化防抖：200 ms。
+- 文件变化节流：250 ms。
 - 校准轮询：15 s。
 - 同一轮解析任务合并，避免并发重读。
 
@@ -491,7 +493,7 @@ iframe 中的可点击控件调用本地 HTTP endpoint；Canvas actions 不会�
 10. child 已创建但 lineage 失败时显示持久 recovery notice，且不会重复创建。
 11. 从子会话重开画布可恢复完整会话族并聚焦当前会话。
 12. 子泳道不重复显示祖先历史。
-13. 文件追加可近实时反映到画布。
+13. 文件追加可近实时原位反映到画布，不替换既有 Map、Lane 或 Turn DOM。
 14. 缺失会话和缺失检查点保持原血缘并显示墓碑。
 15. 安全 Markdown 不执行原始 HTML，远程图片不自动加载。
 16. 50 个会话、5,000 个轮次满足性能目标。

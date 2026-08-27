@@ -327,20 +327,6 @@ export function renderHtml() {
       user-select: text;
       white-space: normal;
     }
-    .turn.virtual.handoff-arrival {
-      animation: handoff-arrival 2.2s ease-out;
-    }
-    @keyframes handoff-arrival {
-      0% {
-        border-color: var(--true-color-blue, #58a6ff);
-        box-shadow:
-          0 0 0 4px color-mix(in srgb, var(--true-color-blue, #58a6ff) 30%, transparent),
-          0 0 28px color-mix(in srgb, var(--true-color-blue, #58a6ff) 20%, transparent);
-      }
-      100% {
-        box-shadow: none;
-      }
-    }
     .turn.virtual .lane-actions {
       margin: 10px 0 0;
     }
@@ -464,10 +450,22 @@ export function renderHtml() {
     }
     .turn:not(.selected) > .branch-button { display: none; }
     .empty { color: var(--text-color-muted, #8b949e); font-style: italic; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
   </style>
 </head>
 <body>
-  <p id="status" role="status">Loading current session...</p>
+  <p id="status">Loading current session...</p>
+  <p id="live-status" class="sr-only" role="status" aria-live="polite"></p>
   <aside id="notice" role="status" hidden></aside>
   <nav class="map-controls" aria-label="Map controls">
     <button id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out">−</button>
@@ -483,11 +481,12 @@ export function renderHtml() {
       </svg>
     </button>
   </nav>
-  <main id="content" aria-live="polite"></main>
+  <main id="content"></main>
   <script>
     const content = document.querySelector("#content");
     const refreshButton = document.querySelector("#refresh");
     const status = document.querySelector("#status");
+    const liveStatus = document.querySelector("#live-status");
     const notice = document.querySelector("#notice");
     const zoomOutButton = document.querySelector("#zoom-out");
     const zoomInButton = document.querySelector("#zoom-in");
@@ -501,7 +500,7 @@ export function renderHtml() {
     const collapsedSessionIds = new Set();
     const expandedMessages = new Set();
     let laneElementsById = new Map();
-    let laneFingerprintsById = new Map();
+    let turnElementsByKey = new Map();
     const view = {
       scale: 1,
       minScale: 0.2,
@@ -518,14 +517,27 @@ export function renderHtml() {
     let turnObserver;
     let initializedFamilyId = "";
     let initializedCurrentSessionId = "";
+    let renderedStateFingerprint = "";
     let refreshPromise;
-    let refreshQueued = false;
+    let queuedRefreshMode = "";
+    let lastSyncError = "";
 
     function element(tag, className, text) {
       const node = document.createElement(tag);
       if (className) node.className = className;
       if (text !== undefined) node.textContent = text;
       return node;
+    }
+
+    function syncChildren(parent, desiredChildren) {
+      const desired = new Set(desiredChildren);
+      Array.from(parent.children).forEach((child) => {
+        if (!desired.has(child)) child.remove();
+      });
+      desiredChildren.forEach((child, index) => {
+        const current = parent.children[index] || null;
+        if (current !== child) parent.insertBefore(child, current);
+      });
     }
 
     function checkpointKey(sessionId, turnId) {
@@ -730,18 +742,6 @@ export function renderHtml() {
       });
     }
 
-    function laneFingerprint(lane, hasChildren) {
-      return JSON.stringify([
-        lane.session,
-        lane.parentSessionId,
-        lane.inheritedTurnCount,
-        lane.sourceCheckpoint,
-        lane.turns,
-        hasChildren,
-        collapsedSessionIds.has(lane.session.id),
-      ]);
-    }
-
     function renderMinimap(
       viewport,
       lanes,
@@ -753,17 +753,29 @@ export function renderHtml() {
         minimap.setAttribute("aria-label", "Conversation family minimap");
         content.append(minimap);
       }
-      const label = element("span", "minimap-label", "Minimap");
-      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      let label = minimap.querySelector(".minimap-label");
+      if (!label) label = element("span", "minimap-label", "Minimap");
+      let svg = minimap.querySelector(".minimap-map");
+      if (!svg) {
+        svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "minimap-map");
+      }
       const width = Math.max(24, lanes.length * 14 + 10);
       const maxTurns = Math.max(1, ...lanes.map((lane) => lane.turns.length));
       const height = Math.max(48, maxTurns * 3 + 14);
       svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+      const existingLaneShapes = new Map(
+        Array.from(svg.querySelectorAll(".minimap-lane")).map((shape) => [
+          shape.dataset.sessionId,
+          shape,
+        ]),
+      );
+      const shapes = [];
       lanes.forEach((lane, index) => {
-        const laneShape = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "rect",
-        );
+        const laneShape =
+          existingLaneShapes.get(lane.session.id) ||
+          document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        laneShape.dataset.sessionId = lane.session.id;
         laneShape.setAttribute(
           "class",
           "minimap-lane" +
@@ -777,32 +789,31 @@ export function renderHtml() {
           "height",
           String(Math.max(8, lane.turns.length * 3)),
         );
-        svg.append(laneShape);
+        shapes.push(laneShape);
         if (selectedCheckpoint?.sessionId === lane.session.id) {
           const turnIndex = Math.max(
             0,
             lane.turns.findIndex((turn) => turn.id === selectedCheckpoint.turnId),
           );
-          const marker = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "circle",
-          );
+          const marker =
+            svg.querySelector(".minimap-selection") ||
+            document.createElementNS("http://www.w3.org/2000/svg", "circle");
           marker.setAttribute("class", "minimap-selection");
           marker.setAttribute("cx", String(index * 14 + 9));
           marker.setAttribute("cy", String(turnIndex * 3 + 7));
           marker.setAttribute("r", "2");
-          svg.append(marker);
+          shapes.push(marker);
         }
       });
-      const viewportShape = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "rect",
-      );
+      const viewportShape =
+        svg.querySelector(".minimap-viewport") ||
+        document.createElementNS("http://www.w3.org/2000/svg", "rect");
       viewportShape.setAttribute("class", "minimap-viewport");
       viewportShape.dataset.mapWidth = String(width);
       viewportShape.dataset.mapHeight = String(height);
-      svg.append(viewportShape);
-      minimap.replaceChildren(label, svg);
+      shapes.push(viewportShape);
+      syncChildren(svg, shapes);
+      syncChildren(minimap, [label, svg]);
       updateMinimapViewport(viewport, width, height);
     }
 
@@ -832,43 +843,64 @@ export function renderHtml() {
 
     function renderMessage(role, text, className, lineClamp, messageKey) {
       const section = element("section", "message " + className);
+      updateMessage(section, role, text, className, lineClamp, messageKey);
+      return section;
+    }
+
+    function updateMessage(
+      section,
+      role,
+      text,
+      className,
+      lineClamp,
+      messageKey,
+    ) {
+      section.className = "message " + className;
       section.setAttribute("aria-label", role + " message");
-      const rendered = renderMarkdown(text || "Waiting for Copilot's final response.");
+      section.dataset.messageKey = messageKey;
+      let rendered = section.querySelector(".content");
+      if (!rendered) rendered = element("div");
       const initiallyExpanded = expandedMessages.has(messageKey);
+      const displayText = text || "Waiting for Copilot's final response.";
+      if (section.renderedText !== displayText) {
+        const nextContent = renderMarkdown(displayText);
+        rendered.replaceChildren(...Array.from(nextContent.childNodes));
+        section.renderedText = displayText;
+      }
       rendered.className =
         "content" +
         (initiallyExpanded ? "" : " collapsed") +
         (text ? "" : " empty");
       rendered.style.setProperty("--line-clamp", String(lineClamp));
-      section.append(rendered);
 
-      const toggle = element(
-        "button",
-        "message-toggle",
-        initiallyExpanded ? "Collapse" : "Expand",
-      );
-      toggle.type = "button";
+      let toggle = section.querySelector(".message-toggle");
+      if (!toggle) {
+        toggle = element("button", "message-toggle");
+        toggle.type = "button";
+        toggle.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const contentNode = section.querySelector(".content");
+          const expanded = !contentNode.classList.toggle("collapsed");
+          const key = section.dataset.messageKey;
+          if (expanded) expandedMessages.add(key);
+          else expandedMessages.delete(key);
+          toggle.textContent = expanded ? "Collapse" : "Expand";
+          toggle.setAttribute("aria-expanded", String(expanded));
+          requestAnimationFrame(() => {
+            const family = document.querySelector(".family");
+            if (family) drawConnections(family);
+          });
+        });
+      }
+      toggle.textContent = initiallyExpanded ? "Collapse" : "Expand";
       toggle.hidden = !initiallyExpanded;
       toggle.setAttribute("aria-expanded", String(initiallyExpanded));
-      toggle.addEventListener("click", (event) => {
-        event.stopPropagation();
-        const expanded = !rendered.classList.toggle("collapsed");
-        if (expanded) expandedMessages.add(messageKey);
-        else expandedMessages.delete(messageKey);
-        toggle.textContent = expanded ? "Collapse" : "Expand";
-        toggle.setAttribute("aria-expanded", String(expanded));
-        requestAnimationFrame(() => {
-          const family = document.querySelector(".family");
-          if (family) drawConnections(family);
-        });
-      });
-      section.append(toggle);
+      syncChildren(section, [rendered, toggle]);
       requestAnimationFrame(() => {
         toggle.hidden =
           !expandedMessages.has(messageKey) &&
           rendered.scrollHeight <= rendered.clientHeight + 1;
       });
-      return section;
     }
 
     function renderMarkdown(markdown) {
@@ -1071,7 +1103,7 @@ export function renderHtml() {
       return url.startsWith("https://") ? url : "";
     }
 
-    function showNotice(title, message, isError) {
+    function showNotice(title, message, isError, kind = "action") {
       const closeButton = element("button", "notice-close", "Close");
       closeButton.type = "button";
       closeButton.setAttribute("aria-label", "Dismiss notification");
@@ -1079,6 +1111,7 @@ export function renderHtml() {
         notice.hidden = true;
       });
       notice.className = isError ? "error" : "";
+      notice.dataset.kind = kind;
       notice.replaceChildren(
         element("strong", "", title),
         element("span", "", message),
@@ -1203,7 +1236,7 @@ export function renderHtml() {
         const result = await response.json();
         if (result.kind === "created") {
           blockedCheckpoints.add(key);
-          await refresh();
+          await refresh("action");
           const childLane = Array.from(document.querySelectorAll(".lane")).find(
             (lane) => lane.dataset.sessionId === result.childSessionId,
           );
@@ -1211,18 +1244,10 @@ export function renderHtml() {
           const focusTarget =
             handoffNode || childLane?.querySelector(".turn") || childLane;
           requestAnimationFrame(() => {
-            handoffNode?.classList.add("handoff-arrival");
             focusTarget?.scrollIntoView({
-              behavior: "smooth",
               block: "center",
               inline: "center",
             });
-            if (handoffNode) {
-              setTimeout(
-                () => handoffNode.classList.remove("handoff-arrival"),
-                2200,
-              );
-            }
           });
           if (result.warning) {
             showNotice("Branch created with a warning", result.warning, true);
@@ -1278,7 +1303,7 @@ export function renderHtml() {
         if (!response.ok || result.kind !== "updated") {
           throw new Error(result.message || "Hidden subtree update failed.");
         }
-        await refresh();
+        await refresh("action");
       } catch (error) {
         showNotice(
           "Could not update hidden subtree",
@@ -1310,7 +1335,13 @@ export function renderHtml() {
       const svg = family.querySelector(".branch-connections");
       if (!svg) return;
       const scale = view.scale;
-      svg.replaceChildren();
+      const existingConnections = new Map(
+        Array.from(svg.children).map((connection) => [
+          connection.dataset.connectionKey,
+          connection,
+        ]),
+      );
+      const nextConnections = [];
       const entries = Array.from(document.querySelectorAll(".branch-entry"));
       document.querySelectorAll(".lane").forEach((lane) => {
         lane.style.paddingTop = "0px";
@@ -1348,7 +1379,7 @@ export function renderHtml() {
         groups.set(key, group);
       });
 
-      groups.forEach((group) => {
+      groups.forEach((group, groupKey) => {
         const source = findSourceTurn(group[0]);
         if (!source) return;
 
@@ -1369,7 +1400,12 @@ export function renderHtml() {
             (target) => target.x - roundedStemRadius(busY, target.y),
           ),
         );
-        const bus = svgLine(startX, busY, busEndX, busY);
+        const busKey = groupKey + ":bus";
+        const bus =
+          existingConnections.get(busKey) ||
+          document.createElementNS("http://www.w3.org/2000/svg", "line");
+        bus.dataset.connectionKey = busKey;
+        setSvgLine(bus, startX, busY, busEndX, busY);
         bus.setAttribute(
           "class",
           "branch-connection branch-bus" +
@@ -1377,18 +1413,25 @@ export function renderHtml() {
               ? " pending"
               : ""),
         );
-        svg.append(bus);
+        nextConnections.push(bus);
 
         targets.forEach(({ entry, x, y }) => {
-          const stem = svgRoundedStem(x, busY, y);
+          const stemKey =
+            groupKey + ":stem:" + (entry.parentElement?.dataset.sessionId || "");
+          const stem =
+            existingConnections.get(stemKey) ||
+            document.createElementNS("http://www.w3.org/2000/svg", "path");
+          stem.dataset.connectionKey = stemKey;
+          setSvgRoundedStem(stem, x, busY, y);
           stem.setAttribute(
             "class",
             "branch-connection branch-stem" +
               (entry.classList.contains("pending") ? " pending" : ""),
           );
-          svg.append(stem);
+          nextConnections.push(stem);
         });
       });
+      syncChildren(svg, nextConnections);
     }
 
     function findSourceTurn(entry) {
@@ -1399,17 +1442,14 @@ export function renderHtml() {
       );
     }
 
-    function svgLine(x1, y1, x2, y2) {
-      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    function setSvgLine(line, x1, y1, x2, y2) {
       line.setAttribute("x1", String(x1));
       line.setAttribute("y1", String(y1));
       line.setAttribute("x2", String(x2));
       line.setAttribute("y2", String(y2));
-      return line;
     }
 
-    function svgRoundedStem(x, busY, targetY) {
-      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    function setSvgRoundedStem(path, x, busY, targetY) {
       const radius = roundedStemRadius(busY, targetY);
       path.setAttribute(
         "d",
@@ -1418,59 +1458,109 @@ export function renderHtml() {
           " " + x + " " + (busY + radius) +
           " V " + targetY,
       );
-      return path;
     }
 
     function roundedStemRadius(busY, targetY) {
       return Math.min(12, Math.max(0, (targetY - busY) / 2));
     }
 
-    function mountRichTurn(article, laneState, turn) {
-      if (article.dataset.rich === "true") return;
-      const body = element("div", "turn-body");
-      const key = checkpointKey(laneState.session.id, turn.id);
-      body.append(
-        renderMessage("You", turn.userContent, "user", 3, key + ":user"),
+    function findTurnState(sessionId, turnId) {
+      const laneState = (currentState?.lanes || []).find(
+        (lane) => lane.session.id === sessionId,
       );
-      body.append(
-        renderMessage(
+      const turn = laneState?.turns.find((candidate) => candidate.id === turnId);
+      return laneState && turn ? { laneState, turn } : null;
+    }
+
+    function mountRichTurn(article) {
+      const turnState = findTurnState(
+        article.dataset.sessionId,
+        article.dataset.turnId,
+      );
+      if (!turnState) return;
+      if (
+        article.dataset.rich !== "true" ||
+        article.richFingerprint !== article.renderFingerprint
+      ) {
+        updateRichTurn(article, turnState.laneState, turnState.turn);
+        article.richFingerprint = article.renderFingerprint;
+      }
+      article.dataset.rich = "true";
+      updateBranchControls();
+    }
+
+    function updateRichTurn(article, laneState, turn) {
+      let body = article.querySelector(".turn-body");
+      if (!body) body = element("div", "turn-body");
+      const key = checkpointKey(laneState.session.id, turn.id);
+      let userMessage = body.querySelector(".message.user");
+      if (!userMessage) {
+        userMessage = renderMessage(
+          "You",
+          turn.userContent,
+          "user",
+          3,
+          key + ":user",
+        );
+      } else {
+        updateMessage(
+          userMessage,
+          "You",
+          turn.userContent,
+          "user",
+          3,
+          key + ":user",
+        );
+      }
+      let assistantMessage = body.querySelector(".message.assistant");
+      if (!assistantMessage) {
+        assistantMessage = renderMessage(
           "Copilot",
           turn.assistantContent,
           "assistant",
           8,
           key + ":assistant",
-        ),
-      );
-      article.replaceChildren(body);
-      if (
+        );
+      } else {
+        updateMessage(
+          assistantMessage,
+          "Copilot",
+          turn.assistantContent,
+          "assistant",
+          8,
+          key + ":assistant",
+        );
+      }
+      syncChildren(body, [userMessage, assistantMessage]);
+
+      const canBranch =
         turn.status === "completed" &&
         laneState.session.available &&
         !laneState.error &&
-        (!laneState.session.inUse || laneState.session.current)
-      ) {
-        const branchButton = element(
-          "button",
-          "branch-button",
-          "+",
-        );
+        (!laneState.session.inUse || laneState.session.current);
+      let branchButton = article.querySelector(".branch-button");
+      if (canBranch && !branchButton) {
+        branchButton = element("button", "branch-button", "+");
         branchButton.type = "button";
         branchButton.setAttribute("aria-label", "Fork to CLI");
         branchButton.title =
           "Fork to CLI. Creates a CLI-only child that will not appear in Copilot App's session list.";
-        branchButton.dataset.sessionId = laneState.session.id;
-        branchButton.dataset.turnId = turn.id;
-        branchButton.dataset.checkpointKey = checkpointKey(
-          laneState.session.id,
-          turn.id,
-        );
         branchButton.addEventListener("click", (event) => {
           event.stopPropagation();
-          createBranch(laneState.session.id, turn);
+          const latest = findTurnState(
+            branchButton.dataset.sessionId,
+            branchButton.dataset.turnId,
+          );
+          if (latest) createBranch(latest.laneState.session.id, latest.turn);
         });
-        article.append(branchButton);
       }
-      article.dataset.rich = "true";
-      updateBranchControls();
+      if (!canBranch) branchButton = undefined;
+      if (branchButton) {
+        branchButton.dataset.sessionId = laneState.session.id;
+        branchButton.dataset.turnId = turn.id;
+        branchButton.dataset.checkpointKey = key;
+      }
+      syncChildren(article, branchButton ? [body, branchButton] : [body]);
     }
 
     function unmountRichTurn(article) {
@@ -1560,157 +1650,11 @@ export function renderHtml() {
       return copy;
     }
 
-    function renderLane(state, laneState, hasChildren) {
-      const lane = element(
-        "section",
-        "lane" + (laneState.session.current ? " current" : ""),
-      );
-      lane.dataset.sessionId = laneState.session.id;
-      if (
-        hasChildren ||
-        (!laneState.session.available && !laneState.session.current)
-      ) {
-        const tools = element("div", "lane-tools");
-        if (hasChildren) {
-          const toggle = element(
-            "button",
-            "subtree-toggle",
-            collapsedSessionIds.has(laneState.session.id)
-              ? "Expand subtree"
-              : "Collapse subtree",
-          );
-          toggle.type = "button";
-          toggle.setAttribute(
-            "aria-expanded",
-            String(!collapsedSessionIds.has(laneState.session.id)),
-          );
-          toggle.addEventListener("click", (event) => {
-            event.stopPropagation();
-            if (collapsedSessionIds.has(laneState.session.id)) {
-              collapsedSessionIds.delete(laneState.session.id);
-            } else {
-              collapsedSessionIds.add(laneState.session.id);
-            }
-            renderReady(currentState);
-          });
-          tools.append(toggle);
-        }
-        if (!laneState.session.available && !laneState.session.current) {
-          const hide = element(
-            "button",
-            "hide-subtree",
-            "Hide unavailable subtree",
-          );
-          hide.type = "button";
-          hide.addEventListener("click", () =>
-            setSubtreeHidden(laneState.session.id, true),
-          );
-          tools.append(hide);
-        }
-        lane.append(tools);
-      }
-
-      if (laneState.sourceCheckpoint) {
-        const isVirtual =
-          laneState.turns.length === 0 ||
-          !laneState.sourceCheckpoint.available;
-        const entry = element(
-          isVirtual ? "article" : "div",
-          isVirtual
-            ? "turn virtual branch-entry pending"
-            : "branch-entry",
-        );
-        entry.dataset.parentSessionId = laneState.sourceCheckpoint.sessionId;
-        entry.dataset.sourceTurnId = laneState.sourceCheckpoint.turnId;
-        if (isVirtual) {
-          if (
-            laneState.session.available &&
-            laneState.sourceCheckpoint.available &&
-            !laneState.error
-          ) {
-            entry.classList.add(
-              laneState.session.inUse ? "handoff-active" : "handoff-ready",
-            );
-          }
-          const actions = element("div", "lane-actions");
-          const checkpoint = element(
-            "button",
-            "checkpoint-link",
-            laneState.sourceCheckpoint.available
-              ? laneState.inheritedTurnCount +
-                  " inherited " +
-                  (laneState.inheritedTurnCount === 1 ? "turn" : "turns") +
-                  " · Fork Checkpoint"
-              : "Fork checkpoint unavailable",
-          );
-          checkpoint.type = "button";
-          checkpoint.disabled = !laneState.sourceCheckpoint.available;
-          checkpoint.addEventListener("click", () =>
-            focusCheckpoint(laneState.sourceCheckpoint),
-          );
-          actions.append(checkpoint);
-          entry.append(renderVirtualCopy(laneState), actions);
-        } else {
-          entry.setAttribute("aria-hidden", "true");
-        }
-        lane.append(entry);
-      }
-
-      if (laneState.turns.length === 0 && !laneState.sourceCheckpoint) {
-        lane.append(
-          element(
-            "div",
-            "state",
-            laneState.session.available
-              ? "No post-fork conversation turns yet."
-              : "Session unavailable.",
-          ),
-        );
-      }
-
-      laneState.turns.forEach((turn) => {
-        const completed = turn.status === "completed";
-        const article = element("article", "turn " + turn.status);
-        article.dataset.sessionId = laneState.session.id;
-        article.dataset.turnId = turn.id;
-        article.dataset.rich = "false";
-        article.setAttribute("aria-label", completed ? "Completed turn" : "Incomplete turn");
-        const selected =
-          selectedCheckpoint?.sessionId === laneState.session.id &&
-          selectedCheckpoint?.turnId === turn.id;
-        if (selected) article.classList.add("selected");
-        article.setAttribute("aria-selected", String(selected));
-        article.title = completed ? "Completed" : "Incomplete";
-        article.mountRich = () => mountRichTurn(article, laneState, turn);
-        article.unmountRich = () => unmountRichTurn(article);
-        if (completed) {
-          article.addEventListener("click", () => {
-            article.mountRich();
-            selectTurn(article);
-          });
-        }
-
-        lane.append(article);
-      });
-      if (laneState.error && laneState.turns.length > 0) {
-        lane.append(element("div", "state lane-error", laneState.error));
-      }
-      return lane;
-    }
-
-    function renderReady(state) {
-      const previousViewport = document.querySelector(".map-viewport");
-      const previousScroll = previousViewport
-        ? { left: previousViewport.scrollLeft, top: previousViewport.scrollTop }
-        : { left: 0, top: 0 };
-      currentState = state;
-      availabilityError = "";
-      const hiddenSessionIds = state.family?.hiddenSessionIds || [];
-      if (showHiddenButton) {
-        showHiddenButton.hidden = hiddenSessionIds.length === 0;
-        showHiddenButton.textContent =
-          "Show hidden (" + hiddenSessionIds.length + ")";
-      }
+    function ensureMap() {
+      const existing = currentMap();
+      if (existing) return existing;
+      laneElementsById = new Map();
+      turnElementsByKey = new Map();
       const viewport = element("div", "map-viewport");
       const stage = element("div", "map-stage");
       const family = element("section", "family");
@@ -1721,6 +1665,341 @@ export function renderHtml() {
       connections.setAttribute("class", "branch-connections");
       connections.setAttribute("aria-hidden", "true");
       family.append(connections);
+      stage.append(family);
+      viewport.append(stage);
+      content.replaceChildren(viewport);
+      enableMapNavigation(viewport);
+      return { viewport, stage, family };
+    }
+
+    function updateLaneTools(lane, laneState, hasChildren) {
+      const canHide =
+        !laneState.session.available && !laneState.session.current;
+      if (!hasChildren && !canHide) return null;
+      let tools = lane.laneTools;
+      if (!tools) {
+        tools = element("div", "lane-tools");
+        lane.laneTools = tools;
+      }
+      const children = [];
+      if (hasChildren) {
+        let toggle = tools.subtreeToggle;
+        if (!toggle) {
+          toggle = element("button", "subtree-toggle");
+          toggle.type = "button";
+          toggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const sessionId = lane.dataset.sessionId;
+            if (collapsedSessionIds.has(sessionId)) {
+              collapsedSessionIds.delete(sessionId);
+            } else {
+              collapsedSessionIds.add(sessionId);
+            }
+            renderReady(currentState);
+          });
+          tools.subtreeToggle = toggle;
+        }
+        const collapsed = collapsedSessionIds.has(laneState.session.id);
+        toggle.textContent = collapsed ? "Expand subtree" : "Collapse subtree";
+        toggle.setAttribute("aria-expanded", String(!collapsed));
+        children.push(toggle);
+      }
+      if (canHide) {
+        let hide = tools.hideSubtree;
+        if (!hide) {
+          hide = element(
+            "button",
+            "hide-subtree",
+            "Hide unavailable subtree",
+          );
+          hide.type = "button";
+          hide.addEventListener("click", () =>
+            setSubtreeHidden(lane.dataset.sessionId, true),
+          );
+          tools.hideSubtree = hide;
+        }
+        children.push(hide);
+      }
+      syncChildren(tools, children);
+      return tools;
+    }
+
+    function renderBranchEntry(laneState) {
+      const isVirtual =
+        laneState.turns.length === 0 ||
+        !laneState.sourceCheckpoint.available;
+      const entry = element(
+        isVirtual ? "article" : "div",
+        isVirtual
+          ? "turn virtual branch-entry pending"
+          : "branch-entry",
+      );
+      entry.dataset.parentSessionId = laneState.sourceCheckpoint.sessionId;
+      entry.dataset.sourceTurnId = laneState.sourceCheckpoint.turnId;
+      if (!isVirtual) {
+        entry.setAttribute("aria-hidden", "true");
+        return entry;
+      }
+      if (
+        laneState.session.available &&
+        laneState.sourceCheckpoint.available &&
+        !laneState.error
+      ) {
+        entry.classList.add(
+          laneState.session.inUse ? "handoff-active" : "handoff-ready",
+        );
+      }
+      const actions = element("div", "lane-actions");
+      const checkpoint = element(
+        "button",
+        "checkpoint-link",
+        laneState.sourceCheckpoint.available
+          ? laneState.inheritedTurnCount +
+              " inherited " +
+              (laneState.inheritedTurnCount === 1 ? "turn" : "turns") +
+              " · Fork Checkpoint"
+          : "Fork checkpoint unavailable",
+      );
+      checkpoint.type = "button";
+      checkpoint.disabled = !laneState.sourceCheckpoint.available;
+      checkpoint.addEventListener("click", () =>
+        focusCheckpoint({
+          sessionId: entry.dataset.parentSessionId,
+          turnId: entry.dataset.sourceTurnId,
+        }),
+      );
+      actions.append(checkpoint);
+      entry.append(renderVirtualCopy(laneState), actions);
+      return entry;
+    }
+
+    function updateBranchEntry(lane, laneState) {
+      if (!laneState.sourceCheckpoint) return null;
+      const fingerprint = JSON.stringify([
+        laneState.sourceCheckpoint,
+        laneState.inheritedTurnCount,
+        laneState.turns.length === 0,
+        laneState.session.available,
+        laneState.session.inUse,
+        laneState.error,
+      ]);
+      if (
+        !lane.branchEntry ||
+        lane.branchEntryFingerprint !== fingerprint
+      ) {
+        lane.branchEntry = renderBranchEntry(laneState);
+        lane.branchEntryFingerprint = fingerprint;
+      }
+      return lane.branchEntry;
+    }
+
+    function createTurnElement() {
+      const article = element("article");
+      article.dataset.rich = "false";
+      article.mountRich = () => mountRichTurn(article);
+      article.unmountRich = () => unmountRichTurn(article);
+      article.addEventListener("click", () => {
+        const latest = findTurnState(
+          article.dataset.sessionId,
+          article.dataset.turnId,
+        );
+        if (!latest || latest.turn.status !== "completed") return;
+        article.mountRich();
+        selectTurn(article);
+      });
+      return article;
+    }
+
+    function updateTurnElement(article, laneState, turn) {
+      const completed = turn.status === "completed";
+      if (
+        !completed &&
+        selectedCheckpoint?.sessionId === laneState.session.id &&
+        selectedCheckpoint?.turnId === turn.id
+      ) {
+        selectedCheckpoint = undefined;
+      }
+      const selected =
+        completed &&
+        selectedCheckpoint?.sessionId === laneState.session.id &&
+        selectedCheckpoint?.turnId === turn.id;
+      article.className =
+        "turn " + turn.status + (selected ? " selected" : "");
+      article.dataset.sessionId = laneState.session.id;
+      article.dataset.turnId = turn.id;
+      article.setAttribute(
+        "aria-label",
+        completed ? "Completed turn" : "Incomplete turn",
+      );
+      article.setAttribute("aria-selected", String(selected));
+      article.title = completed ? "Completed" : "Incomplete";
+      const fingerprint = JSON.stringify([
+        turn.id,
+        turn.userContent,
+        turn.assistantContent,
+        turn.status,
+        laneState.session.available,
+        laneState.session.inUse,
+        laneState.session.current,
+        laneState.error,
+      ]);
+      if (
+        article.renderFingerprint !== fingerprint &&
+        article.dataset.rich === "true"
+      ) {
+        updateRichTurn(article, laneState, turn);
+        article.richFingerprint = fingerprint;
+      }
+      article.renderFingerprint = fingerprint;
+    }
+
+    function mapRenderFingerprint(state, lanes) {
+      return JSON.stringify([
+        state.currentSessionId,
+        state.family,
+        [...collapsedSessionIds].sort(),
+        lanes.map((lane) => [
+          [
+            lane.session.id,
+            lane.session.available,
+            lane.session.inUse,
+            lane.session.current,
+          ],
+          lane.parentSessionId,
+          lane.inheritedTurnCount,
+          lane.sourceCheckpoint,
+          lane.error,
+          lane.turns.map((turn) => [
+            turn.id,
+            turn.userContent,
+            turn.assistantContent,
+            turn.status,
+          ]),
+        ]),
+      ]);
+    }
+
+    function updateLane(lane, laneState, hasChildren, nextTurns) {
+      lane.className =
+        "lane" + (laneState.session.current ? " current" : "");
+      lane.dataset.sessionId = laneState.session.id;
+      const children = [];
+      const tools = updateLaneTools(lane, laneState, hasChildren);
+      if (tools) children.push(tools);
+      const branchEntry = updateBranchEntry(lane, laneState);
+      if (branchEntry) children.push(branchEntry);
+      if (laneState.turns.length === 0 && !laneState.sourceCheckpoint) {
+        if (!lane.emptyState) lane.emptyState = element("div", "state");
+        lane.emptyState.textContent = laneState.session.available
+          ? "No post-fork conversation turns yet."
+          : "Session unavailable.";
+        children.push(lane.emptyState);
+      }
+      laneState.turns.forEach((turn) => {
+        const key = checkpointKey(laneState.session.id, turn.id);
+        const article = turnElementsByKey.get(key) || createTurnElement();
+        updateTurnElement(article, laneState, turn);
+        nextTurns.set(key, article);
+        children.push(article);
+      });
+      if (laneState.error && laneState.turns.length > 0) {
+        if (!lane.errorState) {
+          lane.errorState = element("div", "state lane-error");
+        }
+        lane.errorState.textContent = laneState.error;
+        children.push(lane.errorState);
+      }
+      syncChildren(lane, children);
+    }
+
+    function announceReadyChanges(previousState, state) {
+      if (previousState?.kind !== "ready") return;
+      const previousLanes = previousState.lanes || [];
+      const nextLanes = state.lanes || [];
+      const previousLaneIds = new Set(
+        previousLanes.map((lane) => lane.session.id),
+      );
+      const nextLaneIds = new Set(nextLanes.map((lane) => lane.session.id));
+      const previousTurns = new Map();
+      previousLanes.forEach((lane) => {
+        lane.turns.forEach((turn) => {
+          previousTurns.set(checkpointKey(lane.session.id, turn.id), turn);
+        });
+      });
+      let completedTurns = 0;
+      let addedTurns = 0;
+      const nextTurnKeys = new Set();
+      nextLanes.forEach((lane) => {
+        lane.turns.forEach((turn) => {
+          const key = checkpointKey(lane.session.id, turn.id);
+          nextTurnKeys.add(key);
+          const previous = previousTurns.get(key);
+          if (!previous) addedTurns += 1;
+          else if (
+            previous.status !== "completed" &&
+            turn.status === "completed"
+          ) {
+            completedTurns += 1;
+          }
+        });
+      });
+      const removedTurns = [...previousTurns.keys()].filter(
+        (key) => !nextTurnKeys.has(key),
+      ).length;
+      const addedLanes = [...nextLaneIds].filter(
+        (sessionId) => !previousLaneIds.has(sessionId),
+      ).length;
+      const removedLanes = [...previousLaneIds].filter(
+        (sessionId) => !nextLaneIds.has(sessionId),
+      ).length;
+      const hiddenChanged =
+        JSON.stringify(
+          [...(previousState.family?.hiddenSessionIds || [])].sort(),
+        ) !==
+        JSON.stringify([...(state.family?.hiddenSessionIds || [])].sort());
+      const messages = [];
+      if (completedTurns > 0) {
+        messages.push(
+          completedTurns === 1
+            ? "Turn completed."
+            : completedTurns + " turns completed.",
+        );
+      }
+      if (addedTurns > 0) {
+        messages.push(
+          addedTurns === 1 ? "New turn added." : addedTurns + " new turns added.",
+        );
+      }
+      if (removedTurns > 0) {
+        messages.push(
+          removedTurns === 1
+            ? "Turn removed."
+            : removedTurns + " turns removed.",
+        );
+      }
+      if (addedLanes > 0 || removedLanes > 0 || hiddenChanged) {
+        messages.push("Conversation family structure updated.");
+      }
+      if (messages.length > 0) {
+        liveStatus.textContent = "";
+        requestAnimationFrame(() => {
+          liveStatus.textContent = messages.join(" ");
+        });
+      }
+    }
+
+    function renderReady(state) {
+      const previousState = currentState;
+      currentState = state;
+      availabilityError = "";
+      const hiddenSessionIds = state.family?.hiddenSessionIds || [];
+      if (showHiddenButton) {
+        showHiddenButton.hidden = hiddenSessionIds.length === 0;
+        showHiddenButton.textContent =
+          "Show hidden (" + hiddenSessionIds.length + ")";
+      }
+      const { viewport, family } = ensureMap();
+      const connections = family.querySelector(".branch-connections");
       const allLanes = state.lanes || [{
         session: { ...state.session, current: true, available: true },
         sourceCheckpoint: null,
@@ -1736,41 +2015,56 @@ export function renderHtml() {
         );
       });
       initializeCollapsedSubtrees(state, allLanes, childCountByParent);
+      const nextRenderFingerprint = mapRenderFingerprint(state, allLanes);
+      if (
+        currentMap() &&
+        renderedStateFingerprint === nextRenderFingerprint
+      ) {
+        announceReadyChanges(previousState, state);
+        renderForkAvailability();
+        return;
+      }
       const lanes = visibleLaneStates({ ...state, lanes: allLanes });
       const nextLaneElements = new Map();
-      const nextLaneFingerprints = new Map();
-      lanes.forEach((lane) => {
-        const hasChildren = childCountByParent.has(lane.session.id);
-        const fingerprint = laneFingerprint(lane, hasChildren);
-        const cached =
-          laneFingerprintsById.get(lane.session.id) === fingerprint
-            ? laneElementsById.get(lane.session.id)
-            : null;
-        const laneElement = cached || renderLane(state, lane, hasChildren);
-        nextLaneElements.set(lane.session.id, laneElement);
-        nextLaneFingerprints.set(lane.session.id, fingerprint);
-        family.append(laneElement);
+      const nextTurnElements = new Map();
+      const laneElements = lanes.map((laneState) => {
+        const lane =
+          laneElementsById.get(laneState.session.id) || element("section");
+        updateLane(
+          lane,
+          laneState,
+          childCountByParent.has(laneState.session.id),
+          nextTurnElements,
+        );
+        nextLaneElements.set(laneState.session.id, lane);
+        return lane;
       });
       laneElementsById = nextLaneElements;
-      laneFingerprintsById = nextLaneFingerprints;
-      stage.append(family);
-      viewport.append(stage);
-      content.replaceChildren(viewport);
+      turnElementsByKey = nextTurnElements;
+      if (
+        selectedCheckpoint &&
+        !allLanes.some(
+          (lane) =>
+            lane.session.id === selectedCheckpoint.sessionId &&
+            lane.turns.some((turn) => turn.id === selectedCheckpoint.turnId),
+        )
+      ) {
+        selectedCheckpoint = undefined;
+      }
+      syncChildren(family, [connections, ...laneElements]);
       renderMinimap(
         viewport,
         allLanes,
         new Set(lanes.map((lane) => lane.session.id)),
       );
-      enableMapNavigation(viewport);
+      renderedStateFingerprint = nextRenderFingerprint;
       setupTurnVirtualization(viewport, family);
       requestAnimationFrame(() => {
         applyViewTransform();
         drawConnections(family);
-        viewport.scrollLeft = previousScroll.left;
-        viewport.scrollTop = previousScroll.top;
         updateMinimapViewport();
       });
-      if (focusedSessionId !== state.currentSessionId) {
+      if (!focusedSessionId) {
         focusedSessionId = state.currentSessionId;
         requestAnimationFrame(() => {
           document.querySelector(".lane.current")?.scrollIntoView({
@@ -1779,6 +2073,7 @@ export function renderHtml() {
           });
         });
       }
+      announceReadyChanges(previousState, state);
       renderForkAvailability();
     }
 
@@ -1791,40 +2086,108 @@ export function renderHtml() {
       panel.append(element("h2", "", state.kind === "unsupported" ? "Unavailable" : "Could not load map"));
       panel.append(element("p", "", state.message));
       content.replaceChildren(panel);
+      turnObserver?.disconnect();
+      turnObserver = undefined;
       currentState = undefined;
+      laneElementsById = new Map();
+      turnElementsByKey = new Map();
+      renderedStateFingerprint = "";
       status.hidden = false;
       status.textContent = state.kind === "unsupported" ? "Unsupported session" : "Load error";
     }
 
-    function refresh() {
+    function queueRefreshMode(mode) {
+      const priority = { auto: 0, action: 1, initial: 2, manual: 3 };
+      if (
+        !queuedRefreshMode ||
+        priority[mode] > priority[queuedRefreshMode]
+      ) {
+        queuedRefreshMode = mode;
+      }
+    }
+
+    function clearSyncError() {
+      lastSyncError = "";
+      if (notice.dataset.kind === "sync") notice.hidden = true;
+    }
+
+    function handleRefreshError(mode, error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown refresh error.";
+      if (currentState?.kind !== "ready") {
+        renderState({ kind: "error", message });
+        return;
+      }
+      renderForkAvailability();
+      if (mode === "auto") {
+        if (lastSyncError === message) return;
+        lastSyncError = message;
+        showNotice("Live sync interrupted", message, true, "sync");
+        return;
+      }
+      showNotice("Could not refresh map", message, true, "refresh");
+    }
+
+    async function runRefresh(mode) {
+      const showProgress = mode === "manual" || mode === "initial";
+      if (showProgress) {
+        refreshButton.disabled = true;
+        status.hidden = false;
+        status.textContent =
+          mode === "initial" ? "Loading current session..." : "Refreshing...";
+      }
+      try {
+        const response = await fetch("/api/state?token=" + encodeURIComponent(token), { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("State request failed with status " + response.status);
+        }
+        const state = await response.json();
+        if (
+          state.kind !== "ready" &&
+          currentState?.kind === "ready"
+        ) {
+          handleRefreshError(
+            mode,
+            new Error(state.message || "Map state is unavailable."),
+          );
+          return;
+        }
+        renderState(state);
+        if (state.kind === "ready") clearSyncError();
+      } catch (error) {
+        handleRefreshError(mode, error);
+      } finally {
+        if (showProgress) refreshButton.disabled = false;
+      }
+    }
+
+    function refresh(mode = "manual") {
       if (refreshPromise) {
-        refreshQueued = true;
+        queueRefreshMode(mode);
+        if (mode === "manual") {
+          refreshButton.disabled = true;
+          status.hidden = false;
+          status.textContent = "Refreshing...";
+        }
         return refreshPromise;
       }
       refreshPromise = (async () => {
-        refreshButton.disabled = true;
-        status.hidden = false;
-        status.textContent = "Refreshing...";
-        try {
-          const response = await fetch("/api/state?token=" + encodeURIComponent(token), { cache: "no-store" });
-          if (!response.ok) throw new Error("State request failed with status " + response.status);
-          renderState(await response.json());
-        } catch (error) {
-          renderState({ kind: "error", message: error instanceof Error ? error.message : "Unknown refresh error." });
-        } finally {
-          refreshButton.disabled = false;
+        let nextMode = mode;
+        while (nextMode) {
+          await runRefresh(nextMode);
+          nextMode = queuedRefreshMode;
+          queuedRefreshMode = "";
         }
       })().finally(() => {
+        const pendingMode = queuedRefreshMode;
+        queuedRefreshMode = "";
         refreshPromise = undefined;
-        if (refreshQueued) {
-          refreshQueued = false;
-          refresh();
-        }
+        if (pendingMode) refresh(pendingMode);
       });
       return refreshPromise;
     }
 
-    refreshButton.addEventListener("click", refresh);
+    refreshButton.addEventListener("click", () => refresh("manual"));
     zoomOutButton.addEventListener("click", () => zoomBy(1 / 1.2));
     zoomInButton.addEventListener("click", () => zoomBy(1.2));
     fitAllButton.addEventListener("click", fitAll);
@@ -1845,9 +2208,9 @@ export function renderHtml() {
       const events = new EventSource(
         "/api/events?token=" + encodeURIComponent(token),
       );
-      events.addEventListener("invalidate", refresh);
+      events.addEventListener("invalidate", () => refresh("auto"));
     }
-    refresh();
+    refresh("initial");
   </script>
 </body>
 </html>`;

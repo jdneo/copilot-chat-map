@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { createFamilyLiveSync } from "../extensions/chat-fork-map/live-sync.mjs";
 
-test("debounces event log notifications for known family members", () => {
+test("coalesces event log notifications for known family members", () => {
     const callbacks = new Map();
     const timers = [];
     const invalidations = [];
@@ -30,6 +30,43 @@ test("debounces event log notifications for known family members", () => {
     timers.at(-1)();
 
     assert.deepEqual(invalidations, ["events"]);
+    sync.close();
+});
+
+test("throttles continuous event notifications without postponing indefinitely", () => {
+    const callbacks = new Map();
+    const timers = [];
+    const invalidations = [];
+    const sync = createFamilyLiveSync({
+        onInvalidate: (reason) => invalidations.push(reason),
+        resolveWatchPath: (sessionId) => sessionId,
+        watchDirectory: (sessionId, callback) => {
+            callbacks.set(sessionId, callback);
+            return { close() {} };
+        },
+        setTimer: (callback, milliseconds) => {
+            assert.equal(milliseconds, 250);
+            timers.push(callback);
+            return timers.length;
+        },
+        clearTimer: () => undefined,
+        setRepeater: () => 1,
+        clearRepeater: () => undefined,
+    });
+
+    sync.update(snapshot(["session-1"]));
+    callbacks.get("session-1")("change", "events.jsonl");
+    callbacks.get("session-1")("change", "events.jsonl");
+    callbacks.get("session-1")("change", "events.jsonl");
+
+    assert.equal(timers.length, 1);
+    timers[0]();
+    assert.deepEqual(invalidations, ["events"]);
+
+    callbacks.get("session-1")("change", "events.jsonl");
+    assert.equal(timers.length, 2);
+    timers[1]();
+    assert.deepEqual(invalidations, ["events", "events"]);
     sync.close();
 });
 

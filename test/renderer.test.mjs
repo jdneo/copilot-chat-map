@@ -60,6 +60,12 @@ test("renders selectable checkpoint controls and the CLI fork workflow", () => {
     assert.match(html, /"minimap-label", "Minimap"/);
     assert.doesNotMatch(html, /Family minimap/);
     assert.match(html, /#notice \{[\s\S]+position: fixed;/);
+    assert.match(
+        html,
+        /<p id="live-status"[^>]+role="status"[^>]+aria-live="polite"/,
+    );
+    assert.doesNotMatch(html, /<main id="content"[^>]+aria-live/);
+    assert.doesNotMatch(html, /handoff-arrival/);
 
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
     assert.ok(script);
@@ -595,7 +601,7 @@ test("unmounts a previous selection after it moves off-screen", async () => {
     assert.ok(second.querySelector(".turn-body"));
 });
 
-test("reuses unchanged lane DOM when one branch updates", async () => {
+test("reuses lane and turn DOM when one branch updates", async () => {
     const html = renderHtml();
     const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
     assert.ok(script);
@@ -611,7 +617,10 @@ test("reuses unchanged lane DOM when one branch updates", async () => {
     const childTurn = {
         id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
         userContent: "Existing child",
-        assistantContent: "Existing response",
+        assistantContent: Array.from(
+            { length: 10 },
+            (_, index) => `Existing response ${index + 1}`,
+        ).join("\n"),
         status: "completed",
     };
     const appendedTurn = {
@@ -643,13 +652,212 @@ test("reuses unchanged lane DOM when one branch updates", async () => {
     await settle();
 
     const before = document.querySelectorAll(".lane");
+    const childTurnBefore = before[1].querySelector(".turn");
+    childTurnBefore.click();
+    const assistantToggle = childTurnBefore.querySelectorAll(".message-toggle")[1];
+    assistantToggle.click();
     document.querySelector("#refresh").click();
     await settle();
     const after = document.querySelectorAll(".lane");
 
     assert.equal(after[0], before[0]);
-    assert.notEqual(after[1], before[1]);
+    assert.equal(after[1], before[1]);
+    assert.equal(after[1].querySelector(".turn"), childTurnBefore);
+    assert.equal(
+        childTurnBefore.querySelectorAll(".message-toggle")[1],
+        assistantToggle,
+    );
+    assert.equal(assistantToggle["aria-expanded"], "true");
+    assert.equal(childTurnBefore.classList.contains("selected"), true);
     assert.equal(after[1].querySelectorAll(".turn").length, 2);
+});
+
+test("updates an incomplete current turn without replacing map DOM", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const sessionId = "11111111-1111-4111-8111-111111111111";
+    const turn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Explain the refresh",
+        assistantContent: "",
+        status: "incomplete",
+    };
+    const states = [
+        readyState(sessionId, [lane(sessionId, true, [turn])]),
+        readyState(sessionId, [
+            lane(sessionId, true, [
+                { ...turn, assistantContent: "Partial response" },
+            ]),
+        ]),
+        readyState(sessionId, [
+            lane(sessionId, true, [
+                {
+                    ...turn,
+                    assistantContent: "Complete response",
+                    status: "completed",
+                },
+            ]),
+        ]),
+    ];
+    const document = fakeDocument();
+    let requestCount = 0;
+    const context = browserContext(document, states[0]);
+    context.fetch = async (url) => {
+        if (url.startsWith("/api/state")) {
+            return jsonResponse(states[Math.min(requestCount++, states.length - 1)]);
+        }
+        throw new Error(`Unexpected request: ${url}`);
+    };
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const viewport = document.querySelector(".map-viewport");
+    const laneBefore = document.querySelector(".lane");
+    const turnBefore = document.querySelector(".turn");
+    const messagesBefore = turnBefore.querySelectorAll(".message");
+    viewport.scrollLeft = 137;
+    viewport.scrollTop = 59;
+
+    document.querySelector("#refresh").click();
+    await settle();
+
+    assert.equal(document.querySelector(".map-viewport"), viewport);
+    assert.equal(document.querySelector(".lane"), laneBefore);
+    assert.equal(document.querySelector(".turn"), turnBefore);
+    assert.equal(turnBefore.querySelectorAll(".message")[0], messagesBefore[0]);
+    assert.equal(turnBefore.querySelectorAll(".message")[1], messagesBefore[1]);
+    assert.match(textIn(messagesBefore[1]), /Partial response/);
+    assert.equal(viewport.scrollLeft, 137);
+    assert.equal(viewport.scrollTop, 59);
+
+    document.querySelector("#refresh").click();
+    await settle();
+
+    assert.equal(document.querySelector(".turn"), turnBefore);
+    assert.equal(turnBefore.classList.contains("completed"), true);
+    assert.equal(document.querySelector("#live-status").textContent, "Turn completed.");
+});
+
+test("skips DOM reconciliation for snapshot changes that are not rendered", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const sessionId = "11111111-1111-4111-8111-111111111111";
+    const turn = {
+        id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        userContent: "Inspect the repository",
+        assistantContent: "",
+        status: "incomplete",
+        executionDetails: [],
+    };
+    const initialLane = lane(sessionId, true, [turn]);
+    const updatedLane = {
+        ...lane(sessionId, true, [
+            {
+                ...turn,
+                executionDetails: [
+                    {
+                        id: "tool-event",
+                        type: "tool.execution_complete",
+                    },
+                ],
+            },
+        ]),
+        session: {
+            ...initialLane.session,
+            modifiedTime: "2026-08-20T08:00:01.000Z",
+        },
+    };
+    const states = [
+        readyState(sessionId, [initialLane]),
+        readyState(sessionId, [updatedLane]),
+    ];
+    const document = fakeDocument();
+    let requestCount = 0;
+    let animationFrames = 0;
+    const context = browserContext(document, states[0]);
+    context.fetch = async (url) => {
+        if (url.startsWith("/api/state")) {
+            return jsonResponse(states[Math.min(requestCount++, states.length - 1)]);
+        }
+        throw new Error(`Unexpected request: ${url}`);
+    };
+    context.requestAnimationFrame = (callback) => {
+        animationFrames += 1;
+        callback();
+    };
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const viewport = document.querySelector(".map-viewport");
+    const turnBefore = document.querySelector(".turn");
+    animationFrames = 0;
+    document.querySelector("#refresh").click();
+    await settle();
+
+    assert.equal(document.querySelector(".map-viewport"), viewport);
+    assert.equal(document.querySelector(".turn"), turnBefore);
+    assert.equal(animationFrames, 0);
+});
+
+test("keeps automatic refresh silent and preserves the last good map on failure", async () => {
+    const html = renderHtml();
+    const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1];
+    assert.ok(script);
+
+    const sessionId = "11111111-1111-4111-8111-111111111111";
+    const state = readyState(sessionId, [lane(sessionId, true, [])]);
+    const document = fakeDocument();
+    const responses = [
+        jsonResponse(state),
+        { ok: false, status: 503 },
+        jsonResponse({ kind: "error", message: "Snapshot unavailable" }),
+        jsonResponse(state),
+    ];
+    let invalidate;
+    const context = browserContext(document, state);
+    context.fetch = async (url) => {
+        if (url.startsWith("/api/state")) return responses.shift();
+        throw new Error(`Unexpected request: ${url}`);
+    };
+    context.EventSource = class {
+        addEventListener(type, callback) {
+            if (type === "invalidate") invalidate = callback;
+        }
+    };
+    new vm.Script(script).runInContext(vm.createContext(context));
+    await settle();
+
+    const viewport = document.querySelector(".map-viewport");
+    invalidate();
+
+    assert.equal(document.querySelector("#refresh").disabled, false);
+    assert.notEqual(document.querySelector("#status").textContent, "Refreshing...");
+    await settle();
+
+    assert.equal(document.querySelector(".map-viewport"), viewport);
+    assert.equal(document.querySelectorAll(".lane").length, 1);
+    assert.equal(document.querySelector("#notice").hidden, false);
+    assert.match(textIn(document.querySelector("#notice")), /503/);
+
+    invalidate();
+    await settle();
+
+    assert.equal(document.querySelector(".map-viewport"), viewport);
+    assert.equal(document.querySelector("#notice").hidden, false);
+    assert.match(
+        textIn(document.querySelector("#notice")),
+        /Snapshot unavailable/,
+    );
+
+    invalidate();
+    await settle();
+
+    assert.equal(document.querySelector(".map-viewport"), viewport);
+    assert.equal(document.querySelector("#notice").hidden, true);
 });
 
 test("defaults a large non-current subtree to collapsed without hiding its root", async () => {
@@ -928,6 +1136,10 @@ test("refreshes the family after a branch is created", async () => {
     new vm.Script(script).runInContext(context);
     await settle();
 
+    const viewport = document.querySelector(".map-viewport");
+    const family = document.querySelector(".family");
+    const parentLane = document.querySelector(".lane");
+    const parentTurn = document.querySelector(".turn");
     document.querySelector(".turn").click();
     document.querySelector(".branch-button").click();
     await settle();
@@ -950,13 +1162,33 @@ test("refreshes the family after a branch is created", async () => {
         .map((stem) => Number(/^M ([\d.-]+)/.exec(stem.d)?.[1]));
     assert.equal(Number(bus.x2), Math.max(...stemStartXs));
     assert.equal(document.querySelectorAll(".state").length, 0);
+    assert.equal(document.querySelector(".map-viewport"), viewport);
+    assert.equal(document.querySelector(".family"), family);
+    assert.equal(
+        document
+            .querySelectorAll(".lane")
+            .find((candidate) => candidate.dataset.sessionId === parentId),
+        parentLane,
+    );
+    assert.equal(parentLane.querySelector(".turn"), parentTurn);
     const createdChildLane = document
         .querySelectorAll(".lane")
         .find((candidate) => candidate.dataset.sessionId === childId);
     const handoffNode = createdChildLane.querySelector(".turn.virtual");
+    const siblingLane = document
+        .querySelectorAll(".lane")
+        .find((candidate) => candidate.dataset.sessionId === siblingId);
+    const stems = new Map(
+        document
+            .querySelectorAll(".branch-stem")
+            .map((stem) => [stem.dataset.connectionKey, stem]),
+    );
+    const childMinimapShape = document
+        .querySelectorAll(".minimap-lane")
+        .find((shape) => shape.dataset.sessionId === childId);
     assert.equal(createdChildLane.scrollIntoViewCount, 0);
     assert.equal(handoffNode.scrollIntoViewCount, 1);
-    assert.equal(handoffNode.classList.contains("handoff-arrival"), true);
+    assert.equal(handoffNode.classList.contains("handoff-arrival"), false);
     assert.equal(document.querySelector("#notice").hidden, true);
 
     document.querySelector("#refresh").click();
@@ -969,6 +1201,36 @@ test("refreshes the family after a branch is created", async () => {
         1,
     );
     assert.equal(document.querySelectorAll(".branch-bus.pending").length, 0);
+    assert.equal(document.querySelector(".map-viewport"), viewport);
+    assert.equal(document.querySelector(".family"), family);
+    assert.equal(
+        document
+            .querySelectorAll(".lane")
+            .find((candidate) => candidate.dataset.sessionId === parentId),
+        parentLane,
+    );
+    assert.equal(
+        document
+            .querySelectorAll(".lane")
+            .find((candidate) => candidate.dataset.sessionId === childId),
+        createdChildLane,
+    );
+    assert.equal(
+        document
+            .querySelectorAll(".lane")
+            .find((candidate) => candidate.dataset.sessionId === siblingId),
+        siblingLane,
+    );
+    assert.equal(document.querySelector(".branch-bus"), bus);
+    document.querySelectorAll(".branch-stem").forEach((stem) => {
+        assert.equal(stems.get(stem.dataset.connectionKey), stem);
+    });
+    assert.equal(
+        document
+            .querySelectorAll(".minimap-lane")
+            .find((shape) => shape.dataset.sessionId === childId),
+        childMinimapShape,
+    );
 });
 
 test("forks a completed turn directly from a non-current family lane", async () => {
@@ -1407,6 +1669,7 @@ function fakeDocument() {
         ["content", new FakeElement("main")],
         ["refresh", new FakeElement("button")],
         ["status", new FakeElement("p")],
+        ["live-status", new FakeElement("p")],
         ["notice", new FakeElement("aside")],
         ["zoom-out", new FakeElement("button")],
         ["zoom-in", new FakeElement("button")],
@@ -1464,6 +1727,16 @@ class FakeElement {
         return this.children.length;
     }
 
+    get childNodes() {
+        return this.children;
+    }
+
+    get lastElementChild() {
+        return [...this.children]
+            .reverse()
+            .find((child) => child instanceof FakeElement);
+    }
+
     get parentElement() {
         return this.parent || null;
     }
@@ -1492,19 +1765,49 @@ class FakeElement {
 
     append(...children) {
         children.forEach((child) => {
-            if (child instanceof FakeElement) child.parent = this;
+            if (child instanceof FakeElement) {
+                child.remove();
+                child.parent = this;
+            }
+            this.children.push(child);
         });
-        this.children.push(...children);
         if (this.#classes().has("content")) {
             this.scrollHeight = textIn(this).split("\n").length * 20;
         }
     }
 
     replaceChildren(...children) {
-        children.forEach((child) => {
-            if (child instanceof FakeElement) child.parent = this;
+        this.children.forEach((child) => {
+            if (child instanceof FakeElement && child.parent === this) {
+                child.parent = undefined;
+            }
         });
-        this.children = children;
+        this.children = [];
+        children.forEach((child) => {
+            if (child instanceof FakeElement) {
+                child.remove();
+                child.parent = this;
+            }
+            this.children.push(child);
+        });
+    }
+
+    insertBefore(child, reference) {
+        if (child instanceof FakeElement) {
+            child.remove();
+            child.parent = this;
+        }
+        const index =
+            reference === null ? this.children.length : this.children.indexOf(reference);
+        this.children.splice(index < 0 ? this.children.length : index, 0, child);
+        return child;
+    }
+
+    remove() {
+        if (!this.parent) return;
+        const index = this.parent.children.indexOf(this);
+        if (index >= 0) this.parent.children.splice(index, 1);
+        this.parent = undefined;
     }
 
     addEventListener(type, listener) {

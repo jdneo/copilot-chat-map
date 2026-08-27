@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { resolveEventLogPath } from "./event-reader.mjs";
 
-const WATCH_DEBOUNCE_MS = 200;
+const WATCH_THROTTLE_MS = 250;
 const RECONCILIATION_MS = 15_000;
 
 export function createFamilyLiveSync({
@@ -16,21 +16,21 @@ export function createFamilyLiveSync({
     clearTimer = clearTimeout,
     setRepeater = setInterval,
     clearRepeater = clearInterval,
-    debounceMs = WATCH_DEBOUNCE_MS,
+    throttleMs = WATCH_THROTTLE_MS,
     reconciliationMs = RECONCILIATION_MS,
 }) {
     const watchers = new Map();
-    let debounceTimer;
+    let invalidationTimer;
     let closed = false;
 
     function scheduleInvalidation(reason = "events") {
         if (closed) return;
-        if (debounceTimer) clearTimer(debounceTimer);
-        debounceTimer = setTimer(() => {
-            debounceTimer = undefined;
+        if (invalidationTimer) return;
+        invalidationTimer = setTimer(() => {
+            invalidationTimer = undefined;
             onInvalidate(reason);
-        }, debounceMs);
-        debounceTimer?.unref?.();
+        }, throttleMs);
+        invalidationTimer?.unref?.();
     }
 
     function update(snapshot) {
@@ -81,7 +81,7 @@ export function createFamilyLiveSync({
     function close() {
         if (closed) return;
         closed = true;
-        if (debounceTimer) clearTimer(debounceTimer);
+        if (invalidationTimer) clearTimer(invalidationTimer);
         clearRepeater(reconciliationTimer);
         for (const watcher of watchers.values()) watcher.close();
         watchers.clear();
