@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { groupTurns } from "../extensions/chat-fork-map/transcript.mjs";
+import { groupTurns } from "../com.github.copilot/extensions/chat-fork-map/transcript.mjs";
 
 test("groups a completed user and Copilot exchange into one Turn Node", () => {
     const events = [

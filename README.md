@@ -36,16 +36,16 @@ also requires Git and PowerShell 7 (`pwsh`).
 
 ## Installation
 
-### Install the 0.0.4 release
+### Install as an Agent Plugin
 
-Ask Copilot to install the extension from the following GitHub folder and
-choose the **User** scope:
+Before marketplace approval, install directly from the public GitHub
+repository:
 
-```text
-https://github.com/jdneo/copilot-chat-map/tree/0.0.4/extensions/chat-fork-map
+```powershell
+copilot plugin install jdneo/copilot-chat-map
 ```
 
-Reload extensions in Copilot after installation.
+Reload Copilot extensions after installation.
 
 ### Install from source
 
@@ -60,6 +60,16 @@ The installer copies the extension to
 `~/.copilot/extensions/chat-fork-map` when `COPILOT_HOME` is not set. Running
 it again upgrades the implementation while preserving the current lineage
 index.
+
+### Package layout
+
+- `plugin.json` is the Agent Plugins v1 manifest.
+- `com.github.copilot/extensions/chat-fork-map/` contains the packaged Canvas
+  extension.
+- Root `extension.mjs` and `copilot-extension.json` keep direct extension
+  installation compatible.
+- `extensions/chat-fork-map/extension.mjs` keeps compatibility with the current
+  Awesome Copilot Canvas intake gate.
 
 ## Usage
 

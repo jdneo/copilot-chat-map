@@ -7,9 +7,9 @@ import test from "node:test";
 import {
     closeServer,
     startCanvasServer,
-} from "../extensions/chat-fork-map/canvas-server.mjs";
-import { createForkService } from "../extensions/chat-fork-map/fork-service.mjs";
-import { createLineageStore } from "../extensions/chat-fork-map/lineage-store.mjs";
+} from "../com.github.copilot/extensions/chat-fork-map/canvas-server.mjs";
+import { createForkService } from "../com.github.copilot/extensions/chat-fork-map/fork-service.mjs";
+import { createLineageStore } from "../com.github.copilot/extensions/chat-fork-map/lineage-store.mjs";
 
 test("binds to loopback with a high-entropy instance token and strict CSP", async () => {
     const entry = await startCanvasServer({

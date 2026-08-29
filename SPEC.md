@@ -2,7 +2,7 @@
 
 状态：已实现
 目标版本：GitHub Copilot App / CLI 1.0.80+
-交付范围：用户级 `chat-fork-map` Canvas Extension
+交付范围：Agent Plugin 中的 `chat-fork-map` Canvas Extension，兼容用户级直接安装
 
 ## 1. 目标
 
@@ -384,13 +384,26 @@ copilot --resume=<sessionId>
 
 ## 10. 扩展结构
 
-最终扩展位于：
+发布包遵循 Agent Plugins v1，并将 Canvas 放在 Copilot 客户端命名空间：
 
 ```text
-$COPILOT_HOME/extensions/chat-fork-map/
+chat-fork-map/
+├── plugin.json
+├── extension.mjs
+├── copilot-extension.json
+├── extensions/
+│   └── chat-fork-map/
+│       └── extension.mjs
+└── com.github.copilot/
+    └── extensions/
+        └── chat-fork-map/
 ```
 
-建议模块边界：
+`extensions/chat-fork-map/extension.mjs` 只用于兼容 Awesome Copilot 当前的
+Canvas intake 路径检查，实际实现仍只有 `com.github.copilot/` 下的一份。
+
+通过源码安装脚本安装后，扩展位于
+`$COPILOT_HOME/extensions/chat-fork-map/`。Canvas 的模块边界为：
 
 ```text
 chat-fork-map/

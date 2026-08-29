@@ -26,6 +26,7 @@ const installScript = path.join(
 );
 const extensionSource = path.join(
     repositoryRoot,
+    "com.github.copilot",
     "extensions",
     "chat-fork-map",
 );

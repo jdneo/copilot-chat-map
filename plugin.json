@@ -1,7 +1,8 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "chat-fork-map",
   "description": "Visualize local Copilot conversation lineage and fork completed turns into CLI sessions.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": {
     "name": "jdneo",
     "url": "https://github.com/jdneo"
@@ -17,6 +18,9 @@
     "session-branching",
     "visualization"
   ],
-  "logo": "assets/preview.png",
-  "extensions": "extensions"
+  "extensions": {
+    "com.github.copilot": {
+      "logo": "assets/preview.png"
+    }
+  }
 }

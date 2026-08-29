@@ -2,7 +2,7 @@
 param()
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
-$source = Join-Path (Join-Path $repositoryRoot "extensions") "chat-fork-map"
+$source = Join-Path $repositoryRoot "com.github.copilot\extensions\chat-fork-map"
 $copilotHome = if ($env:COPILOT_HOME) {
     $env:COPILOT_HOME
 } else {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createFamilyLiveSync } from "../extensions/chat-fork-map/live-sync.mjs";
+import { createFamilyLiveSync } from "../com.github.copilot/extensions/chat-fork-map/live-sync.mjs";
 
 test("coalesces event log notifications for known family members", () => {
     const callbacks = new Map();
