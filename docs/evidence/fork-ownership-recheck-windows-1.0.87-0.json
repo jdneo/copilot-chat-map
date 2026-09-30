@@ -1,0 +1,703 @@
+{
+  "schemaVersion": 1,
+  "runId": "555e21ec-b83f-4729-8df7-bb5f156f6439",
+  "startedAt": "2026-09-30T08:34:58.479Z",
+  "platform": "win32",
+  "architecture": "x64",
+  "node": "v22.21.1",
+  "requestedVersion": "1.0.87-0",
+  "mode": "ownership-recheck",
+  "repeats": 5,
+  "modelCalls": 0,
+  "cases": [
+    {
+      "scenario": "live-occupancy-after-competing-release",
+      "boundary": "release-0",
+      "preflight": [
+        false,
+        false
+      ],
+      "alreadyInUse": [
+        true,
+        false
+      ],
+      "liveOccupancyWithBothLoaded": [
+        true,
+        true
+      ],
+      "observerSeesBothLoaded": true,
+      "survivorResponds": true,
+      "survivorProcessing": false,
+      "survivorSeesOtherOwner": false,
+      "observerSeesSurvivor": true,
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "85a4b707-0c0e-405f-892f-1726a732cf60",
+          "type": "session.start",
+          "hash": "d80272c4a917cd9564b259f247e101b89753c8e9301c72d051f5a346115e32b1"
+        },
+        {
+          "id": "c5e31bd7-2219-4f15-9ffb-8b664ac90fac",
+          "type": "user.message",
+          "hash": "8ff5f35ce4ea9e1e7083c78ba2392f0717a3a141c9bb717e0523ef0572120dac"
+        },
+        {
+          "id": "47456fdd-8d2a-45a0-8d00-fedd34abf7b0",
+          "type": "assistant.message",
+          "hash": "24b9303fd72f103d682ff04e51d3c53eab0ad4d82f7507b26da228ce8055f817"
+        },
+        {
+          "id": "14a669da-ef8a-42d3-83f1-534a92d497e2",
+          "type": "assistant.turn_end",
+          "hash": "ec01294dddb5a5870a21cfd20511742cea1e812b0865012ec543b643ac6a9419"
+        },
+        {
+          "id": "6bca3784-b0d1-48ef-9afa-028e0f578206",
+          "type": "user.message",
+          "hash": "beb99a1195a931a6d15fac2a447c98a4d168ec6cd3c5acc7564f5a221d7db2fe"
+        },
+        {
+          "id": "96d7b56d-b7cc-45a6-9f03-35a705b032f7",
+          "type": "assistant.message",
+          "hash": "39272b5b44b4c267eea523a7571aef9f930cc529d423a19a1b6efd61fe10294e"
+        },
+        {
+          "id": "d0407953-0c69-496c-9fbe-fc11116ed1a2",
+          "type": "assistant.turn_end",
+          "hash": "1d4b0cbaa40a0f72e4768baa216bb116547ec8ee35ef1748eb4c2a0d11ce64ab"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "live-survivor-visible-after-release",
+      "completed": true
+    },
+    {
+      "scenario": "live-occupancy-after-competing-release",
+      "boundary": "release-1",
+      "preflight": [
+        false,
+        false
+      ],
+      "alreadyInUse": [
+        true,
+        false
+      ],
+      "liveOccupancyWithBothLoaded": [
+        true,
+        true
+      ],
+      "observerSeesBothLoaded": true,
+      "survivorResponds": true,
+      "survivorProcessing": false,
+      "survivorSeesOtherOwner": false,
+      "observerSeesSurvivor": true,
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "0da1c4e9-25af-4200-ae64-7ef32543734a",
+          "type": "session.start",
+          "hash": "d5d8e823ad66f1ad547178adb9a8cccdb9abf1a1edbec739b717f4d266fdaf40"
+        },
+        {
+          "id": "de1d4e4f-90f0-453a-846e-86489023b6f3",
+          "type": "user.message",
+          "hash": "36ca684046e1479234ec95f2b48d418fdaa55ef49410acad3dfcfff75d4f0da9"
+        },
+        {
+          "id": "3ade7bb7-75fb-4671-b662-bd6a93fdaf66",
+          "type": "assistant.message",
+          "hash": "d9b8c959a14e1941545663c829bbd0224d3000c4cea67c9a961267d7bbb707f4"
+        },
+        {
+          "id": "96b316c1-ec05-4b48-9a03-200b1628b9a4",
+          "type": "assistant.turn_end",
+          "hash": "4218bf887f47c280296d3ad5b4d181fad4d3d3c852f91cf48167cd1a12e6c126"
+        },
+        {
+          "id": "74f55b58-798a-44e6-893c-e1caf0429570",
+          "type": "user.message",
+          "hash": "eadee7e0695f1ad5bb1cd35ce799464397261d300bf7b7556af947631bfdb52d"
+        },
+        {
+          "id": "b9fb0ea6-f6df-4d41-bbc2-aaa38a7b3745",
+          "type": "assistant.message",
+          "hash": "2eb4d7e1ddbb884ab7c46b7954e63df3f68b6b7996879b54b51ef5664868c488"
+        },
+        {
+          "id": "2a09aea4-9040-4796-b4f4-40bd6fd7f44d",
+          "type": "assistant.turn_end",
+          "hash": "e341895c829be5ab35e7ffec6f333584de37378926d5fda92cb6cfbcfeb845ad"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "live-survivor-visible-after-release",
+      "completed": true
+    },
+    {
+      "scenario": "live-occupancy-after-competing-release",
+      "boundary": "release-0",
+      "preflight": [
+        false,
+        false
+      ],
+      "alreadyInUse": [
+        false,
+        false
+      ],
+      "liveOccupancyWithBothLoaded": [
+        true,
+        true
+      ],
+      "observerSeesBothLoaded": true,
+      "survivorResponds": true,
+      "survivorProcessing": false,
+      "survivorSeesOtherOwner": false,
+      "observerSeesSurvivor": true,
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "51bdaf63-8fde-424c-99a5-883c4d3a8b35",
+          "type": "session.start",
+          "hash": "9db18fc4f880a9814700e9bf191e7130ddf22373b90c624491c40d5f0beea692"
+        },
+        {
+          "id": "5889134f-fa7d-463b-b0c5-fbbc22694327",
+          "type": "user.message",
+          "hash": "1d94142ebe0e599fdb3406f436c8fb099a022b53e2db2c9d7ef2a968a356ae2f"
+        },
+        {
+          "id": "2694151e-5e2b-49f1-a906-d4abc23d13df",
+          "type": "assistant.message",
+          "hash": "dc9b592fefd394fe9d74b7fd536e01f195351ecaef0902172fd30c325f1ac80a"
+        },
+        {
+          "id": "8fe8d9de-882f-426a-a300-04c8a14fffbb",
+          "type": "assistant.turn_end",
+          "hash": "b42852ded3204c65d5933c48847c91fd406751d14683ad3da7a671a0657cdd29"
+        },
+        {
+          "id": "dc54efed-3dee-4d8a-9543-432e0ff3d387",
+          "type": "user.message",
+          "hash": "b5eaeb553849bc75df0c62aef725e54396ce418c9dbdda1b39a16a2c41d63063"
+        },
+        {
+          "id": "943f585d-9c36-4c8b-83df-4b3314e886ea",
+          "type": "assistant.message",
+          "hash": "ed1fa9709476131e0105153973f33d93652a774f390825898ce4a471d71c8fd9"
+        },
+        {
+          "id": "913190b9-22ca-4697-a1b6-e65b3c1904d0",
+          "type": "assistant.turn_end",
+          "hash": "8295653b483ccff919eac53777de308ee2d9db52742e03014a0f3253a017f40a"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "live-survivor-visible-after-release",
+      "completed": true
+    },
+    {
+      "scenario": "live-occupancy-after-competing-release",
+      "boundary": "release-1",
+      "preflight": [
+        false,
+        false
+      ],
+      "alreadyInUse": [
+        false,
+        false
+      ],
+      "liveOccupancyWithBothLoaded": [
+        true,
+        true
+      ],
+      "observerSeesBothLoaded": true,
+      "survivorResponds": true,
+      "survivorProcessing": false,
+      "survivorSeesOtherOwner": false,
+      "observerSeesSurvivor": true,
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "e34b4da2-e5f4-482f-abd8-3f0be95d31f7",
+          "type": "session.start",
+          "hash": "3a0527d64e251490ae186213f0f4e9749561a1ad6d82318130942c00a3009927"
+        },
+        {
+          "id": "c90d9608-a354-4a6e-b78b-b9f84e90a6b3",
+          "type": "user.message",
+          "hash": "1b9d4d48a0b8896e4b3d2f5453e45139ec67e587835057756a73100f96920291"
+        },
+        {
+          "id": "35e2d779-0033-4a48-b5d8-e1ee7987ee6b",
+          "type": "assistant.message",
+          "hash": "7e8f143d00dba10f0953a3971ca95afc7d86ddbd51e904f71301a36e52a1c567"
+        },
+        {
+          "id": "e173211d-53f8-47c5-8ce7-adaa7bfce1f8",
+          "type": "assistant.turn_end",
+          "hash": "6d01e7319f605608c56f83a2bf4d60c526d51ed6426984d33deb8a0eaae879dc"
+        },
+        {
+          "id": "f253b31e-d703-4a04-89ff-7ff99d915593",
+          "type": "user.message",
+          "hash": "3637ef61d5a79a33b143916a1da8260f6317c6c41e59431c6c0695cd95fa0827"
+        },
+        {
+          "id": "3efdb1c3-70cb-41ff-a17f-cc0d66acf495",
+          "type": "assistant.message",
+          "hash": "b16389521fbaf336f5f494329a8c16d9b08dbc8c36c36bfbae78f6dc86ef9d55"
+        },
+        {
+          "id": "9d557e3c-f9f7-47b0-ada1-0067920db698",
+          "type": "assistant.turn_end",
+          "hash": "eecb071a74d8295b14388a077d691057e25a9f8a713ab043af9ae5b5ab7f8e1a"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "live-survivor-visible-after-release",
+      "completed": true
+    },
+    {
+      "scenario": "live-occupancy-after-competing-release",
+      "boundary": "release-0",
+      "preflight": [
+        false,
+        false
+      ],
+      "alreadyInUse": [
+        false,
+        true
+      ],
+      "liveOccupancyWithBothLoaded": [
+        true,
+        true
+      ],
+      "observerSeesBothLoaded": true,
+      "survivorResponds": true,
+      "survivorProcessing": false,
+      "survivorSeesOtherOwner": false,
+      "observerSeesSurvivor": true,
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "def492c3-65c4-4985-bf4b-10dea4289704",
+          "type": "session.start",
+          "hash": "d64436245b3fafeee97fba28e261dd5fc9d62592e278097bf32128f04c9812d4"
+        },
+        {
+          "id": "3071b5be-4af6-4402-bbc9-0138b8f8138d",
+          "type": "user.message",
+          "hash": "98839de49c8188e25fecc6c1d4fde9afaa82d639b4358b54ac5d2dd0ed0b13a6"
+        },
+        {
+          "id": "3e4a48d3-ba0e-43e2-b190-aa825e98602b",
+          "type": "assistant.message",
+          "hash": "dfec631a694e81312fa2cfc901f64666a3ca02a501547a42c4b25982e87f91ea"
+        },
+        {
+          "id": "ad1e35d8-0ebd-411b-a7f3-3bad0f3e6aeb",
+          "type": "assistant.turn_end",
+          "hash": "e8963dc8273d0adfd048fe850f6339db1795db2134c0ae9fed2cb6a8d33a2b42"
+        },
+        {
+          "id": "952dd3ce-46af-4ce2-acca-5289fb1ca9b6",
+          "type": "user.message",
+          "hash": "dd1a707fc05c8c055584d08f1e91dc9a58f5de4d6c4c7252279eff10f52b5003"
+        },
+        {
+          "id": "d9aa5a36-ce4d-4ba4-9c89-e99941ab3479",
+          "type": "assistant.message",
+          "hash": "07c410c24876f64f70c97499d9fb2b45af702e6deb5746491eaa85d3122ac043"
+        },
+        {
+          "id": "572e04ca-056e-445b-bbf8-35564dd6b277",
+          "type": "assistant.turn_end",
+          "hash": "09540c306bce720bda10c2484fc32d7a671c04530d47aaf49190c666e9dc2cb6"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "live-survivor-visible-after-release",
+      "completed": true
+    },
+    {
+      "scenario": "live-occupancy-after-competing-release",
+      "boundary": "release-1",
+      "preflight": [
+        false,
+        false
+      ],
+      "alreadyInUse": [
+        false,
+        true
+      ],
+      "liveOccupancyWithBothLoaded": [
+        true,
+        true
+      ],
+      "observerSeesBothLoaded": true,
+      "survivorResponds": true,
+      "survivorProcessing": false,
+      "survivorSeesOtherOwner": false,
+      "observerSeesSurvivor": true,
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "cb3162ed-c356-4313-bfd2-539c76667fae",
+          "type": "session.start",
+          "hash": "1907f05b66e82c9dd22354044130e20ea14461f409aed8d0da4583844c13e858"
+        },
+        {
+          "id": "caad7b07-f9e8-479b-bfa2-c3bee008e8d3",
+          "type": "user.message",
+          "hash": "026868040b93809938512f0532d7c3a11e96f4bafb7b57cc425bdea84e6ece73"
+        },
+        {
+          "id": "951a46fe-1603-4c40-85e6-24d0fa275e99",
+          "type": "assistant.message",
+          "hash": "4f398cf333e293149fc4d989fd242c02f6c7f0a4148e1dd3769c95c33f47faee"
+        },
+        {
+          "id": "c15048a6-f060-4f0c-986a-2d1e014b7722",
+          "type": "assistant.turn_end",
+          "hash": "7e3bf10faf6ba2b3ef4061d60d642c27cf49d4d08299bb6ca1ef261c3a3f111f"
+        },
+        {
+          "id": "39777c4f-e443-4832-8b49-aa692b7fa40d",
+          "type": "user.message",
+          "hash": "b4bc91972ebf538c2f8889c84f35f843c87481611dd9543f42176c089b2aeadb"
+        },
+        {
+          "id": "ce5c01c3-0932-407c-a2a6-9c8543e37aa8",
+          "type": "assistant.message",
+          "hash": "20e711e9a0502a1c041bb6a65538a567fb5d0efbc827e5c290aa05635e5d0401"
+        },
+        {
+          "id": "4e74ee72-f876-450c-859c-ddaa324f2d93",
+          "type": "assistant.turn_end",
+          "hash": "192ab2f708c7e9b9267f8a063e68395c7a49930739717e484454776baf166e74"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "live-survivor-visible-after-release",
+      "completed": true
+    },
+    {
+      "scenario": "live-occupancy-after-competing-release",
+      "boundary": "release-0",
+      "preflight": [
+        false,
+        false
+      ],
+      "alreadyInUse": [
+        false,
+        false
+      ],
+      "liveOccupancyWithBothLoaded": [
+        true,
+        true
+      ],
+      "observerSeesBothLoaded": true,
+      "survivorResponds": true,
+      "survivorProcessing": false,
+      "survivorSeesOtherOwner": false,
+      "observerSeesSurvivor": true,
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "97451363-0989-48c9-ae5d-ae9b27fcbc68",
+          "type": "session.start",
+          "hash": "6135ca621108406bffb1e0c7dc8b885dd70927607acb49bd0777bdf9a42ff9ef"
+        },
+        {
+          "id": "ef12c0d4-de6b-418c-9b6c-b696db2b0bae",
+          "type": "user.message",
+          "hash": "949d71e9adc2f11ebe776aaae5d47b26bcff2e2f50958421829c649764f4e49f"
+        },
+        {
+          "id": "38b1f44d-6079-4674-b574-b75727c3e8fb",
+          "type": "assistant.message",
+          "hash": "d4d8bb240838c8a539b08f350ed647b855ffd86056f4c67de2a4d4b832e2788e"
+        },
+        {
+          "id": "1a2d0a8c-ec6c-4787-a68a-cd39b867f2aa",
+          "type": "assistant.turn_end",
+          "hash": "69268827284469944bb8f06c3d89e4d55c7232cacbaf604aec2266ccad6fe828"
+        },
+        {
+          "id": "00ea1be6-34c7-4709-8c6a-120b73f7bfc7",
+          "type": "user.message",
+          "hash": "d48b25a787c23282ec1ce48e63a457e3d6ba6c3496452dda9f1e245175528554"
+        },
+        {
+          "id": "3c99a57e-6488-4aa6-9fd4-bb29db38f1ae",
+          "type": "assistant.message",
+          "hash": "0c974a90e0fcb779950493054b56c931134a78712554585d9eb811fd733f7012"
+        },
+        {
+          "id": "1f9b65c9-3924-4732-986e-d6714454a838",
+          "type": "assistant.turn_end",
+          "hash": "5934d0185aeddd65fdb36cb265d2a55d94d20c530f755a0cebf2faf7d7260b20"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "live-survivor-visible-after-release",
+      "completed": true
+    },
+    {
+      "scenario": "live-occupancy-after-competing-release",
+      "boundary": "release-1",
+      "preflight": [
+        false,
+        false
+      ],
+      "alreadyInUse": [
+        true,
+        false
+      ],
+      "liveOccupancyWithBothLoaded": [
+        true,
+        true
+      ],
+      "observerSeesBothLoaded": true,
+      "survivorResponds": true,
+      "survivorProcessing": false,
+      "survivorSeesOtherOwner": false,
+      "observerSeesSurvivor": true,
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "f6f6f291-151c-44c3-8e32-40c61f2c2bc2",
+          "type": "session.start",
+          "hash": "105ba992c9a7958b52aa64ecc025e306102fb2d1e4e88a156ecf788ab822e041"
+        },
+        {
+          "id": "c5deff49-b17a-40ef-bbdd-bff6cc6ba3c2",
+          "type": "user.message",
+          "hash": "e89a4dd2f25c79db03e65b4d2c9b1c92dc62c1b3376096b0f1fc779d47e7c75a"
+        },
+        {
+          "id": "229f25e9-384d-451b-8be6-9cc9b6558c5f",
+          "type": "assistant.message",
+          "hash": "d3ff21897975af3dd0947f5118f08da6dc56f7fdd959d13e72c888c17c8382d4"
+        },
+        {
+          "id": "4d836119-7cb9-4e4e-8f70-da51ab3d0dec",
+          "type": "assistant.turn_end",
+          "hash": "915ea211709f24e5855e0a77465d23419358b6c987245198e4af26fc073f2bfe"
+        },
+        {
+          "id": "00d39a5c-3feb-4c5a-8b9e-fcb84014a497",
+          "type": "user.message",
+          "hash": "06acbfc394e352d8cfe256b0a9f3309bb4e4aad8188415caea7855bcfa26de46"
+        },
+        {
+          "id": "80997264-e119-4751-8db0-6ab02850a407",
+          "type": "assistant.message",
+          "hash": "0eeb324ea59b36ac3e61651fe20dec8af974ea7505eb8c0d591c6d588b0a7096"
+        },
+        {
+          "id": "5ee0b0f4-5da8-4725-92c8-1076571a4ad4",
+          "type": "assistant.turn_end",
+          "hash": "3c09aa477cae3977ec7f3f8c143c9b0408b3a603eb9ac45f0e1f7834596c74aa"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "live-survivor-visible-after-release",
+      "completed": true
+    },
+    {
+      "scenario": "live-occupancy-after-competing-release",
+      "boundary": "release-0",
+      "preflight": [
+        false,
+        false
+      ],
+      "alreadyInUse": [
+        false,
+        true
+      ],
+      "liveOccupancyWithBothLoaded": [
+        true,
+        true
+      ],
+      "observerSeesBothLoaded": true,
+      "survivorResponds": true,
+      "survivorProcessing": false,
+      "survivorSeesOtherOwner": false,
+      "observerSeesSurvivor": true,
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "4680626d-50ca-4be1-9b71-73db3d3a400a",
+          "type": "session.start",
+          "hash": "c94e4464d809854233773e0dfc384509e9b31687c9d585cacc708a9f6a102a82"
+        },
+        {
+          "id": "e34ef4b7-ced8-4a13-9e30-e40be8d339c1",
+          "type": "user.message",
+          "hash": "6929d846d821a05caddb75f6619035cfbfd74760875c414225726b59ec91d556"
+        },
+        {
+          "id": "5876f049-ce3d-432d-8aff-3c397b356182",
+          "type": "assistant.message",
+          "hash": "875400f418a6961ac73d5fb3964db7b0b6016e177da0e5d9c59684b4bf6b4da6"
+        },
+        {
+          "id": "00c74e8d-ab58-4c0b-8db7-7579ae640e3b",
+          "type": "assistant.turn_end",
+          "hash": "33d542c371ac1da84a7a9f7c429d4af52e301f0fa464f9185e16fda1cc908b03"
+        },
+        {
+          "id": "fa6834be-f6c5-49b8-b527-f614ed0c92d4",
+          "type": "user.message",
+          "hash": "63735a89affdfabe4b425d961cbbe2caf7542e7baca78f64b66553f8e3bd66e5"
+        },
+        {
+          "id": "af5a4fc1-1d51-4d8a-867f-e36b2a1634db",
+          "type": "assistant.message",
+          "hash": "7163454852654d036a33d992deda274cfc0172bfdd58bf92c09e67cf08336302"
+        },
+        {
+          "id": "26ea7d24-4dbd-49af-a2fb-50f5607ed77f",
+          "type": "assistant.turn_end",
+          "hash": "3d86377b80bfc17626acb976e8e8c5b9c6eda683d362fee4a1b3f8c27cdbe3d0"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "live-survivor-visible-after-release",
+      "completed": true
+    },
+    {
+      "scenario": "live-occupancy-after-competing-release",
+      "boundary": "release-1",
+      "preflight": [
+        false,
+        false
+      ],
+      "alreadyInUse": [
+        true,
+        false
+      ],
+      "liveOccupancyWithBothLoaded": [
+        true,
+        true
+      ],
+      "observerSeesBothLoaded": true,
+      "survivorResponds": true,
+      "survivorProcessing": false,
+      "survivorSeesOtherOwner": false,
+      "observerSeesSurvivor": true,
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "7033bc93-7cb9-4d71-8cdb-a862aba37de2",
+          "type": "session.start",
+          "hash": "4e3ab6089492ec6882ac69c64a16c9c44ec2dacd89297dc8fc8c7b54a323ea8d"
+        },
+        {
+          "id": "673e18ff-ad8f-429f-926e-47e5b564a0d7",
+          "type": "user.message",
+          "hash": "36ff2c96bd4625551fe0ff480c32a802de141ab946491ac92723540ef2d4216b"
+        },
+        {
+          "id": "0c3f8fac-ec9a-4315-944e-485953a53b90",
+          "type": "assistant.message",
+          "hash": "95fd7bf93d4ed2025b0740fb7ada062b85f1f47c7164aaecb31e30f0710e2d85"
+        },
+        {
+          "id": "87ac47fd-0857-4d9e-983b-a473d64413e4",
+          "type": "assistant.turn_end",
+          "hash": "4d8c51fa46a5574346775af7d877b956d77547c4cdb122d93c54123bc9ca9472"
+        },
+        {
+          "id": "01d050ec-bedb-4708-814b-387b96129215",
+          "type": "user.message",
+          "hash": "12871ba3832833b484124b8576f7749ad01ce65b12c5ac8724828f386e4e6d6c"
+        },
+        {
+          "id": "ba497a20-99e2-47f0-98de-f312396c7894",
+          "type": "assistant.message",
+          "hash": "5843f6f8b6dba2e33e50d30a5d8e07ee4418a77da4458456c4b47a2a047fe6f7"
+        },
+        {
+          "id": "c02e69f9-0a67-43ea-a6d4-ff4a8d1d46ef",
+          "type": "assistant.turn_end",
+          "hash": "37eb197879356cd280ffca04ca912ada1e6e6c288955f99e6bd38cee9b066a9f"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "live-survivor-visible-after-release",
+      "completed": true
+    }
+  ],
+  "errors": [],
+  "cleanup": [
+    {
+      "id": "0670874d-9061-4b21-8266-bbd24d7b816e",
+      "deleted": true
+    },
+    {
+      "id": "270d2b95-272f-4bae-a9ab-9b4a5aeba359",
+      "deleted": true
+    },
+    {
+      "id": "34ad7bb4-e0f0-4940-87d5-8d9f269b128a",
+      "deleted": true
+    },
+    {
+      "id": "423d0fd3-a34a-41fa-9e28-cf3c85a88c08",
+      "deleted": true
+    },
+    {
+      "id": "63a5260c-704e-45ff-84c1-062fa5dee76a",
+      "deleted": true
+    },
+    {
+      "id": "67009f75-28ae-485a-a80d-b96652be4aad",
+      "deleted": true
+    },
+    {
+      "id": "6755b4a8-dd09-40ea-924d-67233eac8b28",
+      "deleted": true
+    },
+    {
+      "id": "6e258610-2a21-4367-a21a-9ae161777c99",
+      "deleted": true
+    },
+    {
+      "id": "76c33a52-a2ff-4ab7-8364-78cf6f5cc4ea",
+      "deleted": true
+    },
+    {
+      "id": "a63d7f5e-441e-4f4c-a8df-9a88037116f7",
+      "deleted": true
+    }
+  ],
+  "temporaryHome": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ANUewM",
+  "runtime": {
+    "version": "1.0.87-0",
+    "protocolVersion": 3
+  },
+  "capabilities": {
+    "fork": true,
+    "checkInUse": true,
+    "list": true,
+    "close": true,
+    "deleteSession": true
+  },
+  "remainingSessionDirectories": [],
+  "finishedAt": "2026-09-30T08:36:00.067Z",
+  "ownedRuntimeClientsRemaining": 0,
+  "temporaryHomeRemoved": true
+}

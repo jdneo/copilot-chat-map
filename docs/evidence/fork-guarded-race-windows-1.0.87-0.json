@@ -1,0 +1,423 @@
+{
+  "schemaVersion": 1,
+  "runId": "373cae9d-f4e4-42ec-9581-25b8121e73fd",
+  "startedAt": "2026-09-30T08:37:32.653Z",
+  "platform": "win32",
+  "architecture": "x64",
+  "node": "v22.21.1",
+  "requestedVersion": "1.0.87-0",
+  "mode": "guarded-race",
+  "repeats": 3,
+  "modelCalls": 0,
+  "cases": [
+    {
+      "scenario": "post-resume-guarded-fork-race",
+      "boundary": "full",
+      "contenders": [
+        {
+          "index": 0,
+          "alreadyInUse": true,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        },
+        {
+          "index": 1,
+          "alreadyInUse": false,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        }
+      ],
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "4d9c20d6-cdad-4821-a6e2-208ff31303f4",
+          "type": "session.start",
+          "hash": "b0561c1dd4d5bea3c9821dd6e30a0b5dc6bb16cac26ea9629306fd7cfc3959a7"
+        },
+        {
+          "id": "0d041d28-2b57-4c0a-b4f3-7b0409248c14",
+          "type": "user.message",
+          "hash": "e4c04e357ecf918a7480384ef72d9570fa78bb80ba55fe0b1e0980b2b3b7261c"
+        },
+        {
+          "id": "cc91643b-89da-4b4d-bb4b-24c8ec1f1e35",
+          "type": "assistant.message",
+          "hash": "499663115942cb53b9670f53bddd1efe36b4fd53881e428619e885f228172048"
+        },
+        {
+          "id": "56207956-6692-454f-9ba9-9d2dd1b19e12",
+          "type": "assistant.turn_end",
+          "hash": "cce3f1e0eab8adc38a5de87d122ba33414da518858e120868e863886af94966d"
+        },
+        {
+          "id": "7c034048-1245-4c12-9ced-f64fc604aa16",
+          "type": "user.message",
+          "hash": "3d5e87138b4f98e78743490bc7cea2fec082e942d0ceb983b117fe4b51679551"
+        },
+        {
+          "id": "a2656f73-41e0-4c30-80ce-ac978a3ce9e5",
+          "type": "assistant.message",
+          "hash": "5088f914a878194feb272e627aeb450a2e1a69f0f7721db914e13a5af3744d86"
+        },
+        {
+          "id": "08ba639e-435c-4c4e-84dd-c06e50782267",
+          "type": "assistant.turn_end",
+          "hash": "0f87f0022e786d2a348d357beeb7e4de0f88de3c1f58eb3471345119a9eece52"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "observed-race-rejected-or-single-safe-fork",
+      "continuousExclusiveLeaseProven": false,
+      "completed": true
+    },
+    {
+      "scenario": "post-resume-guarded-fork-race",
+      "boundary": "earlier",
+      "contenders": [
+        {
+          "index": 0,
+          "alreadyInUse": true,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        },
+        {
+          "index": 1,
+          "alreadyInUse": false,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        }
+      ],
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "05651b8a-d26f-457a-81da-b7201d25a3bf",
+          "type": "session.start",
+          "hash": "ae59e390a1d1cde14a1f5176ea2426c6451c80b5523e000e7186b54f8bc4e992"
+        },
+        {
+          "id": "1215889e-b530-40ad-a27e-ecffb5db4ba0",
+          "type": "user.message",
+          "hash": "c4219b8d7481e17d573ca5cde20615e01bc6ff4019c6de34d9cf081452dcc2e6"
+        },
+        {
+          "id": "113f32b6-bac9-4142-86fa-ab793493a5c4",
+          "type": "assistant.message",
+          "hash": "0491e3ebfd0eabab5530782d4950311ff7c7644372178bc25430a0f889f85939"
+        },
+        {
+          "id": "d098c3a0-cfa2-44ae-9e6a-0892e3350145",
+          "type": "assistant.turn_end",
+          "hash": "220c96aadecdd7f8eefb7874c257098eedcda66857d5a70f9db711fe441bb737"
+        },
+        {
+          "id": "8b44b26a-787f-4b18-a300-3e1121495c5e",
+          "type": "user.message",
+          "hash": "77fe2050354bfc67061c17c49ce9f75d48fe0ede130e7b91881378794845b1c6"
+        },
+        {
+          "id": "418b0481-82c9-48fb-8434-cc410282f449",
+          "type": "assistant.message",
+          "hash": "55676342c618d47e144d13727bf11e7f7308a56e9e75faef20a667404f886188"
+        },
+        {
+          "id": "981b2db5-72cd-479f-acc7-8aabd0931899",
+          "type": "assistant.turn_end",
+          "hash": "eac10724e1140f80f7504c0d0021caf66551e314f7c0ed40c5ce6f983b0201fb"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "observed-race-rejected-or-single-safe-fork",
+      "continuousExclusiveLeaseProven": false,
+      "completed": true
+    },
+    {
+      "scenario": "post-resume-guarded-fork-race",
+      "boundary": "full",
+      "contenders": [
+        {
+          "index": 0,
+          "alreadyInUse": true,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        },
+        {
+          "index": 1,
+          "alreadyInUse": false,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        }
+      ],
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "a9369f41-3b08-47f4-a9ae-400d0cc9d62f",
+          "type": "session.start",
+          "hash": "37582c4f5e7298d886aec2c9a61736ffbdef66bfc8a0be0a293abab8c84152d9"
+        },
+        {
+          "id": "83f00d8d-1469-481b-ad4b-5be9cc8c241d",
+          "type": "user.message",
+          "hash": "d369ca0fee1cb26662d38f5c1d14b5a9a578c6427fc0e1cd9076e9110797c731"
+        },
+        {
+          "id": "59e399af-27d1-4157-b9dc-548127182a4b",
+          "type": "assistant.message",
+          "hash": "4c82286ef7fe2982f70cebf277e07197f55390153095bd4da8f83cdc4af9e831"
+        },
+        {
+          "id": "2a59d229-cd6c-4e58-939b-b52766c473da",
+          "type": "assistant.turn_end",
+          "hash": "7fe3e904a848459e66bf5a95267246a894e36f4448edf8c1aea2d9683954046a"
+        },
+        {
+          "id": "ca6c7d54-79d0-4aa1-a577-d86df32d425b",
+          "type": "user.message",
+          "hash": "0bc6796860ebb37c26b8a83699b01cca0de850f3f5896cc65e3a73f42e7bb10e"
+        },
+        {
+          "id": "566c3ebe-0dae-4fe2-9044-3fef4ce6d934",
+          "type": "assistant.message",
+          "hash": "bd2af494b04eed7bb863809de335c5f2dff6689a2739b5ea8db41c5a468710d0"
+        },
+        {
+          "id": "3748d2e5-bc74-4d4b-9f62-027d55dbb339",
+          "type": "assistant.turn_end",
+          "hash": "faa514ab9da7be73c3728d8bf3ec7f17bb3c2ecb7450d9c2d46b8db29ffc9898"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "observed-race-rejected-or-single-safe-fork",
+      "continuousExclusiveLeaseProven": false,
+      "completed": true
+    },
+    {
+      "scenario": "post-resume-guarded-fork-race",
+      "boundary": "earlier",
+      "contenders": [
+        {
+          "index": 0,
+          "alreadyInUse": false,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        },
+        {
+          "index": 1,
+          "alreadyInUse": false,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        }
+      ],
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "46ebfa9c-7eb7-4ab8-8a3d-e189725ee1b4",
+          "type": "session.start",
+          "hash": "1092b5f2eb03eb32bc10fe01e815d9a5d47dd09e894864ef709da7ee5d1f38f3"
+        },
+        {
+          "id": "2a53312b-8ab4-482b-9962-baff7058eafb",
+          "type": "user.message",
+          "hash": "23748c02a15538cdaf2a74ee1f94c8d1386c9a30b9a89deba020cad66063f46c"
+        },
+        {
+          "id": "bc110554-264e-488b-a573-39043c70272f",
+          "type": "assistant.message",
+          "hash": "19f231eec14b60f0cd1b6e72aa13d9ee8be2bc8f204b040aa56fc424425390d9"
+        },
+        {
+          "id": "3b188d32-6b66-4bc2-ad76-abd95859885f",
+          "type": "assistant.turn_end",
+          "hash": "1766c8bc40d5f9832563281576b699b826c0c2efb804e5d08036f03929d95cc0"
+        },
+        {
+          "id": "f6933bbe-06de-4bbf-b45f-64408c718ae6",
+          "type": "user.message",
+          "hash": "36a10296fdc441d370b5c17609a0b03429899903df01c5878212098aa4616868"
+        },
+        {
+          "id": "f01d436e-a5a4-41e1-bae9-6af4bb937bee",
+          "type": "assistant.message",
+          "hash": "d1c026a63e0b56712e2649c658a88ad92ca0ddd0fc13847cba67ddaee863868f"
+        },
+        {
+          "id": "13a8a443-0752-4451-8fb0-eab6474760bb",
+          "type": "assistant.turn_end",
+          "hash": "f47b08a0390fe1732b1761873a510d30c3edcdd93c0fedacb929ca842fb1d2fb"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "observed-race-rejected-or-single-safe-fork",
+      "continuousExclusiveLeaseProven": false,
+      "completed": true
+    },
+    {
+      "scenario": "post-resume-guarded-fork-race",
+      "boundary": "full",
+      "contenders": [
+        {
+          "index": 0,
+          "alreadyInUse": true,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        },
+        {
+          "index": 1,
+          "alreadyInUse": false,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        }
+      ],
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "d911f40c-fc47-4445-ac13-c590c01b7e60",
+          "type": "session.start",
+          "hash": "d8711ff4877c3e9af9a3b3d458a619cca9af10f7d590f2b29a3678d1edf09a63"
+        },
+        {
+          "id": "63ad3203-634a-408d-b333-07b258ad97a7",
+          "type": "user.message",
+          "hash": "213af24729ae910a28e3e0ba1104fae74ae1b1b9f2b42fe6c215c407fc27d745"
+        },
+        {
+          "id": "337f7f11-4075-4a16-8712-7be3eb0e6770",
+          "type": "assistant.message",
+          "hash": "41a8ca336ef0dbb99d647cbeacbb91983b52ed2c72fb1da643aa514a27e837da"
+        },
+        {
+          "id": "01d9eafa-ee61-47d7-8680-9932122db283",
+          "type": "assistant.turn_end",
+          "hash": "6e416584370ab4773fde2d8df003570869d0fb3778d1c0dc8bb6b19453c8bb4b"
+        },
+        {
+          "id": "de3564da-bfb9-45af-b6fe-7e01f0314958",
+          "type": "user.message",
+          "hash": "94b295c92c1d3f953edd901567b82594c3dfb15247e625632ee4a5d87511339e"
+        },
+        {
+          "id": "d94acbc1-e5df-4d41-ad7b-f9fc14977d7e",
+          "type": "assistant.message",
+          "hash": "977a1b3b07a96d7230c1af0d961391650bd5ed0d06fd1782bcb91bf7d99dd264"
+        },
+        {
+          "id": "476608f1-4f78-4f39-bae2-c9638749321e",
+          "type": "assistant.turn_end",
+          "hash": "661fecd12f59a8ec7c4948fc30a6edfd223f6a2a1eea25c7a88cfbf49852b533"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "observed-race-rejected-or-single-safe-fork",
+      "continuousExclusiveLeaseProven": false,
+      "completed": true
+    },
+    {
+      "scenario": "post-resume-guarded-fork-race",
+      "boundary": "earlier",
+      "contenders": [
+        {
+          "index": 0,
+          "alreadyInUse": true,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        },
+        {
+          "index": 1,
+          "alreadyInUse": false,
+          "liveOtherOwner": true,
+          "outcome": "rejected"
+        }
+      ],
+      "forkCalls": 0,
+      "afterShutdown": [
+        {
+          "id": "ae933f82-e620-47ea-9ce2-90803f81cfb8",
+          "type": "session.start",
+          "hash": "f300321597071e83ba5101db970a1417f2ef2dc2e50ba2aa15e5fd0a0145c5ae"
+        },
+        {
+          "id": "f56b1c51-a8b0-42a2-9d8e-fd37fe2be7a4",
+          "type": "user.message",
+          "hash": "3b9d40c30dc43a6ec3cf49ddd3d25ba09c1e190da3cfbf635ab146862d1d80b9"
+        },
+        {
+          "id": "724707d6-25f9-4500-b974-6078418b1e4c",
+          "type": "assistant.message",
+          "hash": "c30bbdec2cd236165a758706a5ae8e4912dd6c45050002aa54757c5b1a94b3a7"
+        },
+        {
+          "id": "c55b96c4-b5d8-409d-9c41-40dcdfeb2212",
+          "type": "assistant.turn_end",
+          "hash": "21edde80a6841addd0266fc09463b9a5e34a35e8765c2b5c2952e753f8071180"
+        },
+        {
+          "id": "67046655-2cb6-4eb5-952a-b144c8c9e8b7",
+          "type": "user.message",
+          "hash": "3db87a8e2c06a55e8fe45b26a003cd0798398f63409edcbaebba45da1bd1d1c2"
+        },
+        {
+          "id": "b64a8bc9-031a-4b91-aac0-bf3ec97ce3f1",
+          "type": "assistant.message",
+          "hash": "dc9b8e029b2fbb19ad812b78d56dc61fd043c53b6ef80126bdbd59b00488d73c"
+        },
+        {
+          "id": "017142e0-0c10-4059-9e8a-b3a2d83af6fb",
+          "type": "assistant.turn_end",
+          "hash": "5932f98aa66a4605a2156faedf28a4d9348cd5abb50b7c564dbe63c15c43653f"
+        }
+      ],
+      "parentPreserved": true,
+      "parentColdResume": true,
+      "verdict": "observed-race-rejected-or-single-safe-fork",
+      "continuousExclusiveLeaseProven": false,
+      "completed": true
+    }
+  ],
+  "errors": [],
+  "cleanup": [
+    {
+      "id": "0842367d-bb8f-40da-9d29-8da06fb84b62",
+      "deleted": true
+    },
+    {
+      "id": "4dc1a76d-f3a3-4f39-980a-f4369eb31f58",
+      "deleted": true
+    },
+    {
+      "id": "8e401302-a60f-4811-b8ec-2f9866f83e0a",
+      "deleted": true
+    },
+    {
+      "id": "8ea4854f-6dad-4a06-a199-c9533e4aafcf",
+      "deleted": true
+    },
+    {
+      "id": "a5b1d03b-4436-4378-b365-980499b24bf7",
+      "deleted": true
+    },
+    {
+      "id": "c04f0892-12c9-41eb-9161-77e382538ea3",
+      "deleted": true
+    }
+  ],
+  "temporaryHome": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-DVJOwN",
+  "runtime": {
+    "version": "1.0.87-0",
+    "protocolVersion": 3
+  },
+  "capabilities": {
+    "fork": true,
+    "checkInUse": true,
+    "list": true,
+    "close": true,
+    "deleteSession": true
+  },
+  "remainingSessionDirectories": [],
+  "finishedAt": "2026-09-30T08:38:01.007Z",
+  "ownedRuntimeClientsRemaining": 0,
+  "temporaryHomeRemoved": true
+}

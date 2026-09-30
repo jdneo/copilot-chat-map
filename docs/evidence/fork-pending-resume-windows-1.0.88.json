@@ -1,0 +1,5403 @@
+{
+  "schemaVersion": 1,
+  "runId": "68f8abbc-ce8d-4a60-96dd-ec1f05914c6d",
+  "startedAt": "2026-09-30T09:09:06.588Z",
+  "platform": "win32",
+  "architecture": "x64",
+  "node": "v22.21.1",
+  "requestedVersion": "1.0.88",
+  "mode": "pending-work",
+  "repeats": 2,
+  "modelCalls": 0,
+  "cases": [
+    {
+      "scenario": "pending-resume-awaiting-assistant",
+      "boundary": "omitted",
+      "sourceId": "bbf8a890-6bba-48cf-bb7c-e7b5a61b2cb8",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "6034c4e7-5dba-4c9d-a87f-118382449eb5",
+          "type": "session.start",
+          "hash": "8fb05af2c931bc28b0076021dcf77be01649f15ed7374eff4776247e4bf5c8ab"
+        },
+        {
+          "id": "8978587d-6532-46a8-8204-c59824fc3c10",
+          "type": "user.message",
+          "hash": "be4328478d570ac3625d7fa8cfa169bdc2e81594ac287d5855b93008df6cd9f0"
+        },
+        {
+          "id": "86b830a3-6fec-4e00-8604-58af6382ecad",
+          "type": "assistant.message",
+          "hash": "5d1f738417cc1401a1f77c8affbb939d1c0dc7309b0029403a43426ae62f155e"
+        },
+        {
+          "id": "8c19d27c-f008-43c7-b77c-4358314b3bed",
+          "type": "assistant.turn_end",
+          "hash": "1bf66029877e149ae4e4577876947084aba6c46d65be59badc60e5506e84dadd"
+        },
+        {
+          "id": "82381670-9fdc-4137-a5aa-604b831146eb",
+          "type": "user.message",
+          "hash": "46a5f7f076d9a38c867a3f8de839f7a711d2ff65c2a08cd707103b6017645638"
+        },
+        {
+          "id": "6f90ad67-bc9d-4362-8780-ff0abef649d3",
+          "type": "assistant.message",
+          "hash": "a87245bc1111fce0139e54cff48e055a124e4a74d41225a7349b020d660ed53f"
+        },
+        {
+          "id": "aef8f0ee-a001-486e-bf99-ef8e273c779c",
+          "type": "assistant.turn_end",
+          "hash": "fd0aafb5e4dc4e8b0e6bf9a8b91902e4e25d594cf89be92e0f8d766d11584715"
+        },
+        {
+          "id": "536d73c1-c713-4eaf-a1f0-6d40e2cc1dc0",
+          "type": "user.message",
+          "hash": "ad87b6f4a463daa962bd49e1f856d9b25af02d7d911ee7fad72f2d398011cec1"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:11.729Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 1997,
+            "eventCount": 8,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "c1eff0aa-d4c3-4cfc-8965-2b012a947473",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:11.729Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 1997,
+            "eventCount": 8,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (c1eff0aa-d4c3-4cfc-8965-2b012a947473) before event 82381670-9fdc-4137-a5aa-604b831146eb."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759350175,
+            "eventsFileSizeBytes": 2847,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 82,
+            "systemTokens": 0,
+            "conversationTokens": 34,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-awaiting-assistant",
+      "boundary": "false",
+      "sourceId": "d46ea40c-6e38-4154-b27a-783f8ad7b0ae",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "272bb6d5-8e1f-4105-bd57-7fd164631e5e",
+          "type": "session.start",
+          "hash": "09069931fbeca8eb90852e2a9f9e6eed6702b7609c8fac13d5d7596c5d49c9bd"
+        },
+        {
+          "id": "6ec2f141-d1d5-459b-b10a-051294fca8f8",
+          "type": "user.message",
+          "hash": "38f73b05c7aa9458a3a4b3aa7bcba50c7f8ffe887d58e36c1d760741ebe4e42d"
+        },
+        {
+          "id": "644dfa4b-2e6f-4e45-a3c1-9f9b6a70b747",
+          "type": "assistant.message",
+          "hash": "e47c39468a94bc3ff57aff838054e86045ae48efca3b5d14a456b8f35eb49f58"
+        },
+        {
+          "id": "c426d9e6-c97d-4f56-b9cf-cf4548bb6a3d",
+          "type": "assistant.turn_end",
+          "hash": "c8364906eb4cf13714d418202a0c3d123a6fe4dfc863ac4069b7f6fd971c5219"
+        },
+        {
+          "id": "73fe11b8-d135-4de5-b55d-015151d8383d",
+          "type": "user.message",
+          "hash": "b29ff277d67ae6fc76e11917a2eaba4f3daf5ef597765f01d82668e60cc345f1"
+        },
+        {
+          "id": "8386cbd9-d0fe-4066-b6c0-edabcc7ef32a",
+          "type": "assistant.message",
+          "hash": "15f327f4628ec1cc7e85b30a0cbd37ead3a8392176be066e6bec7704759d3adb"
+        },
+        {
+          "id": "94b45565-9220-4777-9e96-e25166e00083",
+          "type": "assistant.turn_end",
+          "hash": "c5feb870f4260057bcfa89ef6c50df0b2d88739efd3674df8d667605647758b5"
+        },
+        {
+          "id": "5a572733-7d0c-4651-bcd4-e9101e832594",
+          "type": "user.message",
+          "hash": "3f8cda323972a35bd7530fa6fa0645a31eafbbab68328f38f0cf8208c4d7f007"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:15.786Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 1997,
+            "eventCount": 8,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "d07bc0cc-dfb1-4a6b-9da2-03902db75150",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:15.786Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 1997,
+            "eventCount": 8,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (d07bc0cc-dfb1-4a6b-9da2-03902db75150) before event 73fe11b8-d135-4de5-b55d-015151d8383d."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759354314,
+            "eventsFileSizeBytes": 2875,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 82,
+            "systemTokens": 0,
+            "conversationTokens": 34,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-awaiting-assistant",
+      "boundary": "true",
+      "sourceId": "6e32b76f-f57f-471e-83b6-d27f361480c6",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "c8a869e2-735f-43b6-aa46-b8fec9834f72",
+          "type": "session.start",
+          "hash": "21d68925d1b7438cabe5094787a746f92bb9caa9e5a7549c1c30710025f45df3"
+        },
+        {
+          "id": "99c51f45-121c-4d7d-aca7-bea1f649dbc1",
+          "type": "user.message",
+          "hash": "e948a5f7887f5f86315b95299ee2f5d18a0188726ac2209ac2e86d3f95678d02"
+        },
+        {
+          "id": "d4fd33db-f4f3-4ed8-9d77-86190115bc12",
+          "type": "assistant.message",
+          "hash": "fbecf1faa267bf17af2becca42574b8547d0346ea48cb27c9d50c604c4bf372f"
+        },
+        {
+          "id": "4021d9d0-000d-47d3-bf15-237bcbc795de",
+          "type": "assistant.turn_end",
+          "hash": "56b26d681353246af246d5262317f357da335d06687a0261240687b5679bdd89"
+        },
+        {
+          "id": "77cb9cbf-22de-4c8a-81b3-026cd982e3ad",
+          "type": "user.message",
+          "hash": "0c9c6894e8fa77c557cdf6df83f3e5edfff824ff1567566f8d18bfce6b4a2d4e"
+        },
+        {
+          "id": "5ed925fd-9787-4214-9490-1e9c3aec2263",
+          "type": "assistant.message",
+          "hash": "02643aedc6cb715f42bcc28efbbffe8119d7965df9f7b299c139221d468d5f5b"
+        },
+        {
+          "id": "2000bb53-1691-496d-90f7-81f4b2d38949",
+          "type": "assistant.turn_end",
+          "hash": "d5776d7920949b51695360f4cd9307cee4dcee2077550895266dd381392b106b"
+        },
+        {
+          "id": "53ee5a8d-5263-4578-8616-c0906e6ff433",
+          "type": "user.message",
+          "hash": "194ab168e3edfd94aeb052225e4c4ccafe08d0709be7713c9557afd0f73805a5"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:19.898Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 1997,
+            "eventCount": 8,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "appendedAfterOwnerRelease": [],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-turn-started",
+      "boundary": "omitted",
+      "sourceId": "6a40b4ba-e740-4416-a79a-e3d095ca8963",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "965e0796-d6e8-4b71-9bb3-fce73a9f22ab",
+          "type": "session.start",
+          "hash": "b836593a53a03d37c942d24220a42bd47b50384eda0b39152190c331eee2b95b"
+        },
+        {
+          "id": "65db83a0-8e1f-448e-88ab-c3e0ca64a58a",
+          "type": "user.message",
+          "hash": "d3758876eff0b52ca4c602e02de0a3febf0f563d69b5513b3d2057907b479b6a"
+        },
+        {
+          "id": "754ecd55-ffe3-4643-9db0-8951e0d254c8",
+          "type": "assistant.message",
+          "hash": "0b7097894ea7df2f6d094b04ff2cc2d72dd2935d8dab3eb2783db94619717aa7"
+        },
+        {
+          "id": "b2fd996d-427e-4b70-9a83-2abc2f7ce5aa",
+          "type": "assistant.turn_end",
+          "hash": "0943d87019f06a7e1b8e157368395d0e79b1665547322f3263a50a02ae184985"
+        },
+        {
+          "id": "9b40c76c-3896-4fb6-924b-f49a2b93dd0c",
+          "type": "user.message",
+          "hash": "3c96cd8980f1bdd207170f1dfbbfe43ba64dff8dd20d6348bcaf81ee8010f2e8"
+        },
+        {
+          "id": "3dcb53ac-40ab-4adb-b95b-c3ad83241203",
+          "type": "assistant.message",
+          "hash": "5d51e1610610b72cc370fc5ffad75d9006331bb6a5a4c5f1a9fe7cd7cf54b8a3"
+        },
+        {
+          "id": "28b19859-954e-4733-bf49-1906f7bcb44a",
+          "type": "assistant.turn_end",
+          "hash": "8303cbeaab4f9abc028e97abd1c5b1e016e7abb7ecd97ab49610bef36dab6c9e"
+        },
+        {
+          "id": "b591ca30-22bd-4d8f-adc9-5f135fa6eec4",
+          "type": "user.message",
+          "hash": "43dff95526d1c25cf6f9b4c34aaaca487fdaeccd931b7a7874ecac8d1f34f053"
+        },
+        {
+          "id": "eddf2c15-27db-4609-a72b-63fd590d4d34",
+          "type": "assistant.turn_start",
+          "hash": "528177b0b37021c89311eca4dbb8a02790aecd71c1b0444989f1e9cc09a3ee10"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:22.140Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2184,
+            "eventCount": 9,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "79af9856-167c-426e-8824-85972d1eb5f9",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:22.140Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2184,
+            "eventCount": 9,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (79af9856-167c-426e-8824-85972d1eb5f9) before event 9b40c76c-3896-4fb6-924b-f49a2b93dd0c."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759360639,
+            "eventsFileSizeBytes": 3034,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 82,
+            "systemTokens": 0,
+            "conversationTokens": 34,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-turn-started",
+      "boundary": "false",
+      "sourceId": "fdf018da-62f7-4244-8e94-28b7489bc8b0",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "7b3f90fa-b917-4e3e-9f6a-6e66a8c82a51",
+          "type": "session.start",
+          "hash": "474965c99a7cd8c20b754e7584f0feb60cf63660d258182951dc3669b7f92806"
+        },
+        {
+          "id": "2c554f3a-9006-4e25-9ab0-4d9ddda7883a",
+          "type": "user.message",
+          "hash": "ddbfeee2f2343174cf732d3aca3176cfff1224ee1e58bc155457ba7824f8597f"
+        },
+        {
+          "id": "72232bfb-0a5d-4ffb-9a19-6ef5294db966",
+          "type": "assistant.message",
+          "hash": "03be29b74bf1818c07b3ec1d31224e638e4fac019d4c27134ac968a7682d512b"
+        },
+        {
+          "id": "7e0eb8d0-28ac-4324-b5fb-7e53f50330ad",
+          "type": "assistant.turn_end",
+          "hash": "ecb60379b7b4d439c11d4a83c5cf1b590ef0322c2cef2f7ddd80d9d03e225187"
+        },
+        {
+          "id": "b114c301-edbc-46eb-8097-4caefb3e9e2a",
+          "type": "user.message",
+          "hash": "99ddd7a0af3409d667b104135db586112fac7f56f3c8288be6cfc63ad564b3e9"
+        },
+        {
+          "id": "ed42296b-9334-46bd-9e6f-e4be59861efc",
+          "type": "assistant.message",
+          "hash": "1dd0e70be719e40522be59efaa5527f5c961d111a599c9542e6edbacd879ff06"
+        },
+        {
+          "id": "31966e35-8951-4bab-998a-7f5689378c5f",
+          "type": "assistant.turn_end",
+          "hash": "440fa3bce28e73a91ab775fd82569cc1e2e7d30c742d1eb31aa582b8d1ee3f6b"
+        },
+        {
+          "id": "59ed0cec-aa29-4362-b8c3-a924f32d16d0",
+          "type": "user.message",
+          "hash": "af770f34ebe241e4bcf9e4781f1f033b11f445f23c0c3771b2078a33c3a62585"
+        },
+        {
+          "id": "91f3bc78-83a3-43fa-b6d4-bef28cf6f1ff",
+          "type": "assistant.turn_start",
+          "hash": "e3490462480400cad2dded3b783d407131cdb65231394d051dbf9994dac4d85f"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:26.450Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2184,
+            "eventCount": 9,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "3cac30b5-0a49-4170-b42e-435ab1a92155",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:26.450Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2184,
+            "eventCount": 9,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (3cac30b5-0a49-4170-b42e-435ab1a92155) before event b114c301-edbc-46eb-8097-4caefb3e9e2a."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759364734,
+            "eventsFileSizeBytes": 3062,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 82,
+            "systemTokens": 0,
+            "conversationTokens": 34,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-turn-started",
+      "boundary": "true",
+      "sourceId": "ca6446de-abf7-429f-9f38-400910c6225d",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "c215719a-6fc1-497b-9c27-2bef2ca749a9",
+          "type": "session.start",
+          "hash": "5debc5a36598d95ecb881630bdd5fc7a2b63eef9f6977e49ccf05392f9694a14"
+        },
+        {
+          "id": "b0f6668f-9f8d-4c00-86de-d68bce34da04",
+          "type": "user.message",
+          "hash": "c490a458a0363f952c74fa3f5dbeed3662c9de9ed08ae52fedebe7630e5d32d2"
+        },
+        {
+          "id": "04ccfd70-5b31-4492-b5de-14d183178beb",
+          "type": "assistant.message",
+          "hash": "3fb66d38f358c43ea5643a675061b8fc2fea37ac2a59181c910686af1bf01d7e"
+        },
+        {
+          "id": "52778854-f911-404c-9c4a-c3b93c483c7b",
+          "type": "assistant.turn_end",
+          "hash": "0010580a6ae3142982d171a2737cd90ed4120a1fae6b0769d522a4064672bc50"
+        },
+        {
+          "id": "72388b70-18ca-4dcf-9875-69ed1aaa1334",
+          "type": "user.message",
+          "hash": "ed65d00df1f39d5eb7e59928640eeed629ad1980c2326ae508276085fb4e1dac"
+        },
+        {
+          "id": "14658f98-0789-40e2-abc5-91e2bbccb792",
+          "type": "assistant.message",
+          "hash": "0a2ba809c3b6ed5cca1b8e76a54430994c403a534f6e875b5110dabc44cfa16a"
+        },
+        {
+          "id": "8bfbb65a-fe79-4710-a0f3-125b5fb5fd2e",
+          "type": "assistant.turn_end",
+          "hash": "55b86895f7da875b55645e5ef5b688e3fb4d0f9ddd70fff83c122d79b20b6194"
+        },
+        {
+          "id": "e00f9d15-c2e0-4da7-a198-2dc019ca067f",
+          "type": "user.message",
+          "hash": "fd654559f8ba2807a85568632561590fec52e4e65e25d9ca5330a34f4be31e1d"
+        },
+        {
+          "id": "38f21dfa-0f50-4a6c-8867-8d423876c778",
+          "type": "assistant.turn_start",
+          "hash": "383fee2443986b92bf370b089d35afddc93c001ff07da5f49e6dc1cfb943ca80"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:30.584Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2184,
+            "eventCount": 9,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "appendedAfterOwnerRelease": [],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-requested",
+      "boundary": "omitted",
+      "sourceId": "e1798edc-db41-4e1a-bced-a2011d58b1b8",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "042ec9b7-9163-4533-84c6-c1fa9cb82b07",
+          "type": "session.start",
+          "hash": "7d5b6aac9203fd6a239982d00091a7b20d13967feb225770f7baa650b1bafb26"
+        },
+        {
+          "id": "ec313d77-1070-4e95-8805-a2c1c0d46cd3",
+          "type": "user.message",
+          "hash": "a6542ba24b16b3ff8bc8a6116751be34ce6ddc621fa8ea080a2990644a73a43e"
+        },
+        {
+          "id": "486858bb-be19-4726-a65f-97b2f4efe28a",
+          "type": "assistant.message",
+          "hash": "270e056db9b8f6da2cde36d05326cb0105e1de834b77960708513f16f812c63a"
+        },
+        {
+          "id": "6f70f13a-64c1-4d65-ad75-1dbc4e424bb5",
+          "type": "assistant.turn_end",
+          "hash": "825786b9052411a36bd609deb9a32df4745e915914dd7b110bfcb2fbec739418"
+        },
+        {
+          "id": "62f24ee4-4fb6-47b7-8308-80b49a276cc2",
+          "type": "user.message",
+          "hash": "71baf3f52f081fa1c562a317806f548317bd4eb095926baf2fcabb493a147466"
+        },
+        {
+          "id": "f9cc7baf-8dfe-4fbf-8138-87148d9a2c22",
+          "type": "assistant.message",
+          "hash": "4cdff4278529ce4e23945701a97018305139d3240e131f10c0e9c35da79fe8dc"
+        },
+        {
+          "id": "cb5b9a9e-852f-4933-ade7-e542cd22bbf8",
+          "type": "assistant.turn_end",
+          "hash": "131974ddddf6c6cf5b10eda7b1c8f8b9a4e6a7ea42c4138e3a6e12cc8f51cc19"
+        },
+        {
+          "id": "4f03bd10-4ba3-4d82-85df-2c159df64e60",
+          "type": "user.message",
+          "hash": "8b1d0d3b3d0e26e54cfeeb5300e247b5c633490221379efe2612243731018467"
+        },
+        {
+          "id": "b3de6dd4-dcb0-4e1e-a96f-84e85fb6f9f3",
+          "type": "assistant.turn_start",
+          "hash": "1928f1cc220bed7f8d5e58ab00ed8da8214845b501de6043c1ff10f2b11f30e1"
+        },
+        {
+          "id": "9b1c444a-f2d8-4d1b-b5f3-c05e231b7afe",
+          "type": "assistant.message",
+          "hash": "edd75c1228f8685d387e6363462addbab519e2097915dcf8aec8e3b322cff052"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:32.861Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "0b8c0188-c868-46bf-b446-664d16901960",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:32.861Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (0b8c0188-c868-46bf-b446-664d16901960) before event 62f24ee4-4fb6-47b7-8308-80b49a276cc2."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759371326,
+            "eventsFileSizeBytes": 3396,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 157,
+            "systemTokens": 0,
+            "conversationTokens": 109,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-requested",
+      "boundary": "false",
+      "sourceId": "f91a1721-222b-4afe-8447-79fadecbd95a",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "526cdb1d-4cd3-4b07-abad-ba674f98adbc",
+          "type": "session.start",
+          "hash": "5e8b126bcfc429038db10382e6aa7d000ddfe807b4ffebff0a7dd0c1f11ac67a"
+        },
+        {
+          "id": "ebe76428-f305-4cf1-8502-b36418a5209d",
+          "type": "user.message",
+          "hash": "05dbeaf0ea2766e378ea5b19768df8713352146d65ac533410901ce57d32329d"
+        },
+        {
+          "id": "14454ee2-a461-415c-90a4-2bf9bc8f3c6a",
+          "type": "assistant.message",
+          "hash": "1b6f4dd023a90a2f097d762bcbc9629730a4e5fd8d443d698ab7cd50f3b73c0c"
+        },
+        {
+          "id": "ab1eb564-7490-4a05-8890-96778ef8bb01",
+          "type": "assistant.turn_end",
+          "hash": "25efb356eb72c3d681c75ee3db9d84ddb01316b0ab3adc021b8d716251613157"
+        },
+        {
+          "id": "c8afb835-8918-42d9-aa5b-f58696c6353b",
+          "type": "user.message",
+          "hash": "f199a52c65170c19f48ba5a9ac6ca72c414fd2fb7f5023cdd19e4ba911354a47"
+        },
+        {
+          "id": "c48e35a9-8b7c-4dd5-a752-578c61950fb6",
+          "type": "assistant.message",
+          "hash": "f71f23eddb7b683a34e6b1ccba64eb5773ae0a7f7a87edfacdcd0a5fcf6c9aa8"
+        },
+        {
+          "id": "b6e51c24-ffe9-4cd6-b10a-5fff0f7b5c34",
+          "type": "assistant.turn_end",
+          "hash": "ac6e7af915eac085e16f0490565c986128f85f62c5f572037ac5d390220f57f4"
+        },
+        {
+          "id": "90f3fd74-357e-41da-bbe5-a2fce8719647",
+          "type": "user.message",
+          "hash": "8777040dce003f55ed7df41f44fdac407092236adae9389d94889bec8d4b2ed5"
+        },
+        {
+          "id": "57da8fe3-f46a-4d72-a188-31cb7dd55038",
+          "type": "assistant.turn_start",
+          "hash": "05ab62de0df4dde34cb0f8ea2ce766d318853e8e1257f13a549bbef5b35b20e4"
+        },
+        {
+          "id": "428bf420-b0da-48c5-8cb7-bad4b809c4c8",
+          "type": "assistant.message",
+          "hash": "8b2dc799957260d8d65ec1f5703cd1523cbf40c7206bce8153a0b2dec8994c06"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:37.026Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "44dfeafb-0d89-4fde-94a3-1508f5cb816d",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:37.026Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (44dfeafb-0d89-4fde-94a3-1508f5cb816d) before event c8afb835-8918-42d9-aa5b-f58696c6353b."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759375435,
+            "eventsFileSizeBytes": 3424,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 161,
+            "systemTokens": 0,
+            "conversationTokens": 113,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-requested",
+      "boundary": "true",
+      "sourceId": "fa163aec-1533-4df8-8454-5014a7b2914b",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "debc91c6-b733-4144-ab05-2e748605606a",
+          "type": "session.start",
+          "hash": "48e778525179b60f75fe12e401aa876faf1e4381cbac8aec68467de95d30f851"
+        },
+        {
+          "id": "13daf2b9-cd8c-470e-9427-5d094b1574cf",
+          "type": "user.message",
+          "hash": "9768f5d4676d3b7d60f56503db33414f0c08c64c997329ac5aebd7389fde689d"
+        },
+        {
+          "id": "58228413-4dbc-4d8e-b16f-b90de1060a7d",
+          "type": "assistant.message",
+          "hash": "29394548225ac45e9a514186b5091e3494a5411337424562d8fa0c17399f1c6c"
+        },
+        {
+          "id": "f33e0660-4a7e-4091-a185-e84f9d70ac15",
+          "type": "assistant.turn_end",
+          "hash": "36deb235e86e3c5cfed06a15cc84bc40f35fd0055bf9f39d53b1e394e5aa0800"
+        },
+        {
+          "id": "77b4bbf8-2ec3-400d-be39-081249c2d2f5",
+          "type": "user.message",
+          "hash": "9fded011cce9f2e5c429ef603884685a3426e9c299a4028ef0037318b5bf285e"
+        },
+        {
+          "id": "6abcc0d7-3692-4819-a28c-24d67328388a",
+          "type": "assistant.message",
+          "hash": "17889a6ce4b4f1897f4eb85274e329e021a38d31af573f16a8854c1a4bc05533"
+        },
+        {
+          "id": "7e700eb6-ddda-42aa-947d-51df2c41bd46",
+          "type": "assistant.turn_end",
+          "hash": "7a86aa38fba74b3ebf81aec00024b24be42c99e8c1ebec61221198763095d3d3"
+        },
+        {
+          "id": "bd4b9584-e0bc-4dc0-93a0-7104a6d20676",
+          "type": "user.message",
+          "hash": "441600429d05d21157ea4046c19cc9245bb2ad9b368fd7cfe09e1ff96495291f"
+        },
+        {
+          "id": "b8a99f7d-65b7-4f12-820c-9baffe3b3e3c",
+          "type": "assistant.turn_start",
+          "hash": "425050247bb59bcf92d60c68fe45c4b219f8f06089e30f4f0e74e7c055a03991"
+        },
+        {
+          "id": "aaaa9377-17d1-427b-bba1-49ff93e69828",
+          "type": "assistant.message",
+          "hash": "a4ba4b0a33da6445b2360eb949647d462e476d4013f5488b5b88fbc7470c6981"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:41.026Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "2c35cd2c-d14f-4a61-afca-01260a9f3567",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:41.026Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "2c35cd2c-d14f-4a61-afca-01260a9f3567",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        }
+      ],
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:41.026Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "2c35cd2c-d14f-4a61-afca-01260a9f3567",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759379504,
+            "eventsFileSizeBytes": 3447,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 161,
+            "systemTokens": 0,
+            "conversationTokens": 113,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-started",
+      "boundary": "omitted",
+      "sourceId": "06e17464-74f1-4546-9a8a-1186fef2a457",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "5e0cc478-7baa-4d45-b0b6-8af0d33a88ad",
+          "type": "session.start",
+          "hash": "bfdccbf71cf82592ae0a334dabbbc15121943759e74aab7dfc00b31380cc0978"
+        },
+        {
+          "id": "12914769-fafb-4b9e-9de0-881200970a24",
+          "type": "user.message",
+          "hash": "3daa8a51aba6b5dbfc2da4fb0b029e07c90d45c65148116011ddeff81ff3ef6f"
+        },
+        {
+          "id": "2d042313-dde0-43bc-b64f-6a4f70edd16c",
+          "type": "assistant.message",
+          "hash": "a4102752fd57acdc9f81c295b7bcbaa8b8b694f0b854bc472ceaaaa33999106a"
+        },
+        {
+          "id": "682a3865-77d9-4848-a6f3-fbfdec4e8fb6",
+          "type": "assistant.turn_end",
+          "hash": "2b6e3216dc4c70c07154fb723fdc8bb01219b40ed78fe85d493964f752a43e9e"
+        },
+        {
+          "id": "d8641f7b-b765-4821-8e95-d65e55f135a2",
+          "type": "user.message",
+          "hash": "1ab9e5927821a2f1903b10e31c718f951acda6f2a95191bd90d536b9b0e20805"
+        },
+        {
+          "id": "f185a302-07b2-499a-afb7-a4734b6007aa",
+          "type": "assistant.message",
+          "hash": "f72ad71d6347def4e5cc19b1cb44d1ef7571189f9058f3321e147f29eb19a738"
+        },
+        {
+          "id": "8c6c118c-2106-4586-9d47-ee19792cad5a",
+          "type": "assistant.turn_end",
+          "hash": "8f501a217dbad9548ec18c2e99c71e51f2827b0e29924876f429cd8ee45293c7"
+        },
+        {
+          "id": "b3e1d23d-bc15-4d00-8401-366a504b21c4",
+          "type": "user.message",
+          "hash": "518f2e161b21d43688283d28fa39df0478427856b677c70b1462037dc5489542"
+        },
+        {
+          "id": "dfdc41c4-f98d-4b17-b051-5ea155bf0612",
+          "type": "assistant.turn_start",
+          "hash": "279151bb0e6c725ff22a6d15bc14510f7de80dde51e19daef6e0daf1f9fc6ea6"
+        },
+        {
+          "id": "3244eb50-0d96-4c28-a7f1-4455ee49d55a",
+          "type": "assistant.message",
+          "hash": "750ecee5e1dfcdc54b57c7d83e9076028250000e39e39213c305fc6eff360640"
+        },
+        {
+          "id": "7100137c-30c6-4e26-bdeb-8c9785d0faaf",
+          "type": "tool.execution_start",
+          "hash": "e435c74c1e773dfa8f2cd361dee7c617f1a7ac621b4edf64a9e4ddb019e9c2e6"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:43.633Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "bb5fdcc7-37a8-4cdf-a252-d83a026aac92",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:43.633Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (bb5fdcc7-37a8-4cdf-a252-d83a026aac92) before event d8641f7b-b765-4821-8e95-d65e55f135a2."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759381782,
+            "eventsFileSizeBytes": 3681,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 165,
+            "systemTokens": 0,
+            "conversationTokens": 117,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-started",
+      "boundary": "false",
+      "sourceId": "b9cf2cc6-126d-4de8-aa55-a6f459d4fe0c",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "1d2ad15a-7de7-441f-8e52-f3cc899458e6",
+          "type": "session.start",
+          "hash": "50d1aa2f794dec0dd73ae18c81315e046ca15204d20ab611defd810232ae21cf"
+        },
+        {
+          "id": "28b901c6-ca0a-47e2-be7e-350b981e21f8",
+          "type": "user.message",
+          "hash": "cf63cd278609191398fce797ca9e0584d83ff491ef36e8f0e43d971a538d06ea"
+        },
+        {
+          "id": "02cc7037-2d5a-452e-94e7-7b5f67901f12",
+          "type": "assistant.message",
+          "hash": "628d6e4f4d92af9aa34c87d24ac0580e289d0f8aecf83c3bc00fdef1b9576183"
+        },
+        {
+          "id": "bb2bc265-3431-434a-b2ec-1f8fae6282ab",
+          "type": "assistant.turn_end",
+          "hash": "e4e0303da4d05f72422e38b58cd78d22a21cf88448d46c436dad0cc4b13df4ad"
+        },
+        {
+          "id": "0d242363-e684-4189-bbe0-48a4a61582f6",
+          "type": "user.message",
+          "hash": "7fbb2f8404213d82b44b7dd05bcd74782a49ab5e5fd6d3c9ff1a444a43da9569"
+        },
+        {
+          "id": "c5ba7046-4241-49fe-a357-87107231fd93",
+          "type": "assistant.message",
+          "hash": "d85d50325205e694edb51d30f2090fb2801a87c7a4829796c7f0eb4dfa6e2a48"
+        },
+        {
+          "id": "8ec09402-91f4-476d-bf5b-dfd8176a25d9",
+          "type": "assistant.turn_end",
+          "hash": "cd8c632a3de66fc8fec215ad7d1aed0455adc5aa93e1644391946793bfdfa8cb"
+        },
+        {
+          "id": "c6a0ba6a-8295-4d2c-bab8-e8a0d2801e23",
+          "type": "user.message",
+          "hash": "ea335b7f498b674c9aa17b0c2e700865bd763f67f4791d81a9a33b6bb1b83000"
+        },
+        {
+          "id": "9f351383-1e27-4273-bf3b-f6fdff6c931d",
+          "type": "assistant.turn_start",
+          "hash": "b173d539d01db3c58c5d44dbf1be8be1624a137aef39d8f06eb0c02701113b14"
+        },
+        {
+          "id": "c99f9900-ebd1-4f7d-b5be-8cfaadc72954",
+          "type": "assistant.message",
+          "hash": "7b4d1c9ebb49690f3f10e7c2421959f2202a6b70fa2f028cd62433e8c6cb057d"
+        },
+        {
+          "id": "7006c0a9-cf56-47b3-a794-fa129a099ede",
+          "type": "tool.execution_start",
+          "hash": "b59fe10b2869b12944f94cbbbbeaf13fa5a6e5e56191eacb4e019144611f6037"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:47.682Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "5929a237-9dec-4989-9008-81a387fe633c",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:47.682Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (5929a237-9dec-4989-9008-81a387fe633c) before event 0d242363-e684-4189-bbe0-48a4a61582f6."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759386188,
+            "eventsFileSizeBytes": 3709,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 159,
+            "systemTokens": 0,
+            "conversationTokens": 111,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-started",
+      "boundary": "true",
+      "sourceId": "f33e3bdc-6e70-4434-a487-854f86bbd528",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "6dc240d2-3dfe-4a3c-bf18-47280ecacfea",
+          "type": "session.start",
+          "hash": "8c2529963ecfb127b4d35900df5c30e913d8ea507fc071f0b429c240d8d026be"
+        },
+        {
+          "id": "9895a4cc-e1fe-404a-8265-d047d315cb25",
+          "type": "user.message",
+          "hash": "20cbeb044e5dfc444a83c5a8405b494ebd1bd4086ce028a2073061efb50099df"
+        },
+        {
+          "id": "a32dc1f0-ee22-4cb0-a178-75fd93c6a637",
+          "type": "assistant.message",
+          "hash": "7261a0107a15a3afd4af2fe93f1edbc19e926f247452691bbf345974cd7bd53c"
+        },
+        {
+          "id": "5220792c-67b8-4908-85c9-7cfa7806d159",
+          "type": "assistant.turn_end",
+          "hash": "968b3a8c99a761108de7092b24cef0727c3ba9999b3916bdda06e766700b9fd9"
+        },
+        {
+          "id": "95a327e2-5839-4103-9303-52a4e9313b24",
+          "type": "user.message",
+          "hash": "b9f311d253029bbb95ae813764106671af23fa38d29b1528d2b40879e03f3381"
+        },
+        {
+          "id": "d6d8f750-92ad-4fcf-aebd-c8a60a104f57",
+          "type": "assistant.message",
+          "hash": "ff3336028f75b8f3d3ed06ad322ee2e329909607f1cde0f15b10d87fcc76cd69"
+        },
+        {
+          "id": "599eddc0-51a4-4303-9df5-d0a9752fbc28",
+          "type": "assistant.turn_end",
+          "hash": "925eeab23e29101add49c1c816800fc148e1e61987445e76de7b8c09c985fd92"
+        },
+        {
+          "id": "92f3f0d9-9cda-4e71-90b1-e883f8dd5e5b",
+          "type": "user.message",
+          "hash": "097cb6e3d1aacdac3772483d6bc79a7bcc78b69b22fbaa7c7e2b2ff242b23a11"
+        },
+        {
+          "id": "69802435-4787-4d8e-aff6-5e14ce10f4cb",
+          "type": "assistant.turn_start",
+          "hash": "173b1333dd486af0a985a6ec0bc5659f40782389c80e653d09d369ac3756a070"
+        },
+        {
+          "id": "c71ae064-bdce-4e83-b9c8-d524853bb620",
+          "type": "assistant.message",
+          "hash": "15ac73f6fa39ba2addaded64733fe0c938164132f46ba98c9d1f7f031bc05f9f"
+        },
+        {
+          "id": "2dcd0b12-1409-4bf9-af7b-540ed9950fc9",
+          "type": "tool.execution_start",
+          "hash": "12b0b57e8ee1d84a60109adb4e07c5f5dc45bc5ed419241b7f0a031eb72d7429"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:51.993Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "b330ec5e-6357-4b70-b87d-19a7520b3ae8",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:51.993Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "b330ec5e-6357-4b70-b87d-19a7520b3ae8",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        }
+      ],
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:51.993Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "b330ec5e-6357-4b70-b87d-19a7520b3ae8",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759390279,
+            "eventsFileSizeBytes": 3732,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 163,
+            "systemTokens": 0,
+            "conversationTokens": 115,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-external-tool-pending",
+      "boundary": "omitted",
+      "sourceId": "2c931bef-73dc-4f02-9da4-292ea3c7af87",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "0c546868-0298-4be5-8c84-187a92212ad1",
+          "type": "session.start",
+          "hash": "69399671bff64238f9e69e23e6d1a72ee24dd42b4724e940919c6d82a801a593"
+        },
+        {
+          "id": "01e30bbb-9da3-4044-b927-0aedcd6e4e60",
+          "type": "user.message",
+          "hash": "28fffb3c37f6a8942d5cfb0068ebb4a6b5ccc4e01ef3b0c0785709885141dc45"
+        },
+        {
+          "id": "2a14f65a-cebe-4ee0-9a9a-6601e42c2d37",
+          "type": "assistant.message",
+          "hash": "e74f70099428889b5763d75700558667e58949a001b3995a55fc8f219cdea28f"
+        },
+        {
+          "id": "2bfd5f47-411a-4261-a94e-0dfae258f167",
+          "type": "assistant.turn_end",
+          "hash": "86fe55c5addcfd83f9f8907189a601e6ef3d814783d3d8d092fb3bfcbb2d2808"
+        },
+        {
+          "id": "e5767f5c-695c-4b98-ab87-e9f6a3bbcd5a",
+          "type": "user.message",
+          "hash": "c1769b6b3a59817d4bc7953e55c5a4a1866ab117b26e3baf826d0f1d07be385c"
+        },
+        {
+          "id": "4c189954-b133-4216-96a4-47fc06a41d1e",
+          "type": "assistant.message",
+          "hash": "f273624d0cb9e446594d0d26e215003a4595bd305ccff529fe1af39f6ff20fbc"
+        },
+        {
+          "id": "79a3f0f2-1a9c-4878-8da6-982146e4da1e",
+          "type": "assistant.turn_end",
+          "hash": "fa0c0bde13d9067cbe6e22c1ba9c2a49dc7d86e1da20b87f7c9d96134a61a386"
+        },
+        {
+          "id": "a1af08cb-2e51-4c9b-bdec-094b82f9845c",
+          "type": "user.message",
+          "hash": "75c6d7d69f7ca7f698e4781376ff2187ccbacc45754628df94b4eb533b4a165a"
+        },
+        {
+          "id": "b5126990-6c31-49cf-884a-321cbc684a78",
+          "type": "assistant.turn_start",
+          "hash": "06bb3b727166a6e2091f813195b1ae235ef74cec469bf46350c77ff1d0d32709"
+        },
+        {
+          "id": "022474cb-3d25-40a8-9abd-1b34e054e939",
+          "type": "assistant.message",
+          "hash": "d4f5085a92ad30b8ac9ad334caf324428ae61df6b2fc05727f131322d726d882"
+        },
+        {
+          "id": "cc80a024-b924-4693-b0a4-0f30b2edb8c8",
+          "type": "tool.execution_start",
+          "hash": "525794a5f78ad08e81a7538a072b1cc0ee361d8fb9e8f8f8be42d51a394b67c8"
+        },
+        {
+          "id": "03028dbd-7aec-42c5-a6fc-89c11a5a17c7",
+          "type": "external_tool.requested",
+          "hash": "c38207fb2122e1e338343ae94adb3819cca4ed1d5b14de5dfe97809c03f55aec"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:54.318Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 3301,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "63f49927-5153-432a-9b2e-051df99eb5f9",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:54.318Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 3301,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (63f49927-5153-432a-9b2e-051df99eb5f9) before event e5767f5c-695c-4b98-ab87-e9f6a3bbcd5a."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759392722,
+            "eventsFileSizeBytes": 4152,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 157,
+            "systemTokens": 0,
+            "conversationTokens": 109,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-external-tool-pending",
+      "boundary": "false",
+      "sourceId": "d5580a1e-7879-4f15-9769-c47d938d1da8",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "83bf084d-fa83-4a76-aa0b-46f93c16832a",
+          "type": "session.start",
+          "hash": "b18bf3323bbfd5629fe5cd277ef78ebf5c72fa22f13f1864f8adc4353a6570cc"
+        },
+        {
+          "id": "0f7053a5-47cd-46f6-89ef-6066dd0c15cd",
+          "type": "user.message",
+          "hash": "aab9855b957170d1ca373c2aed6a6e69e20f4d8d3d8b9b36f88c4e7a1befa8e9"
+        },
+        {
+          "id": "0b5fd30f-56d0-4266-b482-1c7860383715",
+          "type": "assistant.message",
+          "hash": "d351992842002f206ab8d61ab2d41a7b89c26f81bab75db077c673b26f796c22"
+        },
+        {
+          "id": "35027b6c-fad0-4570-a53e-b74b79f5d1e1",
+          "type": "assistant.turn_end",
+          "hash": "3acd8ccc8c5f410af622cf7da0ca1ac28352c6f6498238db00fa63a26355fcd6"
+        },
+        {
+          "id": "39cc1284-91b3-4c6d-8ecd-af6eeb36ac3a",
+          "type": "user.message",
+          "hash": "6e19f12a8502da5599a7b26814fcb519acf7e80ff60bf07028a512cdea103c9c"
+        },
+        {
+          "id": "f20c1944-fd48-4c04-92d9-e4eaf51b84dc",
+          "type": "assistant.message",
+          "hash": "381faa8afa58b2d60fffdf1aba961296595a5ddf9b22f02113426d871ba5ba7e"
+        },
+        {
+          "id": "daeb1b9e-3032-4f54-b2dd-ad31288b9d0a",
+          "type": "assistant.turn_end",
+          "hash": "48b3e6d1e0ccc56eadcec00bf566bcda2e541b2f6c0f4d8b0ad3be58f4c679aa"
+        },
+        {
+          "id": "967f7d01-928f-4184-b8d7-ef58205405fc",
+          "type": "user.message",
+          "hash": "f302e8bbf08f028a1a726b695582c240bacaa21c0642f680cc7c1ccde7684ff3"
+        },
+        {
+          "id": "c6f92908-dcf6-4bdf-81c6-57c1d9079e72",
+          "type": "assistant.turn_start",
+          "hash": "b2f79c95bdfcc516855d6fdf5624477c679f42f4b6db983b7b61d0963f010bd9"
+        },
+        {
+          "id": "8c52af85-378a-42c1-9bf2-0b2a0093a6ae",
+          "type": "assistant.message",
+          "hash": "521bc7141eef760e95636621b4712cfc31db6a1648bed07128b0e56ea77dc99f"
+        },
+        {
+          "id": "1f898a6c-0092-4bdf-a460-c566d3520584",
+          "type": "tool.execution_start",
+          "hash": "ff4952920a138b0bfb9c3bdc5bfa2fef3d508203d5315c875ffff226f3292101"
+        },
+        {
+          "id": "80201327-d48e-496b-8e55-563b7629e825",
+          "type": "external_tool.requested",
+          "hash": "4ead605641ecbd09b13793cfe69873a3a0097004ab223ff8194e52242ee66fb8"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:58.879Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 3301,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "fb4bd3e9-bf89-4af8-8388-45d38c61ecc2",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:09:58.879Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 3301,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (fb4bd3e9-bf89-4af8-8388-45d38c61ecc2) before event 39cc1284-91b3-4c6d-8ecd-af6eeb36ac3a."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759397212,
+            "eventsFileSizeBytes": 4180,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 157,
+            "systemTokens": 0,
+            "conversationTokens": 109,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-external-tool-pending",
+      "boundary": "true",
+      "sourceId": "e5be1bd1-3398-42fd-b5fc-3206feb21fd6",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "ecefb8fe-e070-47d9-a5f1-17ba2aafe3fb",
+          "type": "session.start",
+          "hash": "dbf589c4eb4543601767f68806f401c9e9d99772f037394a3881fb2b704ab043"
+        },
+        {
+          "id": "2de342f7-9310-41c4-acab-8bdab2f4c561",
+          "type": "user.message",
+          "hash": "370542fb517c6a956c700532455542da670cf66810f4a8a7050d6ccef49d3004"
+        },
+        {
+          "id": "3f8660c2-e5c7-4d27-b119-67d9446eb87a",
+          "type": "assistant.message",
+          "hash": "0fac80fcac67aea496c4c82e20a60ab40ecc68881ca7b4097bcea0676a135ab2"
+        },
+        {
+          "id": "088c9ff4-d946-4d3c-bc77-a7bb7c99ffc8",
+          "type": "assistant.turn_end",
+          "hash": "5ae7f56731c0afecc59eeefdf8d81f571025fb0fd3bb3a1c5bda2940792726d1"
+        },
+        {
+          "id": "9b145082-d616-4cd1-8531-37ebb8e94290",
+          "type": "user.message",
+          "hash": "43733c99af64c1ffb9eb3ec898ef5cc6d64efdbf7624437e0c989e4fb392894e"
+        },
+        {
+          "id": "5ba53700-520b-4c06-93b2-c382d4b09f62",
+          "type": "assistant.message",
+          "hash": "1afa85231657618b02b30b281af27b020fee37449914a6cf6c51a1e2f2588e28"
+        },
+        {
+          "id": "1fedb965-47ea-429b-a40e-3c2ba3f4b223",
+          "type": "assistant.turn_end",
+          "hash": "2351e428cea882624dcb3bad06d5716ef35710737170111439f12e0e31a90cbc"
+        },
+        {
+          "id": "c2e0d7fe-b4d1-45a4-929a-15b6ecca54c7",
+          "type": "user.message",
+          "hash": "19f94d9905c3881c03b3eee243b4b14c7c5b14fd855c2d777ef97dd14c4cd099"
+        },
+        {
+          "id": "7d38da87-4ade-4454-9aa0-9d7c6c2d1909",
+          "type": "assistant.turn_start",
+          "hash": "5f4fd881e9c5fad5d36f582d23208735e0e64b62029cb1c617ca227dffb1ab71"
+        },
+        {
+          "id": "852660d4-2a97-4932-9716-72f8c47b4299",
+          "type": "assistant.message",
+          "hash": "89f4a4ea6084bb939d9f9c939fa8a5ddb6c2784719cae45f7153ec9c8841dd5e"
+        },
+        {
+          "id": "7b5b994e-8163-4ad4-8261-6f806477d081",
+          "type": "tool.execution_start",
+          "hash": "047bec0409bdf653eb9f0831667a18d2c5f711348b297dfc3f37b139b4dc0518"
+        },
+        {
+          "id": "bd2f3f0b-c929-4d0c-95c2-88d52b8b3e80",
+          "type": "external_tool.requested",
+          "hash": "ff859c923a7ee339373424a8877e94121adede0a3a6a513b6bc52e32200f6c7b"
+        }
+      ],
+      "processingAfterResume": true,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:03.070Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 3301,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "appendedAfterOwnerRelease": [],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-permission-pending",
+      "boundary": "omitted",
+      "sourceId": "37963ef9-788f-471d-98c6-4b9cc9864cba",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "29753a9f-dcf1-4d9f-abd1-4c42055c10c4",
+          "type": "session.start",
+          "hash": "acb99e76d72bf5c5348d55fceec4df73bd456fd482b10db931f226f105cae888"
+        },
+        {
+          "id": "b97aeffa-7959-4a32-ad5c-c4f7c16ed34b",
+          "type": "user.message",
+          "hash": "9a012207e0ca2e6c6adc52f7cf3c5de8ba224fced3955770c7207871e2a04f6b"
+        },
+        {
+          "id": "eb5a5433-a7aa-42e3-8ea6-389cbfd4ed0d",
+          "type": "assistant.message",
+          "hash": "f2724ff2e00ed41cd1272bb5c70e517fc974d6fb99892de66d30e9fad658d342"
+        },
+        {
+          "id": "d7bc808a-f074-47ef-ac67-be1e1bb9b7c5",
+          "type": "assistant.turn_end",
+          "hash": "51b76218f33ab22da5ddba30e41765ce92af0a54fca9abf93989c0af79bc2c33"
+        },
+        {
+          "id": "769ee498-a0ac-4896-bd5b-583fdc8ccf64",
+          "type": "user.message",
+          "hash": "8068d52d1feb89161e9876ec52c57d57de301538d0f131fa3b0c99455b08bc2b"
+        },
+        {
+          "id": "fb4155c4-37f0-4aa6-a901-e8b5400c8ba4",
+          "type": "assistant.message",
+          "hash": "04029ae103830ccd3d7c9de29eb93a797f88f5915ec63afbb9589da8277257cd"
+        },
+        {
+          "id": "7b933728-e6d0-48c8-9c22-2642a4639e44",
+          "type": "assistant.turn_end",
+          "hash": "00b32735263a04814eb8812cf6da4c8d94b19ca622c3d04768b1940ec0927336"
+        },
+        {
+          "id": "aba4c3fb-cac5-43e2-9868-34d9f31a84b6",
+          "type": "user.message",
+          "hash": "bbd8bdc4b0b507e77f3132cdeb5d6e998171d89f6351a477f9783626f0cdddc4"
+        },
+        {
+          "id": "73936b08-1646-42b1-be25-e9fa0632dd59",
+          "type": "assistant.turn_start",
+          "hash": "d6271e6c72a05941f4bdec580f2949a37ffc34cb7903adc1bb09903f067a2753"
+        },
+        {
+          "id": "7b8e28e6-24a0-49e8-9b9e-e89783a1a5fb",
+          "type": "assistant.message",
+          "hash": "50c6e4c0982afbc687931b8cef08826a4cdb5fb7f87b822836887c90e557ef74"
+        },
+        {
+          "id": "7c20129e-6d74-4301-bc8c-1b4cf122adc5",
+          "type": "tool.execution_start",
+          "hash": "be10a6f7e53edbc75c56eaf3f98397dfbf08074af6c153c178aecc605393e689"
+        },
+        {
+          "id": "afca152e-f0d7-48ec-a20d-2e7d7ab34ad6",
+          "type": "permission.requested",
+          "hash": "7675908ae31ad19a6e50b00bc901077164d952e8083c93f9d32078da22951075"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": [
+          {
+            "requestId": "ca78c2da-a318-4e64-beaa-1d188dc30085",
+            "request": {
+              "kind": "custom-tool",
+              "toolCallId": "c5a9cc34-3050-4b83-9330-8f81491d3115",
+              "toolName": "fork_probe_marker",
+              "toolDescription": "Synthetic no-side-effect marker",
+              "args": {}
+            }
+          }
+        ]
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:05.327Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 3243,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "08dbaa1c-0233-408e-badf-282bcf20ffde",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:05.327Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 3243,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (08dbaa1c-0233-408e-badf-282bcf20ffde) before event 769ee498-a0ac-4896-bd5b-583fdc8ccf64."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759403819,
+            "eventsFileSizeBytes": 4094,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 163,
+            "systemTokens": 0,
+            "conversationTokens": 115,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-permission-pending",
+      "boundary": "false",
+      "sourceId": "2ecd5c18-e2e0-48d4-8fc0-f67a152fca3f",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "17f94435-0382-4533-b3ed-3b332dc805b9",
+          "type": "session.start",
+          "hash": "3891351de744da0e33301db615fef90320c1fbcaaa6e45428e4af454428e3b46"
+        },
+        {
+          "id": "0b8ffa16-ed7c-4e06-8bd6-5dc032694893",
+          "type": "user.message",
+          "hash": "1e2bac69234a688414560861dd6d150fcd70ef7f2d5fe5d55a64ab81dbc7584e"
+        },
+        {
+          "id": "9f76b2a8-cb32-4f73-be8d-8bd9fc1ea917",
+          "type": "assistant.message",
+          "hash": "b72ae0840961ffe30dcadc829849a21aa57b6ef58a76336f7d5b1e863cf9462c"
+        },
+        {
+          "id": "8bfacbdf-0173-4338-8388-23de50188fc6",
+          "type": "assistant.turn_end",
+          "hash": "555daf6685664dd5fbc2c4380bd34b96f1ed51a45e25009753b406d647f96973"
+        },
+        {
+          "id": "1e4397ac-0779-4608-8a45-5bfb240f7de3",
+          "type": "user.message",
+          "hash": "b924238e7443bf7ff77a91eb9a675da18874d40c5fba1627d45b4eb3d56263cc"
+        },
+        {
+          "id": "5e79bf8e-c0b6-4580-9fb4-cfd074ac903c",
+          "type": "assistant.message",
+          "hash": "5e288963781a1cd4c08bf3711cc81daa2cb1c19ec4ca16e57e7a02d9a1518a79"
+        },
+        {
+          "id": "e3f6b0f7-52ff-4c64-8949-6a39c20099aa",
+          "type": "assistant.turn_end",
+          "hash": "93ae7b96e2a7de18015297b382f5b5d2d8962fdcf60d0db65fa050b21fe06b69"
+        },
+        {
+          "id": "eb500dd4-0aac-4b22-a539-e5453b057966",
+          "type": "user.message",
+          "hash": "c55769783b346854ebdf3a5d963be44071496ec54f962a3bf369d7f0190b2bc9"
+        },
+        {
+          "id": "a72936af-0af7-4751-b77a-2b2e14309c6e",
+          "type": "assistant.turn_start",
+          "hash": "e278f980eff8b031c898472e7523d0aab0e2b25fb30b2ae622b4f7f2063713e4"
+        },
+        {
+          "id": "7f144bfc-3cb0-4c41-a455-7cc290aa205d",
+          "type": "assistant.message",
+          "hash": "398bf06ee3064274cfb0ed8917bc5994a64f3cf10f9b9ae217a59b7cbe7bd805"
+        },
+        {
+          "id": "654e938c-da9d-4a51-a51e-cfcafa9cd0b7",
+          "type": "tool.execution_start",
+          "hash": "c7758b8aa1fb5ed4c8f955a02b23c873e29ae58df80de354d8e5d70d1d7fc3ab"
+        },
+        {
+          "id": "80a59153-7036-4edc-940f-2d42acc5a29c",
+          "type": "permission.requested",
+          "hash": "207de72749306376499bd37fdd76de41ef3f470517afc3689bd814d79ad7b803"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": [
+          {
+            "requestId": "4768500b-7f0b-4f6c-b491-6ddfd04bf407",
+            "request": {
+              "kind": "custom-tool",
+              "toolCallId": "97f52742-d6ae-4877-a8c3-221134f4ac72",
+              "toolName": "fork_probe_marker",
+              "toolDescription": "Synthetic no-side-effect marker",
+              "args": {}
+            }
+          }
+        ]
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:09.534Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 3243,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "48aea51f-9906-4eba-930c-abfdef542105",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:09.534Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 3243,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (48aea51f-9906-4eba-930c-abfdef542105) before event 1e4397ac-0779-4608-8a45-5bfb240f7de3."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759407911,
+            "eventsFileSizeBytes": 4122,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 157,
+            "systemTokens": 0,
+            "conversationTokens": 109,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-permission-pending",
+      "boundary": "true",
+      "sourceId": "ca804bc0-ad7a-4430-95ad-da7e849ba8ae",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "54dfd0da-56b7-4981-b67c-1dd250a3766e",
+          "type": "session.start",
+          "hash": "05053b5ad26537b835037b3c6c005963e2d1e5fe9c9c9f3c76a6fa4afff30799"
+        },
+        {
+          "id": "19ba1eb6-5efb-4649-8c80-43567e401a09",
+          "type": "user.message",
+          "hash": "46d02c42d56504dd864994c2365fff54777688ba030f2b3cb7abb387489bfe26"
+        },
+        {
+          "id": "88082831-7256-41d6-9c90-5b7ff83cf696",
+          "type": "assistant.message",
+          "hash": "f385435509ae0ec12864b833d515b5eda3262e8052c79bf8a738b0528f540d3a"
+        },
+        {
+          "id": "827ed6ce-0ed3-4e9e-b11a-bd43b48b12c8",
+          "type": "assistant.turn_end",
+          "hash": "5194111650f6e45746cac50a4282d21904cdc1f878f9d37f9eeeb959ac0cd907"
+        },
+        {
+          "id": "787aee56-f7ad-4127-a328-2b2a135e552a",
+          "type": "user.message",
+          "hash": "43a0bab7fc0c1acd95fae68e0b55e530b92bbf3234f3f8de27d58803529dc703"
+        },
+        {
+          "id": "b0305950-0ce9-4a56-983e-5300f834bdf5",
+          "type": "assistant.message",
+          "hash": "15fe50e56e642ab7797cbf5246131fc9e08cc1494c742d3dcbce4c6b56d29694"
+        },
+        {
+          "id": "8aebc0bf-e324-42bf-99b6-976a9dd7b13a",
+          "type": "assistant.turn_end",
+          "hash": "38e81ee47f45c3d34e49d8cf39e7124033973e52eff6b872233f8fa679352518"
+        },
+        {
+          "id": "1c83f486-8078-4075-a483-ad76cb71ef6c",
+          "type": "user.message",
+          "hash": "17a0c4b852ccd2b6f1221a88fc6dca6553171600c6c23cfb997e7673c7567f9b"
+        },
+        {
+          "id": "dec9237c-4fab-4b7e-bc64-1ebd6c90a8f1",
+          "type": "assistant.turn_start",
+          "hash": "400c6bdfce4d8b1053b373de5e63ced1c35b3ab5269cec8ec45a30e7917393ba"
+        },
+        {
+          "id": "71effdab-0227-41ae-ab50-87cf31504e7e",
+          "type": "assistant.message",
+          "hash": "4456f362a3259941b557412d0d0cb7d60adf31084f6d4755499f8993e9b6fa4d"
+        },
+        {
+          "id": "e8655f8f-77c2-404b-bd1e-a112194f29ba",
+          "type": "tool.execution_start",
+          "hash": "a9748adfe52a648b49f97f315a8953fbb410d8d5d96d8e7df5cf951e664bc61b"
+        },
+        {
+          "id": "f4d74ccf-d813-48c9-9e2f-70151edd8baa",
+          "type": "permission.requested",
+          "hash": "014fae49fd9ff3ecd85289285b4ded0ee15280092c5cd3d352190b835526e85b"
+        }
+      ],
+      "processingAfterResume": true,
+      "pendingPermissionsAfterResume": {
+        "items": [
+          {
+            "requestId": "762e9a36-41af-419e-97bf-fee2c117bb53",
+            "request": {
+              "kind": "custom-tool",
+              "toolCallId": "c788531d-bd2b-433d-ab78-38cf0bf5dd1f",
+              "toolName": "fork_probe_marker",
+              "toolDescription": "Synthetic no-side-effect marker",
+              "args": {}
+            }
+          }
+        ]
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:14.467Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 3243,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "appendedAfterOwnerRelease": [],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-awaiting-assistant",
+      "boundary": "omitted",
+      "sourceId": "0e5a1f0f-1254-4ce6-bddf-0ccc6be3c3d3",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "e0d46e3e-b4da-4c4e-9f4f-6fc5c06295d5",
+          "type": "session.start",
+          "hash": "98e5c3f42d546d85d0626155baadeaadbbf6b606532b84cf2988ca006ce6ae87"
+        },
+        {
+          "id": "30073329-5617-423c-8ee6-86386bb7b1a8",
+          "type": "user.message",
+          "hash": "d48a03940b00c06faa994b76215285dbf9bb7ca4d24bdb91d839db2b4690363f"
+        },
+        {
+          "id": "31665100-3510-41d3-ae7a-0467052d64fa",
+          "type": "assistant.message",
+          "hash": "78678e73c12b332fb404529d5c1bae4315ec82be87620e3ca40f0219e6623b16"
+        },
+        {
+          "id": "ab9895b8-335f-4d0d-a3d9-59d4747427cc",
+          "type": "assistant.turn_end",
+          "hash": "ff0dccf70fa92b3af98b8fa70fbe750d5b28a10c52137da1dde47f7063ff2eb8"
+        },
+        {
+          "id": "2810f8ff-f4a9-4bc9-8fa0-5c256fc632f0",
+          "type": "user.message",
+          "hash": "eb09a5739acb68cc8840bf9e06033fc727f33980147b50394c38621f5041852e"
+        },
+        {
+          "id": "91dc97f3-a793-4353-9911-fd92eb1133a2",
+          "type": "assistant.message",
+          "hash": "bf4346cfe3778e46bb8388fc9eebf689954436dbb1d1c34523e896b709862382"
+        },
+        {
+          "id": "0bdc4edb-03ae-4d07-9558-1b1b301a668a",
+          "type": "assistant.turn_end",
+          "hash": "ace9282895450d0e2ceb8a69f2869fa78ce103439d2c3ed4177d2eac47843450"
+        },
+        {
+          "id": "2cc310db-cf0e-450e-92a2-5fdf09e1dfc5",
+          "type": "user.message",
+          "hash": "9a4ef7791af4cb2121255bb79431e67ea10a954d03c784e7f3146ab2cc5a495f"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:16.797Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 1997,
+            "eventCount": 8,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "34de04a6-2704-4e2b-94df-3d528fa3d6bc",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:16.797Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 1997,
+            "eventCount": 8,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (34de04a6-2704-4e2b-94df-3d528fa3d6bc) before event 2810f8ff-f4a9-4bc9-8fa0-5c256fc632f0."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759415213,
+            "eventsFileSizeBytes": 2847,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 82,
+            "systemTokens": 0,
+            "conversationTokens": 34,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-awaiting-assistant",
+      "boundary": "false",
+      "sourceId": "3c8617a1-1d67-4d97-90e6-557e120c3c7f",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "3dd6731b-35cf-4653-a38e-c4b78405f6db",
+          "type": "session.start",
+          "hash": "1ced1fe6868cd2ee5d8d7ed2ddc8d282ea819dcd12b914c981afa1ec7c105d44"
+        },
+        {
+          "id": "7e0ab78d-0600-4ca5-ad9f-ae41b7bfd6b5",
+          "type": "user.message",
+          "hash": "769a6e167c426986d0d0145dbc8d4964d04ae8fdcc9f86841068dcfe73cb3b37"
+        },
+        {
+          "id": "449d120c-bc92-46eb-8f42-26a9e7c95cd8",
+          "type": "assistant.message",
+          "hash": "bea29f320ff82e5840015806b27425f2ad38038ab3c6b667156d8fbbce352831"
+        },
+        {
+          "id": "ece73d4d-bff2-4abe-9ee8-aa13939139f2",
+          "type": "assistant.turn_end",
+          "hash": "9f180cc94272340fedbe0b407f65be2ddc4d2a95d8540acdf047d7818a4040c2"
+        },
+        {
+          "id": "8236c196-c020-47e5-ac1d-b7ee3f0ba26e",
+          "type": "user.message",
+          "hash": "62ccbd79180dc9bac3f38d7796e98fa5115b0fba20d539a22bb069cffeb265dc"
+        },
+        {
+          "id": "fd3ef6db-72e1-41d1-9677-41b80760bd4f",
+          "type": "assistant.message",
+          "hash": "bb6f7c1fd06980b638b064105620fae322451185c705fb6a2c23b2fd6f74f163"
+        },
+        {
+          "id": "241547d1-6aa6-437f-af4d-8b798b068ebd",
+          "type": "assistant.turn_end",
+          "hash": "1307179e4dc27f581a5c7c1c698eaa631f06b1c7c4cbbc7343d6e6d44eb4f905"
+        },
+        {
+          "id": "7995959e-76b3-482d-873f-c5edc1d8b904",
+          "type": "user.message",
+          "hash": "2cb7a31de94daaadf2ca03abb82a88ae2746cd3efa238e0b9cedec9e190d3960"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:21.163Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 1997,
+            "eventCount": 8,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "4a578f06-7854-4104-ac6c-bf3207632f55",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:21.163Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 1997,
+            "eventCount": 8,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (4a578f06-7854-4104-ac6c-bf3207632f55) before event 8236c196-c020-47e5-ac1d-b7ee3f0ba26e."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759419548,
+            "eventsFileSizeBytes": 2875,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 82,
+            "systemTokens": 0,
+            "conversationTokens": 34,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-awaiting-assistant",
+      "boundary": "true",
+      "sourceId": "e8ee6842-c4de-46a3-a5f9-59a9cab5152e",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "5e70e487-0e87-4892-87ed-1b69f07b7282",
+          "type": "session.start",
+          "hash": "e99151c3e70eda9ccfbc25b331a9a57b537f623ff3f5ca418e019ca12d3f78cb"
+        },
+        {
+          "id": "c103d966-4ecf-4586-aa8a-4ed19066c9e8",
+          "type": "user.message",
+          "hash": "73783fd2cd3b96210fc3e49831b65cf4884b743c75e6bebc7d008a09c5939f52"
+        },
+        {
+          "id": "0d6087ac-4210-40d0-aad0-9b0adb888767",
+          "type": "assistant.message",
+          "hash": "7ef8f7f20957cb02267fe5d3951d3866b8762e101a93b1a6b28a4b7eaec3b255"
+        },
+        {
+          "id": "ae9730c0-f743-4c8c-b009-5c3f2c442b24",
+          "type": "assistant.turn_end",
+          "hash": "f561ffcf97469ac744be35a35bd017e1c349a9094522ef6260468bc51b66947c"
+        },
+        {
+          "id": "337b6778-c1ab-415a-9972-99a0e764eefd",
+          "type": "user.message",
+          "hash": "b5463c90b4daad7095709af72889a52472bcf45b9b39371c09770f811afe4ada"
+        },
+        {
+          "id": "3a71f4f5-8b8a-45d5-a91d-51ac3172015e",
+          "type": "assistant.message",
+          "hash": "a939f07f15bcaa905e294ba95bf19a43921b503e05d0636ea5f797b7cc8e79a7"
+        },
+        {
+          "id": "ffb7dc43-12a4-4222-9099-826a555f985e",
+          "type": "assistant.turn_end",
+          "hash": "2bfafdfd983ecece1597e686422cae4a3f704fb833e8137a1a2cd574f10111d6"
+        },
+        {
+          "id": "9dc023d3-65d3-4dba-a46d-337fa5d5742b",
+          "type": "user.message",
+          "hash": "bc73f6ab3680b9c7fe001f3ca45fa754855a443ee37ef889984d1a9956bb1e1a"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:26.116Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 1997,
+            "eventCount": 8,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "appendedAfterOwnerRelease": [],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-turn-started",
+      "boundary": "omitted",
+      "sourceId": "f026d49c-1538-4811-8151-876da7b2aa5f",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "68ac82df-db56-438e-9400-061c3b1d419c",
+          "type": "session.start",
+          "hash": "dd8631a30e0d90ff100d82d200d26214104feeb4a141de0e83f7188586238be7"
+        },
+        {
+          "id": "be205dcf-91f1-4ee1-8a75-2ad507a26626",
+          "type": "user.message",
+          "hash": "657b9993cfa33f1c2d808fd6d2ec8f5a4d1d88e0ceffb76fcd71d942857b8124"
+        },
+        {
+          "id": "cd9bf8bb-3f3a-48f2-9093-74818b2453d7",
+          "type": "assistant.message",
+          "hash": "1bb0d76ca0c1d73a52646a25750ff9baad0c75bcc1e72e2dec0c9b402d4f0efa"
+        },
+        {
+          "id": "75425fff-b3f4-4276-817f-5fa161138f48",
+          "type": "assistant.turn_end",
+          "hash": "16e60d33bdaf5a89d211c9ee5e962acd1468e08260e1901404dd832fafef9a2d"
+        },
+        {
+          "id": "dd5a0137-4722-4ac7-b715-b707dd52b1bb",
+          "type": "user.message",
+          "hash": "afe470c1afc11648604f692c821ed767166bc9b66cb028408809c2eed6090242"
+        },
+        {
+          "id": "b23fe5b3-c4d8-45f4-a87f-cbb1d7ed50c3",
+          "type": "assistant.message",
+          "hash": "5eaad9f07c9546bd317f29a224aae73cf8fe7c47934cd3d47e4cd6b713ddf005"
+        },
+        {
+          "id": "e086710d-2e9e-497f-941f-b8f74f8b84d4",
+          "type": "assistant.turn_end",
+          "hash": "67e3d2045e928ca4d7ea0b88941eff1d2b3bb59fd11db226f9aa9e9d9af91f3b"
+        },
+        {
+          "id": "3ca79d4f-82df-431d-a407-ac0d964b9d69",
+          "type": "user.message",
+          "hash": "26af48f0901236da6618f04418fbe529cdcab8f82e2ad231315d97271cff1455"
+        },
+        {
+          "id": "cccb0f90-e242-45ee-bb6a-544437d790c2",
+          "type": "assistant.turn_start",
+          "hash": "6a149eb1a7dd6da5cbcc5b2477778903e6bfc7eded84ceefc44c27ddc8ef4a5c"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:28.362Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2184,
+            "eventCount": 9,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "b533e2b6-ecff-4fb5-b918-4d153fb53fd5",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:28.362Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2184,
+            "eventCount": 9,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (b533e2b6-ecff-4fb5-b918-4d153fb53fd5) before event dd5a0137-4722-4ac7-b715-b707dd52b1bb."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759426878,
+            "eventsFileSizeBytes": 3034,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 82,
+            "systemTokens": 0,
+            "conversationTokens": 34,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-turn-started",
+      "boundary": "false",
+      "sourceId": "d8f26c1f-0389-49cc-b06d-fefdd2f5b022",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "43f12ac5-fba4-44aa-b57c-8e8111de0422",
+          "type": "session.start",
+          "hash": "48fdb2a9dfa1dbc7c569a34e3a471fa4e0efd5f80cfbee74088c5cba710a0f8c"
+        },
+        {
+          "id": "79369a7d-b2fb-4d12-ae1e-ab80e49ee19c",
+          "type": "user.message",
+          "hash": "062e8db064a4497cd9098be5db8b83ecb18d7e59d2df643ecc99977c0ff37197"
+        },
+        {
+          "id": "da9226db-f4ad-4744-be91-f6283be62a3c",
+          "type": "assistant.message",
+          "hash": "91a01ebb20c7b8f0ddac697c8fb367ca4a9af4ac569a551721613d5cd8e3028f"
+        },
+        {
+          "id": "e9d0ccac-264d-46ce-8b1c-3040d7e3ba22",
+          "type": "assistant.turn_end",
+          "hash": "1204dead3e39aa09b750648d8b3737e2f71b3eb24c62de765d19b105ba27cf37"
+        },
+        {
+          "id": "7ebe0deb-ec1a-4369-81f2-6b3b7c63b892",
+          "type": "user.message",
+          "hash": "36fca9fdb1ecf82374dbd5024bb7fb9fd140b3249d824daa9bdc4f1892b85f89"
+        },
+        {
+          "id": "901f5570-0790-43b9-ad84-5378ff74e5f0",
+          "type": "assistant.message",
+          "hash": "3fcb2a827632cbc4e50c0210eaf4adfba53e0c404d7f01b16b90d00a32036f57"
+        },
+        {
+          "id": "ea23a949-378c-4646-b646-b4d0ea3a87fc",
+          "type": "assistant.turn_end",
+          "hash": "60331d3f056aeaf17aab1f40f8483ac6b9f64109bc17f529c00f4e27765ffb72"
+        },
+        {
+          "id": "c1df5602-7646-4a02-834e-462af7c5a0a3",
+          "type": "user.message",
+          "hash": "091da04cc8e23c8a46ad6203f1d28a5076c1989a53b63a1c4393a7d78229661f"
+        },
+        {
+          "id": "865a37b1-2108-42bd-8f13-a1753f8d3d60",
+          "type": "assistant.turn_start",
+          "hash": "285426d63049c246b787122020c51e9981582a64a74898cd78028acb98bc0906"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:32.520Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2184,
+            "eventCount": 9,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "6bd7deef-ef1a-4e27-b78e-d24d87635d10",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:32.520Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2184,
+            "eventCount": 9,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (6bd7deef-ef1a-4e27-b78e-d24d87635d10) before event 7ebe0deb-ec1a-4369-81f2-6b3b7c63b892."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759431002,
+            "eventsFileSizeBytes": 3062,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 82,
+            "systemTokens": 0,
+            "conversationTokens": 34,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-turn-started",
+      "boundary": "true",
+      "sourceId": "d37e0149-2114-47eb-a8b6-570267678943",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "f74c291f-d634-427e-bdbe-0961512b1583",
+          "type": "session.start",
+          "hash": "e045217bec5d0239d258dfef8230e7daf55637906eaf84b3f4e28611ebbf8f19"
+        },
+        {
+          "id": "e31ab5af-d4f1-4658-90f7-9c72db12d312",
+          "type": "user.message",
+          "hash": "f53c0172d06b633cbdce32f4fa951fe73c1cec4907442c36f6edb461f5b132b0"
+        },
+        {
+          "id": "fa97f330-37e4-4ba3-9e0f-b0c293e0669e",
+          "type": "assistant.message",
+          "hash": "f6dad3b811f4a1f9071baee0c39c38dcc53bca177e814f63ea5e9f99a7b288dd"
+        },
+        {
+          "id": "1c2b1538-6b44-4267-ae65-219b24b2800a",
+          "type": "assistant.turn_end",
+          "hash": "c032e357470fbf3f7c3dc9962d08afa2c68560224fc299450c036c5fdc3b2bae"
+        },
+        {
+          "id": "0c639d87-63c4-4fd5-8033-5a041fed808a",
+          "type": "user.message",
+          "hash": "29e12415ba80d7ef9b0bd74acde6f0413a6254d727ef54731610ae5c35c1a288"
+        },
+        {
+          "id": "de663381-effc-41be-a3dd-a010fa7b46f8",
+          "type": "assistant.message",
+          "hash": "eea9c170ebf0b56dcef72418a73d87fec356aa6e71073923942ee9f7838e74d4"
+        },
+        {
+          "id": "33bcde65-9430-463a-a4ab-f061dd3f1616",
+          "type": "assistant.turn_end",
+          "hash": "d8617576a0ba281b53944ea91bb511fb1868dd64309da903926df2d3a9fcc914"
+        },
+        {
+          "id": "85bbe092-c8d4-4e5d-bfde-9c90ade916b7",
+          "type": "user.message",
+          "hash": "b63e2055dfd2d6db363848a8ec2b3132d133f1d5d82c047da08cc3b55bb43751"
+        },
+        {
+          "id": "9c8a16e4-18b0-41ce-9dfa-db66b2cbf919",
+          "type": "assistant.turn_start",
+          "hash": "69439e9e9ac29213575f9b5e21c7c73c674a6189519aa50dd926dbb859616a8d"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:36.846Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2184,
+            "eventCount": 9,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "appendedAfterOwnerRelease": [],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-requested",
+      "boundary": "omitted",
+      "sourceId": "729c1fcf-3086-48cc-aa6e-4722b199d251",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "6d198ead-6117-4112-892e-43dcbae32aae",
+          "type": "session.start",
+          "hash": "898a5e49fdaeec2a2f8c02d1e807f20e409b75fb9056dc824a92debfc6ac98be"
+        },
+        {
+          "id": "573486f1-e3cb-4e81-bcc9-ab6513cb0dda",
+          "type": "user.message",
+          "hash": "ec08744575d2f7e65d288456c24e8a73c1f87ebeee9afec886deb54567a93e63"
+        },
+        {
+          "id": "10aa8baf-66df-4a2f-9ab6-e98edb927571",
+          "type": "assistant.message",
+          "hash": "1d5d2ce970e4c3da3c3988808ccd78b2d1202e4d817664a13e88643e0696791a"
+        },
+        {
+          "id": "7c01c273-2713-4035-885d-877f43e10952",
+          "type": "assistant.turn_end",
+          "hash": "e5037a3da07a00d5e0ce7013d0c542ffe4e256af43cee59453ee5b1c0b0784ff"
+        },
+        {
+          "id": "03b2c7a0-4096-4cb2-8686-0d8a93340a95",
+          "type": "user.message",
+          "hash": "e5b44cbb50068159cef79bad314d668c8a15de2c9a6da37c0bf89df09fb5e28e"
+        },
+        {
+          "id": "2de3c247-4a9e-40d5-aece-e9596a0e953c",
+          "type": "assistant.message",
+          "hash": "4428026ecd08370cd16b0f744d90ca84f84aeb25a6feee03f7725d7a255f24d6"
+        },
+        {
+          "id": "d4b8d3ac-0cf9-435b-92b9-9b4dcb143aac",
+          "type": "assistant.turn_end",
+          "hash": "79787edad256086cbc8b4c619fd64c04777b05ffd5bbbc9f711e5cb23b1badd9"
+        },
+        {
+          "id": "32ca5d05-748b-4860-aa3b-02590c2a8216",
+          "type": "user.message",
+          "hash": "f6a3ec3d6ec633fb87c8d50c3bfcee3ea7c9ab4a5cf2b3c4633443709b4d1877"
+        },
+        {
+          "id": "4a42da62-e6ee-4544-b26f-69d4332f3497",
+          "type": "assistant.turn_start",
+          "hash": "12cc01582948a575205071cfd26edab263c970619cd17b2a940afe70ca60fb78"
+        },
+        {
+          "id": "e679784e-1573-44f8-ab45-3d12ad339e8d",
+          "type": "assistant.message",
+          "hash": "c68a05ae47796a2da3ec50144d9974920da30e99ae04481ab6485c68d05931b1"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:39.108Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "297c19ce-c60c-44e6-b253-e4f4425fa16d",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:39.108Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (297c19ce-c60c-44e6-b253-e4f4425fa16d) before event 03b2c7a0-4096-4cb2-8686-0d8a93340a95."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759437588,
+            "eventsFileSizeBytes": 3396,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 159,
+            "systemTokens": 0,
+            "conversationTokens": 111,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-requested",
+      "boundary": "false",
+      "sourceId": "d6ae4602-10c1-4fb9-8c92-0b4bd5d8e76e",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "83c27c26-193c-4904-a93f-23e1cfd38303",
+          "type": "session.start",
+          "hash": "92f0b052637fce1de7b916f94bb98fbf6c57e49b763edf64c09d6482a8a1014e"
+        },
+        {
+          "id": "73636244-7a52-4501-9046-c409adb0ed94",
+          "type": "user.message",
+          "hash": "795a5bb4239bc174f0949fb40fb5f2e7d46905c277e3ab46f597035b7da5d5a7"
+        },
+        {
+          "id": "15800b4e-ffed-4530-9747-85e663da9259",
+          "type": "assistant.message",
+          "hash": "947523dbd9cc0d06247a97f051ac4bd6d7cc78b941f9f003d377c049fef524ac"
+        },
+        {
+          "id": "79df1cbb-afdd-4384-8768-955927fc43da",
+          "type": "assistant.turn_end",
+          "hash": "26fd952ef0bb3c2cfa261aa2581907bcfb2bbd3d559c6f21571353e718cafc66"
+        },
+        {
+          "id": "4f16f210-294c-4019-a150-14af6fadf3c9",
+          "type": "user.message",
+          "hash": "ef8ecb63f8573aebb1a87837e2b5d086c6eccb85ed219c736cec4b410d462c99"
+        },
+        {
+          "id": "ec6b31ca-42dc-442f-bf24-a263c2b9c9dc",
+          "type": "assistant.message",
+          "hash": "65cfae6df3fb548399dac5cc2184053dd82e211530be122c2f8b819d7644bf5f"
+        },
+        {
+          "id": "4fdde107-36fa-4d5e-8aa8-a607eee60505",
+          "type": "assistant.turn_end",
+          "hash": "9bc8fddddcc5399d60c9875a1c56689d4edd5009e6460b53c6fd84b1c7d0063a"
+        },
+        {
+          "id": "7ce262f7-e834-4f2b-926c-8e1b8791ca28",
+          "type": "user.message",
+          "hash": "229a52f96ca9bcab7ad7c3436673e7f7e4d2df5412261ef45bd3b50e4ddf987c"
+        },
+        {
+          "id": "f2086d6e-25a4-4c55-aef8-0443be348914",
+          "type": "assistant.turn_start",
+          "hash": "f957a1a13223912ddfd66c355919e429e15a2a694249c23aa2d170791b1108ab"
+        },
+        {
+          "id": "eba0cdf1-c8b6-43cf-a19a-80a26a79ef75",
+          "type": "assistant.message",
+          "hash": "6aff3bcda46e71efc010bb55cd02f4422e9ff05fb55091b3d0872d9108e12e7f"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:43.369Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "3d2e7c6b-20cd-4c4f-bba6-02de37a8e255",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:43.369Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (3d2e7c6b-20cd-4c4f-bba6-02de37a8e255) before event 4f16f210-294c-4019-a150-14af6fadf3c9."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759441681,
+            "eventsFileSizeBytes": 3424,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 157,
+            "systemTokens": 0,
+            "conversationTokens": 109,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-requested",
+      "boundary": "true",
+      "sourceId": "4d7fc4ce-962f-4bf0-826b-70c15e5b66b2",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "7d1e3c1f-9409-4ad4-9bb5-9446dfc9190d",
+          "type": "session.start",
+          "hash": "eba11b672ba2afe2e19015fbb2335945b9e4ba2030b4281cf56e02d1b4b4c9db"
+        },
+        {
+          "id": "93092781-fd6e-4c8c-8692-56f856a33a98",
+          "type": "user.message",
+          "hash": "4c5158f9e756106542a3267fe34b11f383ff27b8ef46848627a927b56833b38b"
+        },
+        {
+          "id": "6937d714-3dc5-4c45-8a50-d16665905b5c",
+          "type": "assistant.message",
+          "hash": "2e042954f0dcbe84443970071d2ed335a0fcc970c0fd1335ed58385d24d3bf05"
+        },
+        {
+          "id": "96aa633c-722e-4072-8137-45d0b40b396a",
+          "type": "assistant.turn_end",
+          "hash": "9e00ade39364a90f746b58537bbc573c9d678f89b22087a06e6c3e7ea6d31593"
+        },
+        {
+          "id": "d7422cd7-8913-48c3-8cd9-ec8e1f3befc3",
+          "type": "user.message",
+          "hash": "7891ccd831c3c7f02307e749c165da95c22d6d0d9cb576c85214c9da6e8751f5"
+        },
+        {
+          "id": "57f4823d-aef1-49aa-a22d-f0ee8e153b91",
+          "type": "assistant.message",
+          "hash": "e48f01a9e23c85edf5a53a42984a3a43554efd98a237f15bafd067594bb96625"
+        },
+        {
+          "id": "bd87a7e2-24fa-42a9-9409-ea5646a02f91",
+          "type": "assistant.turn_end",
+          "hash": "88f18fa05efc1607453c086f4a618a90c9b585b1e24c2a1cb490fa26e6b035f6"
+        },
+        {
+          "id": "6748eb33-115e-4bd7-88c2-eaf1c4436c72",
+          "type": "user.message",
+          "hash": "87c9158b9474de40d008337bddd11d084c976cd4406af245318bd674d73a5a2a"
+        },
+        {
+          "id": "cb32a58c-8813-4ef4-ad36-d5585c07b7fc",
+          "type": "assistant.turn_start",
+          "hash": "3b49638349f33b9af2c88c637f5b42423993c268b47048cdc2686830f2f644dd"
+        },
+        {
+          "id": "db435e7d-c395-44ef-b5a4-b0201d251697",
+          "type": "assistant.message",
+          "hash": "165c069aeb32ab12d6bba7c42c436fd7cf6a8b30c538043ea3f63961a7295cda"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:47.560Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "672a7a7d-03a3-467c-9bc5-d47658f0ffc2",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:47.560Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "672a7a7d-03a3-467c-9bc5-d47658f0ffc2",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        }
+      ],
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:47.560Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2545,
+            "eventCount": 10,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "672a7a7d-03a3-467c-9bc5-d47658f0ffc2",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759446015,
+            "eventsFileSizeBytes": 3447,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 163,
+            "systemTokens": 0,
+            "conversationTokens": 115,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-started",
+      "boundary": "omitted",
+      "sourceId": "104dc76b-4023-4aa0-b2ba-a88d495756c8",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "07252a98-e377-458d-b1fe-e68031e90d9f",
+          "type": "session.start",
+          "hash": "d56d40da070d59828524bd918979dc61322184b456aa4ce42b6061ef489ef1e9"
+        },
+        {
+          "id": "3290fe40-d776-4f77-983e-43702c736019",
+          "type": "user.message",
+          "hash": "f305b19fa79a068fd76b288f8fed8bf197dad2985c352484ab4c7344b086776d"
+        },
+        {
+          "id": "cf864c76-eb99-4546-bb2b-8da763be6761",
+          "type": "assistant.message",
+          "hash": "078f303a7fc145c88780d25e166b8dfcf7da1d9210be4dcb4c798a888572b497"
+        },
+        {
+          "id": "31b37a51-b6ba-4cf1-ace5-9e99de7de352",
+          "type": "assistant.turn_end",
+          "hash": "1653cb08be5d9ef92c2a785a24e25b0cd78618b616f96411a296b717a1e37b68"
+        },
+        {
+          "id": "1ec62146-b3a8-4539-afee-27b403d82c20",
+          "type": "user.message",
+          "hash": "66a9e02a65c3bad3d2a544508916e3520f6ebd4f64ece397a6acd6ee98566aa1"
+        },
+        {
+          "id": "35b9dda6-6a29-48f7-ade8-4f799797755d",
+          "type": "assistant.message",
+          "hash": "f744e05a82bab58022dfdff40c29bf3531ce12446c0b5fd425a676edcb99763e"
+        },
+        {
+          "id": "1585a67a-de13-4932-b565-2ffeaa0b5fde",
+          "type": "assistant.turn_end",
+          "hash": "58e21b7c134f1909acb165648897ee4f1009e85b08d6552f235ffed75ba91f4e"
+        },
+        {
+          "id": "72793f42-2d69-4a4d-b48d-da52a41c3d57",
+          "type": "user.message",
+          "hash": "e7f1928f15c8ba7d72f63b5fc62d002f17054a43871b0314a96b712823e748ee"
+        },
+        {
+          "id": "dcbb9e2d-0ef9-4cf0-b48d-c70ff8125bbf",
+          "type": "assistant.turn_start",
+          "hash": "719e6282b4aea55487d95b3e5bdc87a57de6ebab7e5493e5310d1e9c127ab63e"
+        },
+        {
+          "id": "f796e12f-e734-408b-a835-7402555ec2a8",
+          "type": "assistant.message",
+          "hash": "b10fa1a373664447f98ec20904c0fbfbeac9ac28e1ab953afc0a96a8bc2f86db"
+        },
+        {
+          "id": "85214bc2-57ae-4948-8e98-aecfba8096f5",
+          "type": "tool.execution_start",
+          "hash": "e630a1ff4cde92ed9596263692913525e0a54d019aa2a772edef0d285f08fe0a"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:49.853Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "b08cac45-c741-45d2-8d5a-b667a8d188ed",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:49.853Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (b08cac45-c741-45d2-8d5a-b667a8d188ed) before event 1ec62146-b3a8-4539-afee-27b403d82c20."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759448282,
+            "eventsFileSizeBytes": 3681,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 163,
+            "systemTokens": 0,
+            "conversationTokens": 115,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-started",
+      "boundary": "false",
+      "sourceId": "62f1b06b-ecb7-4099-a0d8-99ddd4874c7b",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "097dbb14-b570-476a-a071-71e71404a36f",
+          "type": "session.start",
+          "hash": "c8e7d8d20c9c7f043f3a6a18e141d3a815297eae8e352ba44a7525de179dc03f"
+        },
+        {
+          "id": "079209fc-85b6-4ca9-8356-273b96722baa",
+          "type": "user.message",
+          "hash": "8a1d5d9cc51ea4a3649ccde21e18dcc30ade046eda0b1df5700ae6d84a6280de"
+        },
+        {
+          "id": "fb1f46bf-93d5-49c6-8114-faa7534c850d",
+          "type": "assistant.message",
+          "hash": "05dfeb89256dfc9db4c59252cbed760203d37a16a37fc48e932c00978b0156d4"
+        },
+        {
+          "id": "6d3bc6bc-8c89-41b9-93f8-68e4b037724a",
+          "type": "assistant.turn_end",
+          "hash": "a3a3fda880791e8f886098c4f8a005c1d73e7162545d21fb6777f919372b8351"
+        },
+        {
+          "id": "07bc4a30-2224-445f-9568-42de24e5f507",
+          "type": "user.message",
+          "hash": "2e7a0200f248278cdd08012fed18e13f72a9a57346048ea09c89bdee4c203631"
+        },
+        {
+          "id": "3d52aeb9-e4d2-4fa1-a23b-064537fb0eb6",
+          "type": "assistant.message",
+          "hash": "bc73401bb649357c4cb960ac2ef4ed16428e1336af612532a9d4b365e19ad126"
+        },
+        {
+          "id": "e7c5a014-bd0a-457b-b635-eb5e7a2a60d1",
+          "type": "assistant.turn_end",
+          "hash": "ff5f21774d16b88ef3036a63f5ca49a71a195491f7e48db9cdc5b06ddf595559"
+        },
+        {
+          "id": "6528bbad-bc24-469f-a6b4-03cdbb667cf6",
+          "type": "user.message",
+          "hash": "3e7e811cbf7b3833e7c7b9bac8a55cb9767373be81ba7b8c01c9291d64f2022c"
+        },
+        {
+          "id": "85c712c0-0db6-4403-b842-df92b6d21a63",
+          "type": "assistant.turn_start",
+          "hash": "f8ef38f7c3e80101fa235f405c8f0ab216116e34c29c9fb7d4ec682d51633a59"
+        },
+        {
+          "id": "b7c90016-a7fc-4394-b808-5721b09947a0",
+          "type": "assistant.message",
+          "hash": "e43be8422717fd202f25edccbd1c8d4aef53966c42f0edf0053ecc86f0af11cd"
+        },
+        {
+          "id": "699a28cd-f85f-43d1-8f5d-221b3d90b56c",
+          "type": "tool.execution_start",
+          "hash": "3e60de88db7c5df30a7ca188e02aa6552c16fcb19c0595cc93d044ed2306def6"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:54.261Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "7f4e015b-d541-4742-8156-2596cf8aae0b",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:54.261Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (7f4e015b-d541-4742-8156-2596cf8aae0b) before event 07bc4a30-2224-445f-9568-42de24e5f507."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759452607,
+            "eventsFileSizeBytes": 3709,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 161,
+            "systemTokens": 0,
+            "conversationTokens": 113,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-tool-started",
+      "boundary": "true",
+      "sourceId": "585bd117-1229-406e-bf58-489cffbe8c67",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "7908eaa1-f0e3-498d-81e6-fcf694e08f6d",
+          "type": "session.start",
+          "hash": "beeef11d50084e1c4188c105d57195e351aa9468e435e19cdedc9e6578670626"
+        },
+        {
+          "id": "7eb4e349-7b69-4fe8-ba74-1aaf41faba52",
+          "type": "user.message",
+          "hash": "21e65fa58014a2df375ea63251ffba538a754f2c23d760d4278050a1167e6dc6"
+        },
+        {
+          "id": "6588d9a4-0ad1-40f8-a488-7cd52cf75bbf",
+          "type": "assistant.message",
+          "hash": "e3e89183b32bebebe2b92b653258cb28ab76966a1df649b920a45e3c0465a15e"
+        },
+        {
+          "id": "300d614e-5796-46b8-85db-e99b353999a6",
+          "type": "assistant.turn_end",
+          "hash": "310cf1844717c9cbc6ac8b998c16e703c64670c678fccc9f0ad8f05ff2aedf7d"
+        },
+        {
+          "id": "6727ca63-f825-4ded-8025-79e84798d17a",
+          "type": "user.message",
+          "hash": "9a4a809069553b08ce1c59da315975371702db4050637e082ea39f703b9cced6"
+        },
+        {
+          "id": "71dec000-3626-4621-8ae5-ee126262f909",
+          "type": "assistant.message",
+          "hash": "dce2b5d95b1d9831a8cc2c7f4c6ed5f43035b051bb2ed6766ec5743607f98eea"
+        },
+        {
+          "id": "0e9ec2e5-b8f0-474e-99ce-0b7cb9555413",
+          "type": "assistant.turn_end",
+          "hash": "08c36d3aaf3d2d509e1a8df61bd6d989e00db51713650ae0822555db8f397afe"
+        },
+        {
+          "id": "6c42706b-d509-4cc6-98d2-ba9811c89ffe",
+          "type": "user.message",
+          "hash": "c9cfbb98327dcc4473e186d5120bf3fa98ba87ea196cda97c1f1f6eb685b99a3"
+        },
+        {
+          "id": "f72991df-1a6d-4b90-a3c4-2aaca4bdffe2",
+          "type": "assistant.turn_start",
+          "hash": "1e2c67fcaf78fc4ac94d822949fd502300ebef7311ee3e36449418373a60b0a6"
+        },
+        {
+          "id": "bf2b0e45-cea3-4bd3-817a-a95ca549b69e",
+          "type": "assistant.message",
+          "hash": "dbc78023ad4bfb8c86e5e6d3bb59d7a57947b37730712b72efcf874842699386"
+        },
+        {
+          "id": "0995c413-85ff-40c0-87c0-365ddb6f6f53",
+          "type": "tool.execution_start",
+          "hash": "31ea0ad0a8a478be13b0a2dca08b57d5d974af9d8426794839229eeb23a84468"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:58.281Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "413f1f60-dd39-421a-9456-e9d2ce52e6e7",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:58.281Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "413f1f60-dd39-421a-9456-e9d2ce52e6e7",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        }
+      ],
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:10:58.281Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 2830,
+            "eventCount": 11,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "413f1f60-dd39-421a-9456-e9d2ce52e6e7",
+            "model": "resumed",
+            "interactionId": "resume",
+            "success": false,
+            "error": {
+              "message": "The execution of this tool, or a previous tool was interrupted.",
+              "code": "interrupted"
+            }
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759456772,
+            "eventsFileSizeBytes": 3732,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 161,
+            "systemTokens": 0,
+            "conversationTokens": 113,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-external-tool-pending",
+      "boundary": "omitted",
+      "sourceId": "69cedc8f-595f-4a47-8dd9-5f677ed2054c",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "8088f573-b317-4118-8b12-d2019303db37",
+          "type": "session.start",
+          "hash": "4d7c6eb4990aa158c4d1c1a69db34ab5739b5c9721b7ee86ba4f870baf8943ca"
+        },
+        {
+          "id": "2eaccdb2-22fe-4754-85aa-4ada555e21a3",
+          "type": "user.message",
+          "hash": "3f22c9dde46115306b1bb23ba8d38e31dfe7a285e13c686214af8608860112ee"
+        },
+        {
+          "id": "a59537f3-5f20-437c-b346-d006cc4bcd02",
+          "type": "assistant.message",
+          "hash": "d9d47bb89bd800bb4efc77529c723be593624dff515a134a7db24cdbdc47266b"
+        },
+        {
+          "id": "cc2c7de7-4681-4438-b986-1ab0424466ac",
+          "type": "assistant.turn_end",
+          "hash": "2a7380cbb395fa64d52eadd5d352abdafd679979de00a0cf53e7df854b208d95"
+        },
+        {
+          "id": "17f87c95-89cb-4050-bf59-e2082b4d1bf1",
+          "type": "user.message",
+          "hash": "bd0893881bc773306cd4107992a93e03a4fa59701f0cd4ba01f6db30680ca109"
+        },
+        {
+          "id": "d56f7107-c325-4f2c-935c-fbe731904dc5",
+          "type": "assistant.message",
+          "hash": "933d8d585c15d18cfa2661f2bfe5a23eaec05e2d9d3d956699eccbc51047aa8b"
+        },
+        {
+          "id": "8510748d-e4c6-4758-86d6-15bc169c69bf",
+          "type": "assistant.turn_end",
+          "hash": "71cf9d68c715d1685147a79a86edb668675e58a5f1a615d227db3c010fd32d05"
+        },
+        {
+          "id": "1a1fd1ad-28b5-449d-a4b9-bf1380974c8e",
+          "type": "user.message",
+          "hash": "f9ac655196f6b1d37e4d428ff1cd8e43740dcd6143b11e05fe5a79e793087f6b"
+        },
+        {
+          "id": "d101e7cd-bd6b-4ab6-a8fc-3f055b0b8c66",
+          "type": "assistant.turn_start",
+          "hash": "05c87fc3afc1a089e553bd3876936040c5a1cc27b6fce1e5ab7909a872b4f14a"
+        },
+        {
+          "id": "58533555-cfcc-49cb-a8b3-f7c56abea5db",
+          "type": "assistant.message",
+          "hash": "be7b9e9b387562edc9c43a3595aad3fd25975470f3ec31db4e0b9171edfb740c"
+        },
+        {
+          "id": "12ebe7ca-aaf8-468b-9302-ea26c4510b7b",
+          "type": "tool.execution_start",
+          "hash": "401647fe44aad7736252737fc5d82d81efb8d0aa6643844e55ba6e8a676ab52d"
+        },
+        {
+          "id": "51a280ed-e37a-494d-bb05-b3036d5d56a8",
+          "type": "external_tool.requested",
+          "hash": "92cc51fbfa94a0ef73d84db1b6f7431a3ba24b9c3dbf38eb8c0901cf8dbedd4f"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:11:00.787Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 3301,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "28ad0d10-f14f-4c68-882f-89c2e64e4714",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:11:00.787Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 3301,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (28ad0d10-f14f-4c68-882f-89c2e64e4714) before event 17f87c95-89cb-4050-bf59-e2082b4d1bf1."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759459053,
+            "eventsFileSizeBytes": 4152,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 161,
+            "systemTokens": 0,
+            "conversationTokens": 113,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-external-tool-pending",
+      "boundary": "false",
+      "sourceId": "9424bd72-6bd0-4734-99c1-8277ab67c24d",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "1f24c2e2-e529-4845-8229-63394276f27e",
+          "type": "session.start",
+          "hash": "67800a62d8451cb8a9862fd46131a00a2cc48451076cc29a7d5fa505881501d8"
+        },
+        {
+          "id": "2819433b-341a-43b9-9ae7-f34fd9f14852",
+          "type": "user.message",
+          "hash": "688e17d86394fd43e18dd291b2e558de30d17b410f69510fe516bd1d805266c7"
+        },
+        {
+          "id": "a61067ba-1320-4f6d-be20-fa2c1341811a",
+          "type": "assistant.message",
+          "hash": "824fd323ece9c1c45a30d2fa28d8aaabde3aee7fb83e9f7a0a32afc994b05596"
+        },
+        {
+          "id": "4aeeda00-f86d-4f63-a928-e5e895d8acb1",
+          "type": "assistant.turn_end",
+          "hash": "e2df32895877cf36e9e3a1df5fa820f29105c8c2be1c7227e7e3db77b21dde1b"
+        },
+        {
+          "id": "2f5edf01-f091-410c-9861-ce6fd220acb1",
+          "type": "user.message",
+          "hash": "2507bdda8ec5d6b3610bd8f9f0060a231857d6d3d698bf26f8fd02855d968c54"
+        },
+        {
+          "id": "9df58fe0-394a-4673-abb0-8f87b88de46d",
+          "type": "assistant.message",
+          "hash": "d785fda6e27a8f1d168ac3129bce01c9fd33e6b14090e3b496fdce54e9302d12"
+        },
+        {
+          "id": "e106a88e-a06f-471c-a327-04be6683a5d8",
+          "type": "assistant.turn_end",
+          "hash": "b393a5adc0e61c9c1df44105f8583867a4307208c334887abe9aff982dc8cdef"
+        },
+        {
+          "id": "8d935ccf-2008-474d-858d-cd8a13dd5fc5",
+          "type": "user.message",
+          "hash": "8d6d9e8ae744375ad707eafc3659d96adf4c27a508067d902901d212f0e35194"
+        },
+        {
+          "id": "e30132e1-efe7-4ef2-a9cb-150258a60e9e",
+          "type": "assistant.turn_start",
+          "hash": "d08ce22950b4c1f936a3bda7f97458c6ee2074d4fa422472ceb83bb5876ab5f5"
+        },
+        {
+          "id": "780454b1-b69b-4878-98a4-5d82c633afd8",
+          "type": "assistant.message",
+          "hash": "1cc5b89193f99c4007dad207dd65819b47b0b206b16b7a6e0ea5fc1e06b90cf3"
+        },
+        {
+          "id": "2e897a52-ed8e-42c3-9bfc-623fcf59e2f4",
+          "type": "tool.execution_start",
+          "hash": "c7f99678960c64d40c8ed391f94aff230121a11b42363d6c87085b874ae8a8ab"
+        },
+        {
+          "id": "1f04b5c5-4b15-4ebc-8c82-bbbf9c612c80",
+          "type": "external_tool.requested",
+          "hash": "fbfc5d96eb6bfa25fb8c328eb9e2ea68987c4c66108afe2f7b539fcdc7e0ec2b"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:11:04.909Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 3301,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "22acbc3d-e1cf-409d-815b-b2e94cacf96e",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:11:04.909Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 3301,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (22acbc3d-e1cf-409d-815b-b2e94cacf96e) before event 2f5edf01-f091-410c-9861-ce6fd220acb1."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759463353,
+            "eventsFileSizeBytes": 4180,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 163,
+            "systemTokens": 0,
+            "conversationTokens": 115,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-external-tool-pending",
+      "boundary": "true",
+      "sourceId": "36fcd8e4-e4f2-4b12-b55e-254a0a2cb6ee",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "c8876dbb-6deb-4b02-abf9-884abe909142",
+          "type": "session.start",
+          "hash": "2cc5e33191f1821fad2181f067742dbf701b3f8505887c44c43045389ad9a573"
+        },
+        {
+          "id": "01a3fe2a-0494-47d5-ace7-4327673435e4",
+          "type": "user.message",
+          "hash": "8e09aedfa9f2a537f6e2742da08a584d142124f0ccc3a7e6c1b5fdcff010dd69"
+        },
+        {
+          "id": "f5acc9bd-c655-47df-ab04-0323eeb13a9c",
+          "type": "assistant.message",
+          "hash": "ff754e03bff8c699311b4288e56495372e1e16be0aba0481c746dd08f001b166"
+        },
+        {
+          "id": "a7ebd2fc-96ad-46b1-97ee-115bdf02555f",
+          "type": "assistant.turn_end",
+          "hash": "fe37ac0c48ed14bf689962b0e0a3563671888aca2a0d40bb8cd57343c57a79da"
+        },
+        {
+          "id": "5631469e-5bbb-4cea-aad2-9d79eb8907b0",
+          "type": "user.message",
+          "hash": "ee0ae907b3ff67dc14fd22ec8f7a18120f7bf0ff747947d7360a3819480f8ae4"
+        },
+        {
+          "id": "8364dad9-c2b1-44c7-ad7a-3b5bb364ffce",
+          "type": "assistant.message",
+          "hash": "50bce69f1956f14f7f2806eebc22e7c5bc7a5527d7b9e658e33c5d3dfbfadadc"
+        },
+        {
+          "id": "3b2e371f-1571-4213-b942-727022efd2e5",
+          "type": "assistant.turn_end",
+          "hash": "06751599db8ba0e13cff8a2ed064c750a0180fdd00e5701805906cebb4f84abc"
+        },
+        {
+          "id": "04ee2b43-b734-4be8-80d7-d892e80edad4",
+          "type": "user.message",
+          "hash": "9ab3d2c8e0d1d73409eb3298cda03b0fe95b3a86453eb33986ee4cf6041908cf"
+        },
+        {
+          "id": "ba8d0698-88c8-45c5-8092-9f6be4cbf354",
+          "type": "assistant.turn_start",
+          "hash": "28a549e66f629c49361f0e4e84fbbf61d657e320292ea1f0a8c72a9b11c5e782"
+        },
+        {
+          "id": "68d90eb6-e142-489e-b036-0292ec011f85",
+          "type": "assistant.message",
+          "hash": "c7aec710a2b86405f7d030d1471b3d8984646141492e9e310775ca56caf0c332"
+        },
+        {
+          "id": "cd93798a-537a-49df-ab60-dbbe724511ba",
+          "type": "tool.execution_start",
+          "hash": "db720caf6989e0ceb17ba7b313b390a854ae973ce6ba7e35c93f0b4a49f527de"
+        },
+        {
+          "id": "2996f491-8bd9-45a7-8500-e3a9d33621fd",
+          "type": "external_tool.requested",
+          "hash": "68a44c49e6ddb2c7dac7fec9e41ac08d02a63e53693a54cf96926f7ebcb8c56a"
+        }
+      ],
+      "processingAfterResume": true,
+      "pendingPermissionsAfterResume": {
+        "items": []
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:11:08.863Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 3301,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "appendedAfterOwnerRelease": [],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-permission-pending",
+      "boundary": "omitted",
+      "sourceId": "c3a6f215-b20e-42e8-97b5-db06cad8312f",
+      "continuePendingWork": "omitted",
+      "before": [
+        {
+          "id": "a1d585a6-9860-4638-99c2-686049595069",
+          "type": "session.start",
+          "hash": "a4b8ec9ba53bfcd3b24f8a2442fba5177773ccc69f1c2659759789d811df3ee7"
+        },
+        {
+          "id": "01987596-fbd0-40df-b1bf-51121d5f3439",
+          "type": "user.message",
+          "hash": "8b408ec2c1393628c51f73b844ec6df87d192685b16ef213b7114c52b85e42b5"
+        },
+        {
+          "id": "9266866d-ec12-4c3b-ba48-6725033834a4",
+          "type": "assistant.message",
+          "hash": "dce924d2343a8813888e742349c03b3f613b126dea0c654177fbad996e02b713"
+        },
+        {
+          "id": "51b53d13-9579-45a5-9130-3447ec0cbcdf",
+          "type": "assistant.turn_end",
+          "hash": "f8e863796460332f543a288cc08e06144b9ad9e222eb2acfd1e9c54877912a46"
+        },
+        {
+          "id": "3fc6d9bb-85cc-479a-97e0-fea754cca8bd",
+          "type": "user.message",
+          "hash": "fbb934747310377eaea1348fb17f92103b62b70b69a54b2f1f71813a09ca0b0f"
+        },
+        {
+          "id": "e4df7d86-d241-4a92-bbe2-b5f34c654f0e",
+          "type": "assistant.message",
+          "hash": "24cc88f9ff81ca08b359718d76f3672881e6ed092a4748f5385e208bda52d3fe"
+        },
+        {
+          "id": "9f02c911-c9d9-4ed5-bb1b-ba23ac44acfb",
+          "type": "assistant.turn_end",
+          "hash": "2befbe8f75ad7d3306c6d6832ad0845d4766a7393f1c3dbe070e4540812106d9"
+        },
+        {
+          "id": "02a9f9f5-7337-4687-a524-dbc2399c4d61",
+          "type": "user.message",
+          "hash": "404a30d0ed4cf101d32748b4971368a9ed61251eaf3878349493184fef4f1c86"
+        },
+        {
+          "id": "9ce32e3b-9826-4d9c-a475-ce34919d754f",
+          "type": "assistant.turn_start",
+          "hash": "783cc894bec78a3be6429dcee08b2086866ba336441c00e2b94cf98eec0d6c5d"
+        },
+        {
+          "id": "1e5ac2ab-b7d0-4ce8-ba6a-a6efbc088dc6",
+          "type": "assistant.message",
+          "hash": "05c2a7c1e43cc0401a9b29609883463a6dc58d2a9cac0758b7a209398b7d7ecf"
+        },
+        {
+          "id": "0448ec40-d7ec-4f4a-9212-32614a4d611b",
+          "type": "tool.execution_start",
+          "hash": "e76bd3b19a675c7980d07fb7375f8224e976a6ca4c694a30b46c0dc57a5d19db"
+        },
+        {
+          "id": "b2fd429a-a2b6-4a73-ade6-d42a4e4e5ae3",
+          "type": "permission.requested",
+          "hash": "612f33d4be9fd2efa6dce7b13d6545c0938eca08e25d45a3c8dc5890a6c922b4"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": [
+          {
+            "requestId": "bd03f486-f16f-424a-9759-5709f028873a",
+            "request": {
+              "kind": "custom-tool",
+              "toolCallId": "e69ca7cb-d3c2-47d0-b9d5-f439ce9b5b58",
+              "toolName": "fork_probe_marker",
+              "toolDescription": "Synthetic no-side-effect marker",
+              "args": {}
+            }
+          }
+        ]
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:11:11.098Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 3243,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "96307931-270f-4149-b316-2d36c68dd89d",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:11:11.098Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "eventsFileSizeBytes": 3243,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (96307931-270f-4149-b316-2d36c68dd89d) before event 3fc6d9bb-85cc-479a-97e0-fea754cca8bd."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759469584,
+            "eventsFileSizeBytes": 4094,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 165,
+            "systemTokens": 0,
+            "conversationTokens": 117,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-permission-pending",
+      "boundary": "false",
+      "sourceId": "90a18788-503f-46d2-aa31-4c52a1a94c34",
+      "continuePendingWork": "false",
+      "before": [
+        {
+          "id": "133fe0ec-b3b5-4857-8ecc-95b5539e5509",
+          "type": "session.start",
+          "hash": "71b3afb01e47e723871023b09f8b592f9c97295344292a70bd6323d851642a07"
+        },
+        {
+          "id": "7ce6f1c3-0e98-44de-9daa-7e27c5acd3a3",
+          "type": "user.message",
+          "hash": "ea453c4d6b99bdf626d5eece42f3c922b4596e86f80c633ea7b73605c43923ca"
+        },
+        {
+          "id": "f842e160-d6f6-4063-9c27-6266993355a6",
+          "type": "assistant.message",
+          "hash": "41fc8877f4f0dc1916dcec5a90daa95072fa8b001da996ff13bb7a2924cbc9ba"
+        },
+        {
+          "id": "8776d711-15d3-4217-9159-c850e1152d74",
+          "type": "assistant.turn_end",
+          "hash": "57515fe8b616ff72caf98ef4388199cc5cfde05ef4d79a54058e75282741a1b6"
+        },
+        {
+          "id": "7aabb01e-ab43-4b92-8bcf-bcb02544cd94",
+          "type": "user.message",
+          "hash": "5261cac5739dd9bbcefcb90ea1ecc2e3919af70b9b13df5d98701fd12560f268"
+        },
+        {
+          "id": "ea17fff7-abc9-4986-b34a-007097a8f08d",
+          "type": "assistant.message",
+          "hash": "f3e7f005e841dd581e101ee19d60fcf6c768ee12a0aba72b75c167c765fbc9ef"
+        },
+        {
+          "id": "f5e6433d-2f2e-436b-9e7f-36085472e7b1",
+          "type": "assistant.turn_end",
+          "hash": "efa47585ddae4b149929a7e8c3a74afdadaa8b871593d6b03847ca8a367237b9"
+        },
+        {
+          "id": "9cfea625-734f-406f-9b81-c2a86bb88448",
+          "type": "user.message",
+          "hash": "466d011ebab5ed210b4c701d5ac46c322a6b1808c178b9d689930bb02ddecad6"
+        },
+        {
+          "id": "61457107-5ae3-47f7-8058-ccbd773ce0ed",
+          "type": "assistant.turn_start",
+          "hash": "c0abb0f00509dfb3c1530b1d284b481e1cf6da1a4ff554973f98d63bc456f07d"
+        },
+        {
+          "id": "b47b3067-c0b9-4842-be38-56a460fc4995",
+          "type": "assistant.message",
+          "hash": "801b880608df7a3751470257b7435b652b9b81657fcc7272792c006cec2751b1"
+        },
+        {
+          "id": "0a6048f8-f0e2-40ef-98e5-83d1a551f7d0",
+          "type": "tool.execution_start",
+          "hash": "930b839401b6f33a57a6a27be652797e22d188372e3dc56682952bbedbcbc281"
+        },
+        {
+          "id": "02a2819d-5afb-4f0a-8f96-e3993cd34bff",
+          "type": "permission.requested",
+          "hash": "6bffc4b3e33bf2a21b767c76377a9b6e0438e56ff33b1518ace3af6714317dbd"
+        }
+      ],
+      "processingAfterResume": false,
+      "pendingPermissionsAfterResume": {
+        "items": [
+          {
+            "requestId": "cf902ceb-9146-40e0-b9b1-990d0cd02082",
+            "request": {
+              "kind": "custom-tool",
+              "toolCallId": "511535b7-a683-4609-a7c4-6626350c7ca4",
+              "toolName": "fork_probe_marker",
+              "toolDescription": "Synthetic no-side-effect marker",
+              "args": {}
+            }
+          }
+        ]
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:11:15.213Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 3243,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "childId": "7456541b-554e-44c7-9596-9fec01986232",
+      "appendedAfterOwnerRelease": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:11:15.213Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": false,
+            "eventsFileSizeBytes": 3243,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        },
+        {
+          "type": "session.info",
+          "data": {
+            "infoType": "fork",
+            "message": "Forked this session into \"Synthetic contract 68f8abbc-ce8d-4a60-96dd-ec1f05914c6d\" (7456541b-554e-44c7-9596-9fec01986232) before event 7aabb01e-ab43-4b92-8bcf-bcb02544cd94."
+          }
+        },
+        {
+          "type": "session.shutdown",
+          "data": {
+            "shutdownType": "routine",
+            "totalPremiumRequests": 0,
+            "totalNanoAiu": 0,
+            "totalApiDurationMs": 0,
+            "sessionStartTime": 1790759473671,
+            "eventsFileSizeBytes": 4122,
+            "codeChanges": {
+              "linesAdded": 0,
+              "linesRemoved": 0,
+              "filesModified": []
+            },
+            "modelMetrics": {},
+            "currentTokens": 157,
+            "systemTokens": 0,
+            "conversationTokens": 109,
+            "toolDefinitionsTokens": 45
+          }
+        }
+      ],
+      "childCheckpointAndColdResume": true,
+      "parentColdResume": true,
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "no-execution-on-default-or-disabled-resume",
+      "completed": true
+    },
+    {
+      "scenario": "pending-resume-permission-pending",
+      "boundary": "true",
+      "sourceId": "b10ce9a7-9f76-4cdb-89a7-9b449b522fcf",
+      "continuePendingWork": "true",
+      "before": [
+        {
+          "id": "97288e92-84e8-4aae-a594-5f777c89ed36",
+          "type": "session.start",
+          "hash": "36fb1cb34e5386c06e064f966c25d51171cdd7d40d2ff03d0aec36a8171fa595"
+        },
+        {
+          "id": "f2804dbb-3790-4f9a-af1c-dd7e5ecfd310",
+          "type": "user.message",
+          "hash": "9584eb967cad47be900edc137bfffe951d46d397a5a409d6f77e41a246a75de8"
+        },
+        {
+          "id": "5429c6df-d26e-48b1-8c75-a4988fec3105",
+          "type": "assistant.message",
+          "hash": "8c3d099ebe7addd1869ddf378ac56ce1e44b3940f03ec46abbbd382aa5c1fe39"
+        },
+        {
+          "id": "2ec44a9a-03b1-41c1-96e8-78c32608b2f8",
+          "type": "assistant.turn_end",
+          "hash": "148d2c77017a13213dcd5b0ea3f1b049a14470a23812a07490596beb1b4d7a58"
+        },
+        {
+          "id": "3b659044-34ea-4054-9c89-6318c6f6d80f",
+          "type": "user.message",
+          "hash": "0b479ba371fedf36ca2d5f605edf98ec47368e36e0f63f49388c9761bdb954e4"
+        },
+        {
+          "id": "4605483d-0cc2-4184-95b8-eeef7ddb2531",
+          "type": "assistant.message",
+          "hash": "a38114ae6cccea641828204abe7bb35c194e50e734a66af91c9bf920dc03ba24"
+        },
+        {
+          "id": "f4963725-1c90-4fed-bf3b-e8e609006472",
+          "type": "assistant.turn_end",
+          "hash": "169c95f338ec27e12e3a6c534401cf563ea3a61f05e7bef923f3f748a5019210"
+        },
+        {
+          "id": "bd71a599-7687-439e-a453-33771c828eda",
+          "type": "user.message",
+          "hash": "0e8b0a7159573396e7b3bac17c9b954b090bd5969cf1e4f9e3b90f7abe4b3e78"
+        },
+        {
+          "id": "7b15f983-ae2b-4eae-abc4-04292db29ff3",
+          "type": "assistant.turn_start",
+          "hash": "d283b904cfbf4d5b073bd095e164a476095c44cfc4e8d54abaa181d746958f2a"
+        },
+        {
+          "id": "721fd411-4939-41d9-9e0c-582cc96905b8",
+          "type": "assistant.message",
+          "hash": "31c4748ae1177391b14980a397444f567df854aa578042d54f73ae89f0099a41"
+        },
+        {
+          "id": "f44c22f3-9d5c-4be8-b397-54efaed3ed39",
+          "type": "tool.execution_start",
+          "hash": "eb92463d48592d79ee2dc4ab26b1b5277f6b53d2efe0c72296c33b1ea53a7e97"
+        },
+        {
+          "id": "9577764a-bb69-4ff7-a493-245d81707763",
+          "type": "permission.requested",
+          "hash": "ce185307c6d8181b51cfa59369c946865df4cdf3c5bd70450b762779b67995e6"
+        }
+      ],
+      "processingAfterResume": true,
+      "pendingPermissionsAfterResume": {
+        "items": [
+          {
+            "requestId": "7a7247fc-4a25-4d9f-91af-528264f90a68",
+            "request": {
+              "kind": "custom-tool",
+              "toolCallId": "75852159-2a53-4c4c-8d4c-886a5868141d",
+              "toolName": "fork_probe_marker",
+              "toolDescription": "Synthetic no-side-effect marker",
+              "args": {}
+            }
+          }
+        ]
+      },
+      "queueAfterResume": {
+        "items": [],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "appendedInMemoryOnResume": [
+        {
+          "type": "session.resume",
+          "data": {
+            "resumeTime": "2026-09-30T09:11:19.318Z",
+            "selectedModel": "gpt-4.1",
+            "contextTier": null,
+            "sessionLimits": null,
+            "context": {
+              "cwd": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr\\workspace"
+            },
+            "remoteSteerable": false,
+            "continuePendingWork": true,
+            "eventsFileSizeBytes": 3243,
+            "eventCount": 12,
+            "alreadyInUse": false,
+            "sessionWasActive": false
+          }
+        }
+      ],
+      "originalPrefixPreserved": true,
+      "appendedOnResume": [],
+      "appendedAfterOwnerRelease": [],
+      "modelRequestAttempts": 0,
+      "toolInvocations": 0,
+      "permissionCallbacks": 0,
+      "verdict": "explicit-continuation-observed-not-used-for-fork",
+      "completed": true
+    }
+  ],
+  "errors": [],
+  "cleanup": [
+    {
+      "id": "06e17464-74f1-4546-9a8a-1186fef2a457",
+      "deleted": true
+    },
+    {
+      "id": "08dbaa1c-0233-408e-badf-282bcf20ffde",
+      "deleted": true
+    },
+    {
+      "id": "0b8c0188-c868-46bf-b446-664d16901960",
+      "deleted": true
+    },
+    {
+      "id": "0e5a1f0f-1254-4ce6-bddf-0ccc6be3c3d3",
+      "deleted": true
+    },
+    {
+      "id": "104dc76b-4023-4aa0-b2ba-a88d495756c8",
+      "deleted": true
+    },
+    {
+      "id": "22acbc3d-e1cf-409d-815b-b2e94cacf96e",
+      "deleted": true
+    },
+    {
+      "id": "28ad0d10-f14f-4c68-882f-89c2e64e4714",
+      "deleted": true
+    },
+    {
+      "id": "297c19ce-c60c-44e6-b253-e4f4425fa16d",
+      "deleted": true
+    },
+    {
+      "id": "2c931bef-73dc-4f02-9da4-292ea3c7af87",
+      "deleted": true
+    },
+    {
+      "id": "2ecd5c18-e2e0-48d4-8fc0-f67a152fca3f",
+      "deleted": true
+    },
+    {
+      "id": "34de04a6-2704-4e2b-94df-3d528fa3d6bc",
+      "deleted": true
+    },
+    {
+      "id": "36fcd8e4-e4f2-4b12-b55e-254a0a2cb6ee",
+      "deleted": true
+    },
+    {
+      "id": "37963ef9-788f-471d-98c6-4b9cc9864cba",
+      "deleted": true
+    },
+    {
+      "id": "3c8617a1-1d67-4d97-90e6-557e120c3c7f",
+      "deleted": true
+    },
+    {
+      "id": "3cac30b5-0a49-4170-b42e-435ab1a92155",
+      "deleted": true
+    },
+    {
+      "id": "3d2e7c6b-20cd-4c4f-bba6-02de37a8e255",
+      "deleted": true
+    },
+    {
+      "id": "44dfeafb-0d89-4fde-94a3-1508f5cb816d",
+      "deleted": true
+    },
+    {
+      "id": "48aea51f-9906-4eba-930c-abfdef542105",
+      "deleted": true
+    },
+    {
+      "id": "4a578f06-7854-4104-ac6c-bf3207632f55",
+      "deleted": true
+    },
+    {
+      "id": "4d7fc4ce-962f-4bf0-826b-70c15e5b66b2",
+      "deleted": true
+    },
+    {
+      "id": "585bd117-1229-406e-bf58-489cffbe8c67",
+      "deleted": true
+    },
+    {
+      "id": "5929a237-9dec-4989-9008-81a387fe633c",
+      "deleted": true
+    },
+    {
+      "id": "62f1b06b-ecb7-4099-a0d8-99ddd4874c7b",
+      "deleted": true
+    },
+    {
+      "id": "63f49927-5153-432a-9b2e-051df99eb5f9",
+      "deleted": true
+    },
+    {
+      "id": "69cedc8f-595f-4a47-8dd9-5f677ed2054c",
+      "deleted": true
+    },
+    {
+      "id": "6a40b4ba-e740-4416-a79a-e3d095ca8963",
+      "deleted": true
+    },
+    {
+      "id": "6bd7deef-ef1a-4e27-b78e-d24d87635d10",
+      "deleted": true
+    },
+    {
+      "id": "6e32b76f-f57f-471e-83b6-d27f361480c6",
+      "deleted": true
+    },
+    {
+      "id": "729c1fcf-3086-48cc-aa6e-4722b199d251",
+      "deleted": true
+    },
+    {
+      "id": "7456541b-554e-44c7-9596-9fec01986232",
+      "deleted": true
+    },
+    {
+      "id": "79af9856-167c-426e-8824-85972d1eb5f9",
+      "deleted": true
+    },
+    {
+      "id": "7f4e015b-d541-4742-8156-2596cf8aae0b",
+      "deleted": true
+    },
+    {
+      "id": "8639b563-2878-4f27-a2be-5cd26995d26b",
+      "deleted": true
+    },
+    {
+      "id": "90a18788-503f-46d2-aa31-4c52a1a94c34",
+      "deleted": true
+    },
+    {
+      "id": "9424bd72-6bd0-4734-99c1-8277ab67c24d",
+      "deleted": true
+    },
+    {
+      "id": "96307931-270f-4149-b316-2d36c68dd89d",
+      "deleted": true
+    },
+    {
+      "id": "b08cac45-c741-45d2-8d5a-b667a8d188ed",
+      "deleted": true
+    },
+    {
+      "id": "b10ce9a7-9f76-4cdb-89a7-9b449b522fcf",
+      "deleted": true
+    },
+    {
+      "id": "b533e2b6-ecff-4fb5-b918-4d153fb53fd5",
+      "deleted": true
+    },
+    {
+      "id": "b9cf2cc6-126d-4de8-aa55-a6f459d4fe0c",
+      "deleted": true
+    },
+    {
+      "id": "bb5fdcc7-37a8-4cdf-a252-d83a026aac92",
+      "deleted": true
+    },
+    {
+      "id": "bbf8a890-6bba-48cf-bb7c-e7b5a61b2cb8",
+      "deleted": true
+    },
+    {
+      "id": "c1eff0aa-d4c3-4cfc-8965-2b012a947473",
+      "deleted": true
+    },
+    {
+      "id": "c3a6f215-b20e-42e8-97b5-db06cad8312f",
+      "deleted": true
+    },
+    {
+      "id": "ca6446de-abf7-429f-9f38-400910c6225d",
+      "deleted": true
+    },
+    {
+      "id": "ca804bc0-ad7a-4430-95ad-da7e849ba8ae",
+      "deleted": true
+    },
+    {
+      "id": "d07bc0cc-dfb1-4a6b-9da2-03902db75150",
+      "deleted": true
+    },
+    {
+      "id": "d37e0149-2114-47eb-a8b6-570267678943",
+      "deleted": true
+    },
+    {
+      "id": "d46ea40c-6e38-4154-b27a-783f8ad7b0ae",
+      "deleted": true
+    },
+    {
+      "id": "d5580a1e-7879-4f15-9769-c47d938d1da8",
+      "deleted": true
+    },
+    {
+      "id": "d6ae4602-10c1-4fb9-8c92-0b4bd5d8e76e",
+      "deleted": true
+    },
+    {
+      "id": "d8f26c1f-0389-49cc-b06d-fefdd2f5b022",
+      "deleted": true
+    },
+    {
+      "id": "dbe0f98a-5be1-46aa-9c51-ad7dac07a426",
+      "deleted": true
+    },
+    {
+      "id": "e1798edc-db41-4e1a-bced-a2011d58b1b8",
+      "deleted": true
+    },
+    {
+      "id": "e5be1bd1-3398-42fd-b5fc-3206feb21fd6",
+      "deleted": true
+    },
+    {
+      "id": "e8ee6842-c4de-46a3-a5f9-59a9cab5152e",
+      "deleted": true
+    },
+    {
+      "id": "f026d49c-1538-4811-8151-876da7b2aa5f",
+      "deleted": true
+    },
+    {
+      "id": "f33e3bdc-6e70-4434-a487-854f86bbd528",
+      "deleted": true
+    },
+    {
+      "id": "f91a1721-222b-4afe-8447-79fadecbd95a",
+      "deleted": true
+    },
+    {
+      "id": "fa163aec-1533-4df8-8454-5014a7b2914b",
+      "deleted": true
+    },
+    {
+      "id": "fb4bd3e9-bf89-4af8-8388-45d38c61ecc2",
+      "deleted": true
+    },
+    {
+      "id": "fdf018da-62f7-4244-8e94-28b7489bc8b0",
+      "deleted": true
+    }
+  ],
+  "temporaryHome": "C:\\Users\\sheche\\AppData\\Local\\Temp\\fork-contract-ZpyGmr",
+  "runtime": {
+    "version": "1.0.88",
+    "protocolVersion": 3
+  },
+  "capabilities": {
+    "fork": true,
+    "checkInUse": true,
+    "list": true,
+    "close": true,
+    "deleteSession": true
+  },
+  "modelSensorCalibration": {
+    "explicitControlSend": true,
+    "interceptedRequests": 1,
+    "realModelCalls": 0,
+    "error": "400 Synthetic probe blocks all model requests",
+    "permissionCallbacks": 1,
+    "harmlessToolInvocations": 1
+  },
+  "remainingSessionDirectories": [],
+  "finishedAt": "2026-09-30T09:11:21.745Z",
+  "ownedRuntimeClientsRemaining": 0,
+  "temporaryHomeRemoved": true
+}
