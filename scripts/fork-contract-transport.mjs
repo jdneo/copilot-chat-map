@@ -3,6 +3,10 @@ import { connect, createServer } from "node:net";
 
 // Only used with synthetic local runtimes. No request payload or connection token is retained.
 export async function interceptFork({ upstreamPort, onRequest, onResponse }) {
+    return interceptRpc({ upstreamPort, method: "sessions.fork", onRequest, onResponse });
+}
+
+export async function interceptRpc({ upstreamPort, method, onRequest, onResponse }) {
     const sockets = new Set();
     const faults = [];
     const observed = { forkRequests: 0, suppressedResponses: 0 };
@@ -21,11 +25,17 @@ export async function interceptFork({ upstreamPort, onRequest, onResponse }) {
             upstream.destroy();
         };
         pipeFrames(downstream, async (message, frame) => {
-            if (message.method === "sessions.fork") {
+            if (message.method === method) {
                 forkRequestId = message.id;
                 observed.forkRequests++;
                 const forward = () => upstream.write(frame);
-                if (onRequest) return onRequest({ forward, cut });
+                const respond = (result) => {
+                    const body = Buffer.from(JSON.stringify({ jsonrpc: "2.0", id: message.id, result }));
+                    downstream.write(Buffer.concat([
+                        Buffer.from(`Content-Length: ${body.length}\r\n\r\n`), body,
+                    ]));
+                };
+                if (onRequest) return onRequest({ forward, cut, respond });
             }
             upstream.write(frame);
         });
@@ -78,9 +88,13 @@ export async function interceptFork({ upstreamPort, onRequest, onResponse }) {
         observed,
         faults,
         async close() {
-            for (const socket of sockets) socket.destroy();
+            const closed = [...sockets].map((socket) => new Promise((resolve) => {
+                socket.once("close", resolve);
+                socket.destroy();
+            }));
             await new Promise((resolve, reject) =>
                 server.close((error) => error ? reject(error) : resolve()));
+            await Promise.all(closed);
             assert.equal(sockets.size, 0);
         },
     };

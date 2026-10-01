@@ -1,0 +1,3564 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-10-01T03:37:42.068Z",
+  "platform": "win32",
+  "architecture": "x64",
+  "node": "v24.16.0",
+  "requestedVersion": "1.0.90-0",
+  "sdkSha256": "11801c489647dc7ce8c924c9be7b68f0bca558a67d100739e16fa6ec401a5bd9",
+  "runnerSha256": "ebf017ccb11d3003881d4c7bdd480a88a19289035ba5aa51646bd975c809ef8d",
+  "transportSha256": "f750fb48bc376e5edc41dd69eb912355bdde73c19b1ab01b81a094181aecd823",
+  "temporaryHome": "C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK",
+  "realModelCalls": 0,
+  "syntheticRequests": 42,
+  "cases": [
+    {
+      "name": "text-correlation-persistence-cold-resume",
+      "messageId": "5f78507e-886a-4776-9f37-4b464c59d492",
+      "sessionId": "54490c57-ef8e-4fb5-8e3c-79148172e8a5",
+      "live": [
+        {
+          "id": "56194d14-b2f5-49fb-8cfb-1116176f3397",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic correlation baseline",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:43.859+08:00</current_datetime>\n\nSynthetic correlation baseline",
+            "messageId": "5f78507e-886a-4776-9f37-4b464c59d492",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "110df6e4-eadc-453d-a426-11c58b912c2f",
+            "turnId": "0",
+            "parentAgentTaskId": "72fb0d92-91bc-4f9f-adc6-72089c8a9b49"
+          }
+        },
+        {
+          "id": "037e6fec-75c0-4723-95be-a54326e94ca2",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "110df6e4-eadc-453d-a426-11c58b912c2f"
+          }
+        },
+        {
+          "id": "998c155e-1a90-4f7a-ba22-1a01ba831515",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "b6dbd275-aa35-4caf-991c-1f986cb47adc",
+            "originatingMessageId": "5f78507e-886a-4776-9f37-4b464c59d492",
+            "model": "gpt-4.1",
+            "content": "ACK 54490c57-ef8e-4fb5-8e3c-79148172e8a5",
+            "toolRequests": [],
+            "interactionId": "110df6e4-eadc-453d-a426-11c58b912c2f",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "d307de65-d578-4d9a-88c4-83b5dbbefafd",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "66b7d864-b90e-4ae6-a810-e356d475804a",
+          "type": "assistant.idle",
+          "data": {},
+          "ephemeral": true
+        },
+        {
+          "id": "ec018bf0-0ac4-4d7b-8de8-46e21f7cc053",
+          "type": "session.idle",
+          "data": {
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "56194d14-b2f5-49fb-8cfb-1116176f3397",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic correlation baseline",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:43.859+08:00</current_datetime>\n\nSynthetic correlation baseline",
+            "messageId": "5f78507e-886a-4776-9f37-4b464c59d492",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "110df6e4-eadc-453d-a426-11c58b912c2f",
+            "turnId": "0",
+            "parentAgentTaskId": "72fb0d92-91bc-4f9f-adc6-72089c8a9b49"
+          }
+        },
+        {
+          "id": "037e6fec-75c0-4723-95be-a54326e94ca2",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "110df6e4-eadc-453d-a426-11c58b912c2f"
+          }
+        },
+        {
+          "id": "998c155e-1a90-4f7a-ba22-1a01ba831515",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "b6dbd275-aa35-4caf-991c-1f986cb47adc",
+            "originatingMessageId": "5f78507e-886a-4776-9f37-4b464c59d492",
+            "model": "gpt-4.1",
+            "content": "ACK 54490c57-ef8e-4fb5-8e3c-79148172e8a5",
+            "toolRequests": [],
+            "interactionId": "110df6e4-eadc-453d-a426-11c58b912c2f",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "d307de65-d578-4d9a-88c4-83b5dbbefafd",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "diskAfterRelease": [
+        {
+          "id": "56194d14-b2f5-49fb-8cfb-1116176f3397",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic correlation baseline",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:43.859+08:00</current_datetime>\n\nSynthetic correlation baseline",
+            "messageId": "5f78507e-886a-4776-9f37-4b464c59d492",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "110df6e4-eadc-453d-a426-11c58b912c2f",
+            "turnId": "0",
+            "parentAgentTaskId": "72fb0d92-91bc-4f9f-adc6-72089c8a9b49"
+          }
+        },
+        {
+          "id": "037e6fec-75c0-4723-95be-a54326e94ca2",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "110df6e4-eadc-453d-a426-11c58b912c2f"
+          }
+        },
+        {
+          "id": "998c155e-1a90-4f7a-ba22-1a01ba831515",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "b6dbd275-aa35-4caf-991c-1f986cb47adc",
+            "originatingMessageId": "5f78507e-886a-4776-9f37-4b464c59d492",
+            "model": "gpt-4.1",
+            "content": "ACK 54490c57-ef8e-4fb5-8e3c-79148172e8a5",
+            "toolRequests": [],
+            "interactionId": "110df6e4-eadc-453d-a426-11c58b912c2f",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "d307de65-d578-4d9a-88c4-83b5dbbefafd",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "coldRecoveredAnswerId": "998c155e-1a90-4f7a-ba22-1a01ba831515",
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 1,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "native-duplicate-delivery-negative-control",
+      "messageIds": [
+        "aa0dfcc7-9028-433f-bded-e2c89758ba49",
+        "6bc4a39c-bc35-4517-9ca3-d6e6054431ee"
+      ],
+      "pending": {
+        "items": [
+          {
+            "id": "0",
+            "messageId": "aa0dfcc7-9028-433f-bded-e2c89758ba49",
+            "kind": "message",
+            "displayText": "Identical synthetic delivery",
+            "agentMode": "interactive"
+          },
+          {
+            "id": "1",
+            "messageId": "6bc4a39c-bc35-4517-9ca3-d6e6054431ee",
+            "kind": "message",
+            "displayText": "Identical synthetic delivery",
+            "agentMode": "interactive"
+          }
+        ],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "sessionId": "6ef56071-9624-47e5-8dcd-eeded1d11923",
+      "live": [
+        {
+          "id": "0d7928d3-6e7d-45f1-8563-abaa51b76bfc",
+          "type": "user.message",
+          "data": {
+            "content": "Identical synthetic delivery",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:47.782+08:00</current_datetime>\n\nIdentical synthetic delivery",
+            "messageId": "aa0dfcc7-9028-433f-bded-e2c89758ba49",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "6b2f81ce-1318-4c74-9c1f-05c8916a2df6",
+            "turnId": "0",
+            "parentAgentTaskId": "4ddbf72e-e71e-4532-bba4-52b674a9a018"
+          }
+        },
+        {
+          "id": "9d55a7ca-4862-491d-8100-04962e43366e",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "6b2f81ce-1318-4c74-9c1f-05c8916a2df6"
+          }
+        },
+        {
+          "id": "be5b2ba6-e6bd-492f-9809-11b1c6fa99e2",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "121ef24e-df66-4476-81fa-eca9bc799274",
+            "originatingMessageId": "aa0dfcc7-9028-433f-bded-e2c89758ba49",
+            "model": "gpt-4.1",
+            "content": "ACK 6ef56071-9624-47e5-8dcd-eeded1d11923",
+            "toolRequests": [],
+            "interactionId": "6b2f81ce-1318-4c74-9c1f-05c8916a2df6",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "cc768110-5125-4a03-b17e-915f4fb03a1f",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "928a8d9e-b012-49dd-be85-2d3043cf2eed",
+          "type": "user.message",
+          "data": {
+            "content": "Identical synthetic delivery",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:47.804+08:00</current_datetime>\n\nIdentical synthetic delivery",
+            "messageId": "6bc4a39c-bc35-4517-9ca3-d6e6054431ee",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "queued",
+            "interactionId": "6af0ec9d-a73c-42c4-8b5d-80820e3949ab",
+            "turnId": "0",
+            "parentAgentTaskId": "b54b26d3-12c8-4240-b01f-81648305c83c"
+          }
+        },
+        {
+          "id": "37fceb1c-a640-4943-ad9d-258061480815",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "6af0ec9d-a73c-42c4-8b5d-80820e3949ab"
+          }
+        },
+        {
+          "id": "09fd5998-10e5-4473-b456-39ba2b0f4f53",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "0244ed18-2686-4e03-80c1-9fbd8946fa0b",
+            "originatingMessageId": "6bc4a39c-bc35-4517-9ca3-d6e6054431ee",
+            "model": "gpt-4.1",
+            "content": "ACK 6ef56071-9624-47e5-8dcd-eeded1d11923",
+            "toolRequests": [],
+            "interactionId": "6af0ec9d-a73c-42c4-8b5d-80820e3949ab",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "848d2e5b-3d8b-4acb-8259-af49f470e0b2",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "5320937c-5796-4591-b1ab-88328b02d012",
+          "type": "assistant.idle",
+          "data": {},
+          "ephemeral": true
+        },
+        {
+          "id": "968b1cf5-53ef-4a65-baa5-c49929822125",
+          "type": "session.idle",
+          "data": {
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "0d7928d3-6e7d-45f1-8563-abaa51b76bfc",
+          "type": "user.message",
+          "data": {
+            "content": "Identical synthetic delivery",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:47.782+08:00</current_datetime>\n\nIdentical synthetic delivery",
+            "messageId": "aa0dfcc7-9028-433f-bded-e2c89758ba49",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "6b2f81ce-1318-4c74-9c1f-05c8916a2df6",
+            "turnId": "0",
+            "parentAgentTaskId": "4ddbf72e-e71e-4532-bba4-52b674a9a018"
+          }
+        },
+        {
+          "id": "9d55a7ca-4862-491d-8100-04962e43366e",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "6b2f81ce-1318-4c74-9c1f-05c8916a2df6"
+          }
+        },
+        {
+          "id": "be5b2ba6-e6bd-492f-9809-11b1c6fa99e2",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "121ef24e-df66-4476-81fa-eca9bc799274",
+            "originatingMessageId": "aa0dfcc7-9028-433f-bded-e2c89758ba49",
+            "model": "gpt-4.1",
+            "content": "ACK 6ef56071-9624-47e5-8dcd-eeded1d11923",
+            "toolRequests": [],
+            "interactionId": "6b2f81ce-1318-4c74-9c1f-05c8916a2df6",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "cc768110-5125-4a03-b17e-915f4fb03a1f",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "928a8d9e-b012-49dd-be85-2d3043cf2eed",
+          "type": "user.message",
+          "data": {
+            "content": "Identical synthetic delivery",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:47.804+08:00</current_datetime>\n\nIdentical synthetic delivery",
+            "messageId": "6bc4a39c-bc35-4517-9ca3-d6e6054431ee",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "queued",
+            "interactionId": "6af0ec9d-a73c-42c4-8b5d-80820e3949ab",
+            "turnId": "0",
+            "parentAgentTaskId": "b54b26d3-12c8-4240-b01f-81648305c83c"
+          }
+        },
+        {
+          "id": "37fceb1c-a640-4943-ad9d-258061480815",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "6af0ec9d-a73c-42c4-8b5d-80820e3949ab"
+          }
+        },
+        {
+          "id": "09fd5998-10e5-4473-b456-39ba2b0f4f53",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "0244ed18-2686-4e03-80c1-9fbd8946fa0b",
+            "originatingMessageId": "6bc4a39c-bc35-4517-9ca3-d6e6054431ee",
+            "model": "gpt-4.1",
+            "content": "ACK 6ef56071-9624-47e5-8dcd-eeded1d11923",
+            "toolRequests": [],
+            "interactionId": "6af0ec9d-a73c-42c4-8b5d-80820e3949ab",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "848d2e5b-3d8b-4acb-8259-af49f470e0b2",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "nativeDeduplication": false,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 3,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "same-runtime-two-panel-negative-control",
+      "messageIds": [
+        "a678dc85-c40d-4b02-b97d-29031756daa6",
+        "2c9bf90d-cb04-4aa3-a3d0-3a0040984a61"
+      ],
+      "pending": {
+        "items": [
+          {
+            "id": "0",
+            "messageId": "a678dc85-c40d-4b02-b97d-29031756daa6",
+            "kind": "message",
+            "displayText": "Identical synthetic delivery",
+            "agentMode": "interactive"
+          },
+          {
+            "id": "1",
+            "messageId": "2c9bf90d-cb04-4aa3-a3d0-3a0040984a61",
+            "kind": "message",
+            "displayText": "Identical synthetic delivery",
+            "agentMode": "interactive"
+          }
+        ],
+        "steeringMessages": [],
+        "inFlightSteeringCount": 0
+      },
+      "sessionId": "274c0a3e-d450-40a4-a8c6-9ae45294ad7a",
+      "live": [
+        {
+          "id": "4e6a1be0-2582-4752-973b-f9eb06e40755",
+          "type": "user.message",
+          "data": {
+            "content": "Identical synthetic delivery",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:49.683+08:00</current_datetime>\n\nIdentical synthetic delivery",
+            "messageId": "a678dc85-c40d-4b02-b97d-29031756daa6",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "02f99c05-fe38-4249-912e-757fd7ebcaeb",
+            "turnId": "0",
+            "parentAgentTaskId": "87cd13a4-a0ed-42d2-8524-f8336fd4b233"
+          }
+        },
+        {
+          "id": "74625963-84e1-4506-a476-b27707083ae6",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "02f99c05-fe38-4249-912e-757fd7ebcaeb"
+          }
+        },
+        {
+          "id": "b60a4388-f275-4e44-8344-753de5b969c4",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "c71a54b6-b439-428f-908a-1b881c80694d",
+            "originatingMessageId": "a678dc85-c40d-4b02-b97d-29031756daa6",
+            "model": "gpt-4.1",
+            "content": "ACK 274c0a3e-d450-40a4-a8c6-9ae45294ad7a",
+            "toolRequests": [],
+            "interactionId": "02f99c05-fe38-4249-912e-757fd7ebcaeb",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "56c8e859-a510-47cf-9d7c-faed19c7ea77",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "df3dbcc8-4450-4ab1-9292-9882e90fe4da",
+          "type": "user.message",
+          "data": {
+            "content": "Identical synthetic delivery",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:49.708+08:00</current_datetime>\n\nIdentical synthetic delivery",
+            "messageId": "2c9bf90d-cb04-4aa3-a3d0-3a0040984a61",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "queued",
+            "interactionId": "594efd1c-ce20-47f7-8c69-a89a8e4bb8f7",
+            "turnId": "0",
+            "parentAgentTaskId": "1ba64a5a-4a74-4589-b1b7-2284c6031ea8"
+          }
+        },
+        {
+          "id": "65748fd8-c36e-451b-9f91-8686205a7d5c",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "594efd1c-ce20-47f7-8c69-a89a8e4bb8f7"
+          }
+        },
+        {
+          "id": "da55db3e-3ccb-4108-a16f-f958d269b562",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "399ede25-5879-4128-9a93-11c35570feae",
+            "originatingMessageId": "2c9bf90d-cb04-4aa3-a3d0-3a0040984a61",
+            "model": "gpt-4.1",
+            "content": "ACK 274c0a3e-d450-40a4-a8c6-9ae45294ad7a",
+            "toolRequests": [],
+            "interactionId": "594efd1c-ce20-47f7-8c69-a89a8e4bb8f7",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "1dd806dd-575e-4842-b1ee-885f9ed4cbd5",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "fa3dc353-fe78-4f0c-9c25-999d112b5b7f",
+          "type": "assistant.idle",
+          "data": {},
+          "ephemeral": true
+        },
+        {
+          "id": "28425c4f-4095-480f-aa42-5edcd713bbba",
+          "type": "session.idle",
+          "data": {
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "4e6a1be0-2582-4752-973b-f9eb06e40755",
+          "type": "user.message",
+          "data": {
+            "content": "Identical synthetic delivery",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:49.683+08:00</current_datetime>\n\nIdentical synthetic delivery",
+            "messageId": "a678dc85-c40d-4b02-b97d-29031756daa6",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "02f99c05-fe38-4249-912e-757fd7ebcaeb",
+            "turnId": "0",
+            "parentAgentTaskId": "87cd13a4-a0ed-42d2-8524-f8336fd4b233"
+          }
+        },
+        {
+          "id": "74625963-84e1-4506-a476-b27707083ae6",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "02f99c05-fe38-4249-912e-757fd7ebcaeb"
+          }
+        },
+        {
+          "id": "b60a4388-f275-4e44-8344-753de5b969c4",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "c71a54b6-b439-428f-908a-1b881c80694d",
+            "originatingMessageId": "a678dc85-c40d-4b02-b97d-29031756daa6",
+            "model": "gpt-4.1",
+            "content": "ACK 274c0a3e-d450-40a4-a8c6-9ae45294ad7a",
+            "toolRequests": [],
+            "interactionId": "02f99c05-fe38-4249-912e-757fd7ebcaeb",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "56c8e859-a510-47cf-9d7c-faed19c7ea77",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "df3dbcc8-4450-4ab1-9292-9882e90fe4da",
+          "type": "user.message",
+          "data": {
+            "content": "Identical synthetic delivery",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:49.708+08:00</current_datetime>\n\nIdentical synthetic delivery",
+            "messageId": "2c9bf90d-cb04-4aa3-a3d0-3a0040984a61",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "queued",
+            "interactionId": "594efd1c-ce20-47f7-8c69-a89a8e4bb8f7",
+            "turnId": "0",
+            "parentAgentTaskId": "1ba64a5a-4a74-4589-b1b7-2284c6031ea8"
+          }
+        },
+        {
+          "id": "65748fd8-c36e-451b-9f91-8686205a7d5c",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "594efd1c-ce20-47f7-8c69-a89a8e4bb8f7"
+          }
+        },
+        {
+          "id": "da55db3e-3ccb-4108-a16f-f958d269b562",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "399ede25-5879-4128-9a93-11c35570feae",
+            "originatingMessageId": "2c9bf90d-cb04-4aa3-a3d0-3a0040984a61",
+            "model": "gpt-4.1",
+            "content": "ACK 274c0a3e-d450-40a4-a8c6-9ae45294ad7a",
+            "toolRequests": [],
+            "interactionId": "594efd1c-ce20-47f7-8c69-a89a8e4bb8f7",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "1dd806dd-575e-4842-b1ee-885f9ed4cbd5",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "nativeDeduplication": false,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 5,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "tool-read",
+      "messageId": "4beec806-c4a6-41ac-b53d-779df7b0616e",
+      "sessionId": "b75fbc5c-c869-49ed-a894-f35b9f4be2fd",
+      "live": [
+        {
+          "id": "2fb2172c-3309-4db2-b4ae-05b5604b7428",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic read scenario",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:51.792+08:00</current_datetime>\n\nSynthetic read scenario",
+            "messageId": "4beec806-c4a6-41ac-b53d-779df7b0616e",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a",
+            "turnId": "0",
+            "parentAgentTaskId": "3a9fb1c8-675f-47da-a0fe-d109f7ab0e5d"
+          }
+        },
+        {
+          "id": "ec97b359-5094-42c7-b68d-38701adb3430",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a"
+          }
+        },
+        {
+          "id": "72247ea4-9ddc-4643-b838-e4615c06779e",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "918f305c-a779-4a05-9e77-b36636b16bd2",
+            "originatingMessageId": "4beec806-c4a6-41ac-b53d-779df7b0616e",
+            "model": "gpt-4.1",
+            "content": "",
+            "toolRequests": [
+              {
+                "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+                "name": "view",
+                "arguments": {
+                  "path": "C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt"
+                },
+                "type": "function",
+                "intentionSummary": "view the file at C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt.",
+                "toolTitle": "Viewing file"
+              }
+            ],
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "e9701faf-511e-4384-9881-876d515f15be",
+          "type": "tool.execution_start",
+          "data": {
+            "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+            "toolName": "view",
+            "arguments": {
+              "path": "C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt"
+            },
+            "turnId": "0",
+            "model": "gpt-4.1",
+            "toolTitle": "Viewing file"
+          }
+        },
+        {
+          "id": "b1c345bb-b4d8-4cc9-a2c1-a275f7ac9489",
+          "type": "permission.requested",
+          "data": {
+            "requestId": "ba151762-8ff1-442b-912b-a977857b758c",
+            "permissionRequest": {
+              "kind": "read",
+              "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+              "intention": "Read file: C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt",
+              "path": "C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt"
+            },
+            "promptRequest": {
+              "kind": "read",
+              "intention": "Read file: C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt",
+              "path": "C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt",
+              "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0"
+            },
+            "agentMode": "interactive",
+            "permissionMode": "manual"
+          }
+        },
+        {
+          "id": "5ece0e3a-b015-4848-925a-a21012585d7e",
+          "type": "permission.completed",
+          "data": {
+            "requestId": "ba151762-8ff1-442b-912b-a977857b758c",
+            "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+            "result": {
+              "kind": "approved"
+            }
+          }
+        },
+        {
+          "id": "d99d3dd8-4097-4a37-abbf-a3be4a8078ec",
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+            "model": "gpt-4.1",
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a",
+            "turnId": "0",
+            "rte": false,
+            "success": true,
+            "result": {
+              "content": "PRIVATE SYNTHETIC READ MARKER\n",
+              "detailedContent": "\ndiff --git a/C:/Users/SHECHE~1.FAR/AppData/Local/Temp/chat-contract-tWsBnK/workspace/sentinel.txt b/C:/Users/SHECHE~1.FAR/AppData/Local/Temp/chat-contract-tWsBnK/workspace/sentinel.txt\nindex 0000000..0000000 100644\n--- a/C:/Users/SHECHE~1.FAR/AppData/Local/Temp/chat-contract-tWsBnK/workspace/sentinel.txt\n+++ b/C:/Users/SHECHE~1.FAR/AppData/Local/Temp/chat-contract-tWsBnK/workspace/sentinel.txt\n@@ -1,2 +1,2 @@\n PRIVATE SYNTHETIC READ MARKER\n \n"
+            },
+            "toolTelemetry": {
+              "properties": {
+                "command": "view",
+                "options": "{\"truncateBasedOn\":\"tokenCount\",\"truncateStyle\":\"middle\"}",
+                "inputs": "[\"path\",\"command\"]",
+                "resolvedPathAgainstCwd": "false",
+                "fileExtension": "[\".txt\"]",
+                "viewType": "file"
+              },
+              "metrics": {
+                "resultLength": 30,
+                "resultForLlmLength": 30
+              },
+              "restrictedProperties": {}
+            }
+          }
+        },
+        {
+          "id": "ded8b83c-4ea8-48bd-a8eb-1eae4d9eb94c",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "5e1e96b5-bce7-4ae8-bf96-744d3acf6f75",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "1",
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a"
+          }
+        },
+        {
+          "id": "31f2cf9f-d016-4ce7-a55d-6c2a41e8938d",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "ca7b08b1-c02c-4945-a399-5cdce5fffc07",
+            "originatingMessageId": "4beec806-c4a6-41ac-b53d-779df7b0616e",
+            "model": "gpt-4.1",
+            "content": "ACK b75fbc5c-c869-49ed-a894-f35b9f4be2fd",
+            "toolRequests": [],
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a",
+            "turnId": "1",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "6ae8b5a5-6830-44b6-8311-7fccb91cbcf1",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "1"
+          }
+        },
+        {
+          "id": "1d695445-b14f-40b8-b7a1-0278675950cc",
+          "type": "assistant.idle",
+          "data": {},
+          "ephemeral": true
+        },
+        {
+          "id": "2c4c5e2a-2e2c-4604-9d72-9ea46cb1c9a6",
+          "type": "session.idle",
+          "data": {
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "2fb2172c-3309-4db2-b4ae-05b5604b7428",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic read scenario",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:51.792+08:00</current_datetime>\n\nSynthetic read scenario",
+            "messageId": "4beec806-c4a6-41ac-b53d-779df7b0616e",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a",
+            "turnId": "0",
+            "parentAgentTaskId": "3a9fb1c8-675f-47da-a0fe-d109f7ab0e5d"
+          }
+        },
+        {
+          "id": "ec97b359-5094-42c7-b68d-38701adb3430",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a"
+          }
+        },
+        {
+          "id": "72247ea4-9ddc-4643-b838-e4615c06779e",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "918f305c-a779-4a05-9e77-b36636b16bd2",
+            "originatingMessageId": "4beec806-c4a6-41ac-b53d-779df7b0616e",
+            "model": "gpt-4.1",
+            "content": "",
+            "toolRequests": [
+              {
+                "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+                "name": "view",
+                "arguments": {
+                  "path": "C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt"
+                },
+                "type": "function",
+                "intentionSummary": "view the file at C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt.",
+                "toolTitle": "Viewing file"
+              }
+            ],
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "e9701faf-511e-4384-9881-876d515f15be",
+          "type": "tool.execution_start",
+          "data": {
+            "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+            "toolName": "view",
+            "arguments": {
+              "path": "C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt"
+            },
+            "turnId": "0",
+            "model": "gpt-4.1",
+            "toolTitle": "Viewing file"
+          }
+        },
+        {
+          "id": "b1c345bb-b4d8-4cc9-a2c1-a275f7ac9489",
+          "type": "permission.requested",
+          "data": {
+            "requestId": "ba151762-8ff1-442b-912b-a977857b758c",
+            "permissionRequest": {
+              "kind": "read",
+              "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+              "intention": "Read file: C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt",
+              "path": "C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt"
+            },
+            "promptRequest": {
+              "kind": "read",
+              "intention": "Read file: C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt",
+              "path": "C:\\Users\\SHECHE~1.FAR\\AppData\\Local\\Temp\\chat-contract-tWsBnK\\workspace\\sentinel.txt",
+              "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0"
+            },
+            "agentMode": "interactive",
+            "permissionMode": "manual"
+          }
+        },
+        {
+          "id": "5ece0e3a-b015-4848-925a-a21012585d7e",
+          "type": "permission.completed",
+          "data": {
+            "requestId": "ba151762-8ff1-442b-912b-a977857b758c",
+            "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+            "result": {
+              "kind": "approved"
+            }
+          }
+        },
+        {
+          "id": "d99d3dd8-4097-4a37-abbf-a3be4a8078ec",
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+            "model": "gpt-4.1",
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a",
+            "turnId": "0",
+            "rte": false,
+            "success": true,
+            "result": {
+              "content": "PRIVATE SYNTHETIC READ MARKER\n",
+              "detailedContent": "\ndiff --git a/C:/Users/SHECHE~1.FAR/AppData/Local/Temp/chat-contract-tWsBnK/workspace/sentinel.txt b/C:/Users/SHECHE~1.FAR/AppData/Local/Temp/chat-contract-tWsBnK/workspace/sentinel.txt\nindex 0000000..0000000 100644\n--- a/C:/Users/SHECHE~1.FAR/AppData/Local/Temp/chat-contract-tWsBnK/workspace/sentinel.txt\n+++ b/C:/Users/SHECHE~1.FAR/AppData/Local/Temp/chat-contract-tWsBnK/workspace/sentinel.txt\n@@ -1,2 +1,2 @@\n PRIVATE SYNTHETIC READ MARKER\n \n"
+            },
+            "toolTelemetry": {
+              "properties": {
+                "command": "view",
+                "options": "{\"truncateBasedOn\":\"tokenCount\",\"truncateStyle\":\"middle\"}",
+                "inputs": "[\"path\",\"command\"]",
+                "resolvedPathAgainstCwd": "false",
+                "fileExtension": "[\".txt\"]",
+                "viewType": "file"
+              },
+              "metrics": {
+                "resultLength": 30,
+                "resultForLlmLength": 30
+              },
+              "restrictedProperties": {}
+            }
+          }
+        },
+        {
+          "id": "ded8b83c-4ea8-48bd-a8eb-1eae4d9eb94c",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "5e1e96b5-bce7-4ae8-bf96-744d3acf6f75",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "1",
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a"
+          }
+        },
+        {
+          "id": "31f2cf9f-d016-4ce7-a55d-6c2a41e8938d",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "ca7b08b1-c02c-4945-a399-5cdce5fffc07",
+            "originatingMessageId": "4beec806-c4a6-41ac-b53d-779df7b0616e",
+            "model": "gpt-4.1",
+            "content": "ACK b75fbc5c-c869-49ed-a894-f35b9f4be2fd",
+            "toolRequests": [],
+            "interactionId": "e960587e-3d60-4b3a-8e9d-8f5482bde93a",
+            "turnId": "1",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "6ae8b5a5-6830-44b6-8311-7fccb91cbcf1",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "1"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "permissions": [
+        {
+          "kind": "read",
+          "toolCallId": "call_43e59194-204f-4253-be4b-fad17fed3ee0"
+        }
+      ],
+      "offeredTools": [
+        "view",
+        "ask_user",
+        "chat_probe_marker"
+      ],
+      "modelRequests": 2,
+      "toolResults": [
+        {
+          "role": "tool",
+          "tool_call_id": "call_43e59194-204f-4253-be4b-fad17fed3ee0",
+          "content": "PRIVATE SYNTHETIC READ MARKER\n"
+        }
+      ],
+      "questions": [],
+      "executions": 0,
+      "authorizedFixtureReads": 1,
+      "nextMessageId": "9e3137dc-f001-493f-826a-5744190133da",
+      "independentOwnerNewTurn": true,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 8,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "tool-permission",
+      "messageId": "0c5c9bc7-f72b-4be5-991f-f37d3bf2a568",
+      "pendingBeforeStop": {
+        "items": [
+          {
+            "requestId": "c675c1ad-d0d7-47fd-8269-a2974e37ccb4",
+            "request": {
+              "kind": "custom-tool",
+              "toolName": "chat_probe_marker",
+              "toolDescription": "Synthetic permission probe; never authorized.",
+              "args": {},
+              "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8"
+            }
+          }
+        ]
+      },
+      "stopResult": {
+        "success": true
+      },
+      "sessionId": "aa5bc79d-b15c-4dd5-8dad-f063ef4c4ae4",
+      "live": [
+        {
+          "id": "8e849f47-97b4-4094-b3db-129e10533a57",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic permission scenario",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:55.916+08:00</current_datetime>\n\nSynthetic permission scenario",
+            "messageId": "0c5c9bc7-f72b-4be5-991f-f37d3bf2a568",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "34b58363-37f6-4e31-9871-1b7213a6dccb",
+            "turnId": "0",
+            "parentAgentTaskId": "b6e00ad3-204d-4be9-a82b-322fdf7101ea"
+          }
+        },
+        {
+          "id": "995c11ba-a5f5-46b2-b24b-02391ae6d339",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "34b58363-37f6-4e31-9871-1b7213a6dccb"
+          }
+        },
+        {
+          "id": "cb0efd54-43b6-4060-bac5-d65724edcbe4",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "75fa86c8-ee5c-41bf-ac40-163de2964acd",
+            "originatingMessageId": "0c5c9bc7-f72b-4be5-991f-f37d3bf2a568",
+            "model": "gpt-4.1",
+            "content": "",
+            "toolRequests": [
+              {
+                "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8",
+                "name": "chat_probe_marker",
+                "arguments": {},
+                "type": "function"
+              }
+            ],
+            "interactionId": "34b58363-37f6-4e31-9871-1b7213a6dccb",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "cb8b9f71-4c27-45cb-981d-fb597fbd02d5",
+          "type": "tool.execution_start",
+          "data": {
+            "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8",
+            "toolName": "chat_probe_marker",
+            "arguments": {},
+            "turnId": "0",
+            "model": "gpt-4.1"
+          }
+        },
+        {
+          "id": "b6bc6035-1aa9-40f4-a84d-04310364404b",
+          "type": "permission.requested",
+          "data": {
+            "requestId": "c675c1ad-d0d7-47fd-8269-a2974e37ccb4",
+            "permissionRequest": {
+              "kind": "custom-tool",
+              "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8",
+              "toolName": "chat_probe_marker",
+              "toolDescription": "Synthetic permission probe; never authorized.",
+              "args": {}
+            },
+            "promptRequest": {
+              "kind": "custom-tool",
+              "toolName": "chat_probe_marker",
+              "toolDescription": "Synthetic permission probe; never authorized.",
+              "args": {},
+              "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8"
+            },
+            "agentMode": "interactive",
+            "permissionMode": "manual"
+          }
+        },
+        {
+          "id": "008bb115-6ceb-4d2b-8a7b-9aa970458d0a",
+          "type": "abort",
+          "data": {
+            "reason": "user_initiated"
+          }
+        },
+        {
+          "id": "e8659527-a531-4643-b6e1-0b5282fdd6fc",
+          "type": "permission.completed",
+          "data": {
+            "requestId": "c675c1ad-d0d7-47fd-8269-a2974e37ccb4",
+            "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8",
+            "result": {
+              "kind": "cancelled",
+              "reason": "Session aborted"
+            }
+          }
+        },
+        {
+          "id": "4f698e03-870a-4459-a91d-1ebf7093a490",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "9b7e80eb-1ab9-462e-858e-fd5343b28cc5",
+          "type": "assistant.idle",
+          "data": {
+            "aborted": true
+          },
+          "ephemeral": true
+        },
+        {
+          "id": "e5fcbf58-af4f-4313-adc2-3badf4f8f590",
+          "type": "session.idle",
+          "data": {
+            "aborted": true,
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "8e849f47-97b4-4094-b3db-129e10533a57",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic permission scenario",
+            "transformedContent": "<current_datetime>2026-10-01T11:37:55.916+08:00</current_datetime>\n\nSynthetic permission scenario",
+            "messageId": "0c5c9bc7-f72b-4be5-991f-f37d3bf2a568",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "34b58363-37f6-4e31-9871-1b7213a6dccb",
+            "turnId": "0",
+            "parentAgentTaskId": "b6e00ad3-204d-4be9-a82b-322fdf7101ea"
+          }
+        },
+        {
+          "id": "995c11ba-a5f5-46b2-b24b-02391ae6d339",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "34b58363-37f6-4e31-9871-1b7213a6dccb"
+          }
+        },
+        {
+          "id": "cb0efd54-43b6-4060-bac5-d65724edcbe4",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "75fa86c8-ee5c-41bf-ac40-163de2964acd",
+            "originatingMessageId": "0c5c9bc7-f72b-4be5-991f-f37d3bf2a568",
+            "model": "gpt-4.1",
+            "content": "",
+            "toolRequests": [
+              {
+                "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8",
+                "name": "chat_probe_marker",
+                "arguments": {},
+                "type": "function"
+              }
+            ],
+            "interactionId": "34b58363-37f6-4e31-9871-1b7213a6dccb",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "cb8b9f71-4c27-45cb-981d-fb597fbd02d5",
+          "type": "tool.execution_start",
+          "data": {
+            "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8",
+            "toolName": "chat_probe_marker",
+            "arguments": {},
+            "turnId": "0",
+            "model": "gpt-4.1"
+          }
+        },
+        {
+          "id": "b6bc6035-1aa9-40f4-a84d-04310364404b",
+          "type": "permission.requested",
+          "data": {
+            "requestId": "c675c1ad-d0d7-47fd-8269-a2974e37ccb4",
+            "permissionRequest": {
+              "kind": "custom-tool",
+              "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8",
+              "toolName": "chat_probe_marker",
+              "toolDescription": "Synthetic permission probe; never authorized.",
+              "args": {}
+            },
+            "promptRequest": {
+              "kind": "custom-tool",
+              "toolName": "chat_probe_marker",
+              "toolDescription": "Synthetic permission probe; never authorized.",
+              "args": {},
+              "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8"
+            },
+            "agentMode": "interactive",
+            "permissionMode": "manual"
+          }
+        },
+        {
+          "id": "008bb115-6ceb-4d2b-8a7b-9aa970458d0a",
+          "type": "abort",
+          "data": {
+            "reason": "user_initiated"
+          }
+        },
+        {
+          "id": "e8659527-a531-4643-b6e1-0b5282fdd6fc",
+          "type": "permission.completed",
+          "data": {
+            "requestId": "c675c1ad-d0d7-47fd-8269-a2974e37ccb4",
+            "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8",
+            "result": {
+              "kind": "cancelled",
+              "reason": "Session aborted"
+            }
+          }
+        },
+        {
+          "id": "4f698e03-870a-4459-a91d-1ebf7093a490",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "permissions": [
+        {
+          "kind": "custom-tool",
+          "toolCallId": "call_24725289-6f24-4d7c-b145-7323208988f8"
+        }
+      ],
+      "questions": [],
+      "executions": 0,
+      "authorizedFixtureReads": 0,
+      "nextMessageId": "929fb26d-c0c3-486f-a6d7-750fabfa6cb1",
+      "independentOwnerNewTurn": true,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 10,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "tool-ask",
+      "messageId": "2dc5d795-eb9d-4236-8569-497aa51b2d55",
+      "pendingBeforeStop": {
+        "items": []
+      },
+      "stopResult": {
+        "success": true
+      },
+      "sessionId": "98ae1cf9-cc97-4c18-8c3a-01324fe6e2b6",
+      "live": [
+        {
+          "id": "ec8f7e2e-b979-4802-817f-83c69d887a1b",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic ask scenario",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:00.173+08:00</current_datetime>\n\nSynthetic ask scenario",
+            "messageId": "2dc5d795-eb9d-4236-8569-497aa51b2d55",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "5bd8de13-74c8-4b59-a397-e9deb272766d",
+            "turnId": "0",
+            "parentAgentTaskId": "b5afd6ab-ce7b-4e6d-b6dd-f21325753973"
+          }
+        },
+        {
+          "id": "3e56a8ce-6a2e-489a-96de-e209ec0ad381",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "5bd8de13-74c8-4b59-a397-e9deb272766d"
+          }
+        },
+        {
+          "id": "b6e43ba8-759e-4d9c-8d29-044e046845de",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "ee2574e5-3fbe-47c6-be6b-65aa5389557a",
+            "originatingMessageId": "2dc5d795-eb9d-4236-8569-497aa51b2d55",
+            "model": "gpt-4.1",
+            "content": "",
+            "toolRequests": [
+              {
+                "toolCallId": "call_bd3faf2d-db5d-4a14-a79d-806281b3ef3e",
+                "name": "ask_user",
+                "arguments": {
+                  "question": "Synthetic unanswered question",
+                  "choices": [
+                    "Yes",
+                    "No"
+                  ]
+                },
+                "type": "function",
+                "intentionSummary": "Synthetic unanswered question",
+                "toolTitle": "Asking user"
+              }
+            ],
+            "interactionId": "5bd8de13-74c8-4b59-a397-e9deb272766d",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "45a10f99-d21b-4411-bfdd-b3ff1c4441c3",
+          "type": "tool.execution_start",
+          "data": {
+            "toolCallId": "call_bd3faf2d-db5d-4a14-a79d-806281b3ef3e",
+            "toolName": "ask_user",
+            "arguments": {
+              "question": "Synthetic unanswered question",
+              "choices": [
+                "Yes",
+                "No"
+              ]
+            },
+            "turnId": "0",
+            "model": "gpt-4.1",
+            "toolTitle": "Asking user"
+          }
+        },
+        {
+          "id": "9f8a9b18-0c43-4fb9-9bb2-560dc0f08562",
+          "type": "abort",
+          "data": {
+            "reason": "user_initiated"
+          }
+        },
+        {
+          "id": "f1f839a8-a8be-4ba2-9cc9-84a967b971e7",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "f6172493-a92b-402c-9c3a-9b268631b833",
+          "type": "assistant.idle",
+          "data": {
+            "aborted": true
+          },
+          "ephemeral": true
+        },
+        {
+          "id": "a3a0390d-36d6-483f-ba9c-330382a47b80",
+          "type": "session.idle",
+          "data": {
+            "aborted": true,
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "ec8f7e2e-b979-4802-817f-83c69d887a1b",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic ask scenario",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:00.173+08:00</current_datetime>\n\nSynthetic ask scenario",
+            "messageId": "2dc5d795-eb9d-4236-8569-497aa51b2d55",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "5bd8de13-74c8-4b59-a397-e9deb272766d",
+            "turnId": "0",
+            "parentAgentTaskId": "b5afd6ab-ce7b-4e6d-b6dd-f21325753973"
+          }
+        },
+        {
+          "id": "3e56a8ce-6a2e-489a-96de-e209ec0ad381",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "5bd8de13-74c8-4b59-a397-e9deb272766d"
+          }
+        },
+        {
+          "id": "b6e43ba8-759e-4d9c-8d29-044e046845de",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "ee2574e5-3fbe-47c6-be6b-65aa5389557a",
+            "originatingMessageId": "2dc5d795-eb9d-4236-8569-497aa51b2d55",
+            "model": "gpt-4.1",
+            "content": "",
+            "toolRequests": [
+              {
+                "toolCallId": "call_bd3faf2d-db5d-4a14-a79d-806281b3ef3e",
+                "name": "ask_user",
+                "arguments": {
+                  "question": "Synthetic unanswered question",
+                  "choices": [
+                    "Yes",
+                    "No"
+                  ]
+                },
+                "type": "function",
+                "intentionSummary": "Synthetic unanswered question",
+                "toolTitle": "Asking user"
+              }
+            ],
+            "interactionId": "5bd8de13-74c8-4b59-a397-e9deb272766d",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "45a10f99-d21b-4411-bfdd-b3ff1c4441c3",
+          "type": "tool.execution_start",
+          "data": {
+            "toolCallId": "call_bd3faf2d-db5d-4a14-a79d-806281b3ef3e",
+            "toolName": "ask_user",
+            "arguments": {
+              "question": "Synthetic unanswered question",
+              "choices": [
+                "Yes",
+                "No"
+              ]
+            },
+            "turnId": "0",
+            "model": "gpt-4.1",
+            "toolTitle": "Asking user"
+          }
+        },
+        {
+          "id": "9f8a9b18-0c43-4fb9-9bb2-560dc0f08562",
+          "type": "abort",
+          "data": {
+            "reason": "user_initiated"
+          }
+        },
+        {
+          "id": "f1f839a8-a8be-4ba2-9cc9-84a967b971e7",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "permissions": [],
+      "questions": [
+        {
+          "question": "Synthetic unanswered question",
+          "choices": [
+            "Yes",
+            "No"
+          ],
+          "allowFreeform": true
+        }
+      ],
+      "executions": 0,
+      "authorizedFixtureReads": 0,
+      "nextMessageId": "8fe150c9-705d-481d-8c30-537d8ac905fc",
+      "independentOwnerNewTurn": true,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 12,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "tool-reject",
+      "messageId": "595eae8d-806a-450a-950a-f877dfbf67a6",
+      "sessionId": "83d4017a-1478-4cb5-8df6-d2efc9901cb3",
+      "live": [
+        {
+          "id": "88664fc6-628b-4684-ad86-348808733088",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic reject scenario",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:04.389+08:00</current_datetime>\n\nSynthetic reject scenario",
+            "messageId": "595eae8d-806a-450a-950a-f877dfbf67a6",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "bdb6abbd-7643-452d-959a-b4af4bcd7d7c",
+            "turnId": "0",
+            "parentAgentTaskId": "63e9fabc-1079-44a3-92e1-f2cb65812237"
+          }
+        },
+        {
+          "id": "3050308e-a88c-49df-8114-290cf00e294c",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "bdb6abbd-7643-452d-959a-b4af4bcd7d7c"
+          }
+        },
+        {
+          "id": "eabf55e3-b132-46b6-8404-f431f3bd6aea",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "afdbb5b3-0450-486c-afd0-f968c5572107",
+            "originatingMessageId": "595eae8d-806a-450a-950a-f877dfbf67a6",
+            "model": "gpt-4.1",
+            "content": "",
+            "toolRequests": [
+              {
+                "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827",
+                "name": "chat_probe_marker",
+                "arguments": {},
+                "type": "function"
+              }
+            ],
+            "interactionId": "bdb6abbd-7643-452d-959a-b4af4bcd7d7c",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "06d426d8-244c-45a2-b8c3-c9c12335c99f",
+          "type": "tool.execution_start",
+          "data": {
+            "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827",
+            "toolName": "chat_probe_marker",
+            "arguments": {},
+            "turnId": "0",
+            "model": "gpt-4.1"
+          }
+        },
+        {
+          "id": "dc8a7949-3a17-4d43-9e94-7685a677bd7f",
+          "type": "permission.requested",
+          "data": {
+            "requestId": "3f523dbc-da61-49f9-a6a3-ce7a6c7fc81f",
+            "permissionRequest": {
+              "kind": "custom-tool",
+              "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827",
+              "toolName": "chat_probe_marker",
+              "toolDescription": "Synthetic permission probe; never authorized.",
+              "args": {}
+            },
+            "promptRequest": {
+              "kind": "custom-tool",
+              "toolName": "chat_probe_marker",
+              "toolDescription": "Synthetic permission probe; never authorized.",
+              "args": {},
+              "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827"
+            },
+            "agentMode": "interactive",
+            "permissionMode": "manual"
+          }
+        },
+        {
+          "id": "b7064d9b-5b83-47ae-9fab-ff04a76a61c4",
+          "type": "permission.completed",
+          "data": {
+            "requestId": "3f523dbc-da61-49f9-a6a3-ce7a6c7fc81f",
+            "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827",
+            "result": {
+              "kind": "denied-interactively-by-user"
+            }
+          }
+        },
+        {
+          "id": "39ccab00-bd8a-4c00-8f96-a59fd0d214f0",
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827",
+            "model": "gpt-4.1",
+            "interactionId": "bdb6abbd-7643-452d-959a-b4af4bcd7d7c",
+            "turnId": "0",
+            "rte": false,
+            "success": false,
+            "error": {
+              "message": "The user rejected this tool call.",
+              "code": "rejected"
+            },
+            "toolTelemetry": {}
+          }
+        },
+        {
+          "id": "1dbc2f2a-572e-4cf0-a2b6-91509773c36d",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "c301b29d-98db-48b9-b4a8-4f2220acf0ce",
+          "type": "assistant.idle",
+          "data": {},
+          "ephemeral": true
+        },
+        {
+          "id": "cdec9a31-95b3-4dbc-af01-fab69c371a76",
+          "type": "session.idle",
+          "data": {
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "88664fc6-628b-4684-ad86-348808733088",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic reject scenario",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:04.389+08:00</current_datetime>\n\nSynthetic reject scenario",
+            "messageId": "595eae8d-806a-450a-950a-f877dfbf67a6",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "bdb6abbd-7643-452d-959a-b4af4bcd7d7c",
+            "turnId": "0",
+            "parentAgentTaskId": "63e9fabc-1079-44a3-92e1-f2cb65812237"
+          }
+        },
+        {
+          "id": "3050308e-a88c-49df-8114-290cf00e294c",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "bdb6abbd-7643-452d-959a-b4af4bcd7d7c"
+          }
+        },
+        {
+          "id": "eabf55e3-b132-46b6-8404-f431f3bd6aea",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "afdbb5b3-0450-486c-afd0-f968c5572107",
+            "originatingMessageId": "595eae8d-806a-450a-950a-f877dfbf67a6",
+            "model": "gpt-4.1",
+            "content": "",
+            "toolRequests": [
+              {
+                "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827",
+                "name": "chat_probe_marker",
+                "arguments": {},
+                "type": "function"
+              }
+            ],
+            "interactionId": "bdb6abbd-7643-452d-959a-b4af4bcd7d7c",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "06d426d8-244c-45a2-b8c3-c9c12335c99f",
+          "type": "tool.execution_start",
+          "data": {
+            "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827",
+            "toolName": "chat_probe_marker",
+            "arguments": {},
+            "turnId": "0",
+            "model": "gpt-4.1"
+          }
+        },
+        {
+          "id": "dc8a7949-3a17-4d43-9e94-7685a677bd7f",
+          "type": "permission.requested",
+          "data": {
+            "requestId": "3f523dbc-da61-49f9-a6a3-ce7a6c7fc81f",
+            "permissionRequest": {
+              "kind": "custom-tool",
+              "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827",
+              "toolName": "chat_probe_marker",
+              "toolDescription": "Synthetic permission probe; never authorized.",
+              "args": {}
+            },
+            "promptRequest": {
+              "kind": "custom-tool",
+              "toolName": "chat_probe_marker",
+              "toolDescription": "Synthetic permission probe; never authorized.",
+              "args": {},
+              "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827"
+            },
+            "agentMode": "interactive",
+            "permissionMode": "manual"
+          }
+        },
+        {
+          "id": "b7064d9b-5b83-47ae-9fab-ff04a76a61c4",
+          "type": "permission.completed",
+          "data": {
+            "requestId": "3f523dbc-da61-49f9-a6a3-ce7a6c7fc81f",
+            "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827",
+            "result": {
+              "kind": "denied-interactively-by-user"
+            }
+          }
+        },
+        {
+          "id": "39ccab00-bd8a-4c00-8f96-a59fd0d214f0",
+          "type": "tool.execution_complete",
+          "data": {
+            "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827",
+            "model": "gpt-4.1",
+            "interactionId": "bdb6abbd-7643-452d-959a-b4af4bcd7d7c",
+            "turnId": "0",
+            "rte": false,
+            "success": false,
+            "error": {
+              "message": "The user rejected this tool call.",
+              "code": "rejected"
+            },
+            "toolTelemetry": {}
+          }
+        },
+        {
+          "id": "1dbc2f2a-572e-4cf0-a2b6-91509773c36d",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "permissions": [
+        {
+          "kind": "custom-tool",
+          "toolCallId": "call_13250694-c005-48aa-bc5b-043a61b87827"
+        }
+      ],
+      "offeredTools": [
+        "view",
+        "ask_user",
+        "chat_probe_marker"
+      ],
+      "modelRequests": 1,
+      "toolResults": [],
+      "questions": [],
+      "executions": 0,
+      "authorizedFixtureReads": 0,
+      "nextMessageId": "4fa18e10-863e-4c49-9724-04ed4dae6798",
+      "independentOwnerNewTurn": true,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 14,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "stop-in-flight-text",
+      "messageId": "9502b3bb-a7c4-49f0-980a-4da0d5029e77",
+      "stopResult": {
+        "success": true
+      },
+      "sessionId": "c5d8d396-a2d3-4000-99c9-b3db247550f4",
+      "live": [
+        {
+          "id": "7e2381a9-2bab-4deb-9564-7f655b9dadfc",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic gated response",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:08.611+08:00</current_datetime>\n\nSynthetic gated response",
+            "messageId": "9502b3bb-a7c4-49f0-980a-4da0d5029e77",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "1b1e0609-b193-4ce1-baab-555d4998bcaa",
+            "turnId": "0",
+            "parentAgentTaskId": "d7dd8832-0eb5-4691-b557-3ae502080eb9"
+          }
+        },
+        {
+          "id": "412497da-851c-46e3-80cc-eb6111f59eae",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "1b1e0609-b193-4ce1-baab-555d4998bcaa"
+          }
+        },
+        {
+          "id": "97f75739-0994-4c35-8c31-80f5072e09e5",
+          "type": "abort",
+          "data": {
+            "reason": "user_initiated"
+          }
+        },
+        {
+          "id": "5c080de1-f091-4b25-9418-7e29cffb332c",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "49708998-c006-4f9c-a00c-e598d49b1cda",
+          "type": "assistant.idle",
+          "data": {
+            "aborted": true
+          },
+          "ephemeral": true
+        },
+        {
+          "id": "43aa8d85-40be-4329-b204-dd6bfd276a92",
+          "type": "session.idle",
+          "data": {
+            "aborted": true,
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "7e2381a9-2bab-4deb-9564-7f655b9dadfc",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic gated response",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:08.611+08:00</current_datetime>\n\nSynthetic gated response",
+            "messageId": "9502b3bb-a7c4-49f0-980a-4da0d5029e77",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "1b1e0609-b193-4ce1-baab-555d4998bcaa",
+            "turnId": "0",
+            "parentAgentTaskId": "d7dd8832-0eb5-4691-b557-3ae502080eb9"
+          }
+        },
+        {
+          "id": "412497da-851c-46e3-80cc-eb6111f59eae",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "1b1e0609-b193-4ce1-baab-555d4998bcaa"
+          }
+        },
+        {
+          "id": "97f75739-0994-4c35-8c31-80f5072e09e5",
+          "type": "abort",
+          "data": {
+            "reason": "user_initiated"
+          }
+        },
+        {
+          "id": "5c080de1-f091-4b25-9418-7e29cffb332c",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "finalObserved": [],
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 15,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "stop-completion-race",
+      "messageId": "67e5367f-c582-45e0-a7d3-439e7e99177e",
+      "stopResult": {
+        "success": true
+      },
+      "sessionId": "a7ef6063-18d7-4966-8276-24b553f9d937",
+      "live": [
+        {
+          "id": "3f75b642-57ba-43f7-96be-961a9672effa",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic gated response",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:10.474+08:00</current_datetime>\n\nSynthetic gated response",
+            "messageId": "67e5367f-c582-45e0-a7d3-439e7e99177e",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "1cc9e15f-bf98-4c43-8b2f-1a50deb8edb9",
+            "turnId": "0",
+            "parentAgentTaskId": "05751fb8-ff50-4133-9190-6890a2f0dd6c"
+          }
+        },
+        {
+          "id": "7e070deb-7eee-41ee-93e9-9a9c4fd222b2",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "1cc9e15f-bf98-4c43-8b2f-1a50deb8edb9"
+          }
+        },
+        {
+          "id": "a94a1163-3b51-4b56-8788-cf8793412221",
+          "type": "abort",
+          "data": {
+            "reason": "user_initiated"
+          }
+        },
+        {
+          "id": "77398c21-f997-4d5c-ba5b-9dd05654ea1e",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "53f6a5c1-d59e-496d-95bc-a07178cca265",
+          "type": "assistant.idle",
+          "data": {
+            "aborted": true
+          },
+          "ephemeral": true
+        },
+        {
+          "id": "994342e6-9df2-4fd9-817d-441fcab3e7cd",
+          "type": "session.idle",
+          "data": {
+            "aborted": true,
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "3f75b642-57ba-43f7-96be-961a9672effa",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic gated response",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:10.474+08:00</current_datetime>\n\nSynthetic gated response",
+            "messageId": "67e5367f-c582-45e0-a7d3-439e7e99177e",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "1cc9e15f-bf98-4c43-8b2f-1a50deb8edb9",
+            "turnId": "0",
+            "parentAgentTaskId": "05751fb8-ff50-4133-9190-6890a2f0dd6c"
+          }
+        },
+        {
+          "id": "7e070deb-7eee-41ee-93e9-9a9c4fd222b2",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "1cc9e15f-bf98-4c43-8b2f-1a50deb8edb9"
+          }
+        },
+        {
+          "id": "a94a1163-3b51-4b56-8788-cf8793412221",
+          "type": "abort",
+          "data": {
+            "reason": "user_initiated"
+          }
+        },
+        {
+          "id": "77398c21-f997-4d5c-ba5b-9dd05654ea1e",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "finalObserved": [],
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 16,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "completed-before-stop",
+      "stopResult": {
+        "success": true
+      },
+      "sessionId": "09622c7a-7709-4d14-aa27-9cadc0b4b927",
+      "live": [
+        {
+          "id": "318f78d4-f328-45a4-b691-de9b60d7f7f5",
+          "type": "user.message",
+          "data": {
+            "content": "Finish before stop",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:12.523+08:00</current_datetime>\n\nFinish before stop",
+            "messageId": "acbf2f0c-8a9f-49d2-9caa-ede2105437e3",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "d11bfb97-91ab-477d-943e-5400cc44e371",
+            "turnId": "0",
+            "parentAgentTaskId": "b098e140-c347-40ba-a837-c4f791f421c0"
+          }
+        },
+        {
+          "id": "b5bfe510-4c9d-4c53-aa86-c571a6afa1aa",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "d11bfb97-91ab-477d-943e-5400cc44e371"
+          }
+        },
+        {
+          "id": "ca8d868e-cee6-4439-9e1b-b0d6e26df42d",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "4bc9517d-dbf4-44f7-8e84-dbed567f0d8e",
+            "originatingMessageId": "acbf2f0c-8a9f-49d2-9caa-ede2105437e3",
+            "model": "gpt-4.1",
+            "content": "ACK 09622c7a-7709-4d14-aa27-9cadc0b4b927",
+            "toolRequests": [],
+            "interactionId": "d11bfb97-91ab-477d-943e-5400cc44e371",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "ac1390f7-f238-4f93-9d0f-8f0bf7704868",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "cfa711a7-846d-4eac-971a-0070fcb0669f",
+          "type": "assistant.idle",
+          "data": {},
+          "ephemeral": true
+        },
+        {
+          "id": "1e0c3546-3f59-4b46-84d8-ad85ddeac303",
+          "type": "session.idle",
+          "data": {
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "318f78d4-f328-45a4-b691-de9b60d7f7f5",
+          "type": "user.message",
+          "data": {
+            "content": "Finish before stop",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:12.523+08:00</current_datetime>\n\nFinish before stop",
+            "messageId": "acbf2f0c-8a9f-49d2-9caa-ede2105437e3",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "d11bfb97-91ab-477d-943e-5400cc44e371",
+            "turnId": "0",
+            "parentAgentTaskId": "b098e140-c347-40ba-a837-c4f791f421c0"
+          }
+        },
+        {
+          "id": "b5bfe510-4c9d-4c53-aa86-c571a6afa1aa",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "d11bfb97-91ab-477d-943e-5400cc44e371"
+          }
+        },
+        {
+          "id": "ca8d868e-cee6-4439-9e1b-b0d6e26df42d",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "4bc9517d-dbf4-44f7-8e84-dbed567f0d8e",
+            "originatingMessageId": "acbf2f0c-8a9f-49d2-9caa-ede2105437e3",
+            "model": "gpt-4.1",
+            "content": "ACK 09622c7a-7709-4d14-aa27-9cadc0b4b927",
+            "toolRequests": [],
+            "interactionId": "d11bfb97-91ab-477d-943e-5400cc44e371",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "ac1390f7-f238-4f93-9d0f-8f0bf7704868",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "completedAnswerPreserved": true,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 17,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "lifecycle-panel-close",
+      "messageId": "20e24b12-68da-4387-9e95-cfea78ca48fd",
+      "processingOnReattach": {
+        "processing": true
+      },
+      "sessionId": "977992ca-af5b-4640-821f-7705c3fe0804",
+      "live": [
+        {
+          "id": "47bd3de5-091e-4595-9e66-7ed9158e243f",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "6492b74e-1f99-4af9-87fe-c250527ea39b",
+            "originatingMessageId": "20e24b12-68da-4387-9e95-cfea78ca48fd",
+            "model": "gpt-4.1",
+            "content": "ACK 977992ca-af5b-4640-821f-7705c3fe0804",
+            "toolRequests": [],
+            "interactionId": "ab41f3bf-9c31-4b52-9123-43b210f79cc9",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "eb5a0754-2500-40b7-b307-cafbfc3e0c08",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "eb8c5977-2aa2-48c8-968d-aca73291dcd6",
+          "type": "assistant.idle",
+          "data": {},
+          "ephemeral": true
+        },
+        {
+          "id": "f10397ee-7d3a-4809-9e21-e53cee181a5a",
+          "type": "session.idle",
+          "data": {
+            "mode": "interactive"
+          },
+          "ephemeral": true
+        }
+      ],
+      "history": [
+        {
+          "id": "f57c0f66-635e-4c87-836b-f559cb5ac0ad",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:14.426+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "dfd4b8c5-d520-441e-a27a-d3373274eb16",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "0e4c1d66-824e-4bb3-a6d2-705b92640d1f",
+            "turnId": "0",
+            "parentAgentTaskId": "46387c00-104f-4ef2-a7d5-5850401fc043"
+          }
+        },
+        {
+          "id": "4492d051-370a-4ecb-96b9-9230e21db26e",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "0e4c1d66-824e-4bb3-a6d2-705b92640d1f"
+          }
+        },
+        {
+          "id": "6621e531-1014-4448-b00a-ea8375d08230",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "4157bbb5-ba60-49a5-94d7-fd2402e942c5",
+            "originatingMessageId": "dfd4b8c5-d520-441e-a27a-d3373274eb16",
+            "model": "gpt-4.1",
+            "content": "ACK 977992ca-af5b-4640-821f-7705c3fe0804",
+            "toolRequests": [],
+            "interactionId": "0e4c1d66-824e-4bb3-a6d2-705b92640d1f",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "aa4cf5a0-e402-4d64-82d6-b1d30c9d9e41",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "d49961ad-91ab-4c93-bf12-559f21926fb6",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic lifecycle panel-close",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:14.578+08:00</current_datetime>\n\nSynthetic lifecycle panel-close",
+            "messageId": "20e24b12-68da-4387-9e95-cfea78ca48fd",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "ab41f3bf-9c31-4b52-9123-43b210f79cc9",
+            "turnId": "0",
+            "parentAgentTaskId": "c0b90fae-4fb0-45e0-8556-578c5d5e2f9e"
+          }
+        },
+        {
+          "id": "681a93cc-f0f3-45ce-88cd-3cca8e1a7ee8",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "ab41f3bf-9c31-4b52-9123-43b210f79cc9"
+          }
+        },
+        {
+          "id": "47bd3de5-091e-4595-9e66-7ed9158e243f",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "6492b74e-1f99-4af9-87fe-c250527ea39b",
+            "originatingMessageId": "20e24b12-68da-4387-9e95-cfea78ca48fd",
+            "model": "gpt-4.1",
+            "content": "ACK 977992ca-af5b-4640-821f-7705c3fe0804",
+            "toolRequests": [],
+            "interactionId": "ab41f3bf-9c31-4b52-9123-43b210f79cc9",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "eb5a0754-2500-40b7-b307-cafbfc3e0c08",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 19,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "lifecycle-normal-unload",
+      "messageId": "23b34282-e33e-45dd-8688-a880b3e49bd5",
+      "stopResult": {
+        "success": true
+      },
+      "sessionId": "9ba1fe85-a040-4cf8-a6f8-fc9117deaa27",
+      "live": [],
+      "history": [
+        {
+          "id": "584e674a-4e7b-4e5d-9801-7f8643a8956a",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:16.526+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "cbdf2c71-1eca-4031-8bfe-217641a38d3e",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "c014223b-63ff-4b28-a372-357dd79fd23e",
+            "turnId": "0",
+            "parentAgentTaskId": "a2352fad-cb63-4bda-af7f-cfd34c3b14b1"
+          }
+        },
+        {
+          "id": "811cd85d-2e3a-49aa-acb5-b4e85e4cf65e",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "c014223b-63ff-4b28-a372-357dd79fd23e"
+          }
+        },
+        {
+          "id": "37fcde2e-7946-4b41-a914-7bb6afedb826",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "9c1283e2-edf5-43f7-ab0d-6d13da041bd3",
+            "originatingMessageId": "cbdf2c71-1eca-4031-8bfe-217641a38d3e",
+            "model": "gpt-4.1",
+            "content": "ACK 9ba1fe85-a040-4cf8-a6f8-fc9117deaa27",
+            "toolRequests": [],
+            "interactionId": "c014223b-63ff-4b28-a372-357dd79fd23e",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "c6307ce2-adaa-4891-a060-e6015a10359c",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "ceb2b7a5-5667-4573-b7ea-15b70af44415",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic lifecycle normal-unload",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:16.648+08:00</current_datetime>\n\nSynthetic lifecycle normal-unload",
+            "messageId": "23b34282-e33e-45dd-8688-a880b3e49bd5",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "3cf3e93a-51e1-4368-a64d-137c124747da",
+            "turnId": "0",
+            "parentAgentTaskId": "c1fb1675-cc02-45e2-95bc-e9cba52f1fe0"
+          }
+        },
+        {
+          "id": "c686b4f6-d7af-49da-a1a8-932cbc0e94a2",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "3cf3e93a-51e1-4368-a64d-137c124747da"
+          }
+        },
+        {
+          "id": "4da367f8-b9d0-4c35-bdcf-ea8414c37c4a",
+          "type": "abort",
+          "data": {
+            "reason": "user_initiated"
+          }
+        },
+        {
+          "id": "cadff902-e274-469b-a376-831656599791",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "userMessagePreserved": true,
+      "answerCount": 0,
+      "recoverySendCalls": 0,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 21,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "lifecycle-runtime-crash",
+      "messageId": "989519e7-d48f-4885-bb68-d2ecc7bc216b",
+      "liveBeforeCrash": [
+        {
+          "id": "7237c540-4b8b-4516-9593-dbb301453de1",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:20.725+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "34ad40de-849a-43b6-82c3-9f285b5a648e",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "01075a2b-b5a6-448e-b552-9ce58a2b5efd",
+            "turnId": "0",
+            "parentAgentTaskId": "ac6e3587-c365-4bf5-a0e0-737a86c7765a"
+          }
+        },
+        {
+          "id": "2a91ad81-dcbe-4689-890a-cf3bf59f0ad1",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "01075a2b-b5a6-448e-b552-9ce58a2b5efd"
+          }
+        },
+        {
+          "id": "4abe6c8a-3505-455e-94be-76f633b008bf",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "b35cbbbb-caf9-4036-ad87-14d5a4f8d8ff",
+            "originatingMessageId": "34ad40de-849a-43b6-82c3-9f285b5a648e",
+            "model": "gpt-4.1",
+            "content": "ACK a547f589-4267-487a-8ba9-837f7f0904dc",
+            "toolRequests": [],
+            "interactionId": "01075a2b-b5a6-448e-b552-9ce58a2b5efd",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "4a5fb1d1-9d7b-45ec-8f62-43a4b5e1cec2",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "57bbeb23-d24f-43d1-b0bd-9221e2d26942",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic lifecycle runtime-crash",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:20.861+08:00</current_datetime>\n\nSynthetic lifecycle runtime-crash",
+            "messageId": "989519e7-d48f-4885-bb68-d2ecc7bc216b",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "398621e1-a6dc-4437-9184-8b1f12e53f1b",
+            "turnId": "0",
+            "parentAgentTaskId": "dfe0b338-28b1-4b14-810b-20447bce4b5c"
+          }
+        },
+        {
+          "id": "516d56bf-4e89-4a4d-a4ab-6ef3c3e14a9a",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "398621e1-a6dc-4437-9184-8b1f12e53f1b"
+          }
+        }
+      ],
+      "sessionId": "a547f589-4267-487a-8ba9-837f7f0904dc",
+      "live": [],
+      "history": [
+        {
+          "id": "7237c540-4b8b-4516-9593-dbb301453de1",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:20.725+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "34ad40de-849a-43b6-82c3-9f285b5a648e",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "01075a2b-b5a6-448e-b552-9ce58a2b5efd",
+            "turnId": "0",
+            "parentAgentTaskId": "ac6e3587-c365-4bf5-a0e0-737a86c7765a"
+          }
+        },
+        {
+          "id": "2a91ad81-dcbe-4689-890a-cf3bf59f0ad1",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "01075a2b-b5a6-448e-b552-9ce58a2b5efd"
+          }
+        },
+        {
+          "id": "4abe6c8a-3505-455e-94be-76f633b008bf",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "b35cbbbb-caf9-4036-ad87-14d5a4f8d8ff",
+            "originatingMessageId": "34ad40de-849a-43b6-82c3-9f285b5a648e",
+            "model": "gpt-4.1",
+            "content": "ACK a547f589-4267-487a-8ba9-837f7f0904dc",
+            "toolRequests": [],
+            "interactionId": "01075a2b-b5a6-448e-b552-9ce58a2b5efd",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "4a5fb1d1-9d7b-45ec-8f62-43a4b5e1cec2",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "userMessagePreserved": false,
+      "answerCount": 0,
+      "recoverySendCalls": 0,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 23,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "lifecycle-runtime-crash-save",
+      "messageId": "53af33e7-48ab-4917-a290-ec356bbf305f",
+      "liveBeforeCrash": [
+        {
+          "id": "80154072-58cd-470e-9d2c-5686c4045232",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:24.931+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "39df32e3-639f-4466-a440-8d92312d3895",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "2fb11b17-1a6b-4b40-b08f-b84011a6ba01",
+            "turnId": "0",
+            "parentAgentTaskId": "37ec93bf-339f-4f43-8e53-bf89bb585167"
+          }
+        },
+        {
+          "id": "cac47bdb-f4ae-400d-a092-a292a89ded20",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "2fb11b17-1a6b-4b40-b08f-b84011a6ba01"
+          }
+        },
+        {
+          "id": "1e8928c4-ad86-4698-8762-9a06aea394ed",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "f395254c-6d25-45eb-9d29-b77165d7ade3",
+            "originatingMessageId": "39df32e3-639f-4466-a440-8d92312d3895",
+            "model": "gpt-4.1",
+            "content": "ACK 09606013-7b7c-4c8e-8190-c3d1b09c7597",
+            "toolRequests": [],
+            "interactionId": "2fb11b17-1a6b-4b40-b08f-b84011a6ba01",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "45874e27-615b-44d2-b6e7-a78c6fdbd4c4",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "81049e74-6f74-43e5-8b57-f159dbdbc1c5",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic lifecycle runtime-crash-save",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:25.033+08:00</current_datetime>\n\nSynthetic lifecycle runtime-crash-save",
+            "messageId": "53af33e7-48ab-4917-a290-ec356bbf305f",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "9be4704a-383a-452a-9ed8-a6a90806af95",
+            "turnId": "0",
+            "parentAgentTaskId": "99894e24-a390-43d3-a267-87a48c483bf4"
+          }
+        },
+        {
+          "id": "589d3309-bdd9-4ecc-8931-63d43af2fd58",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "9be4704a-383a-452a-9ed8-a6a90806af95"
+          }
+        }
+      ],
+      "diskBeforeCrash": [
+        {
+          "id": "80154072-58cd-470e-9d2c-5686c4045232",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:24.931+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "39df32e3-639f-4466-a440-8d92312d3895",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "2fb11b17-1a6b-4b40-b08f-b84011a6ba01",
+            "turnId": "0",
+            "parentAgentTaskId": "37ec93bf-339f-4f43-8e53-bf89bb585167"
+          }
+        },
+        {
+          "id": "cac47bdb-f4ae-400d-a092-a292a89ded20",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "2fb11b17-1a6b-4b40-b08f-b84011a6ba01"
+          }
+        },
+        {
+          "id": "1e8928c4-ad86-4698-8762-9a06aea394ed",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "f395254c-6d25-45eb-9d29-b77165d7ade3",
+            "originatingMessageId": "39df32e3-639f-4466-a440-8d92312d3895",
+            "model": "gpt-4.1",
+            "content": "ACK 09606013-7b7c-4c8e-8190-c3d1b09c7597",
+            "toolRequests": [],
+            "interactionId": "2fb11b17-1a6b-4b40-b08f-b84011a6ba01",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "45874e27-615b-44d2-b6e7-a78c6fdbd4c4",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "81049e74-6f74-43e5-8b57-f159dbdbc1c5",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic lifecycle runtime-crash-save",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:25.033+08:00</current_datetime>\n\nSynthetic lifecycle runtime-crash-save",
+            "messageId": "53af33e7-48ab-4917-a290-ec356bbf305f",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "9be4704a-383a-452a-9ed8-a6a90806af95",
+            "turnId": "0",
+            "parentAgentTaskId": "99894e24-a390-43d3-a267-87a48c483bf4"
+          }
+        },
+        {
+          "id": "589d3309-bdd9-4ecc-8931-63d43af2fd58",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "9be4704a-383a-452a-9ed8-a6a90806af95"
+          }
+        }
+      ],
+      "sessionId": "09606013-7b7c-4c8e-8190-c3d1b09c7597",
+      "live": [],
+      "history": [
+        {
+          "id": "80154072-58cd-470e-9d2c-5686c4045232",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:24.931+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "39df32e3-639f-4466-a440-8d92312d3895",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "2fb11b17-1a6b-4b40-b08f-b84011a6ba01",
+            "turnId": "0",
+            "parentAgentTaskId": "37ec93bf-339f-4f43-8e53-bf89bb585167"
+          }
+        },
+        {
+          "id": "cac47bdb-f4ae-400d-a092-a292a89ded20",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "2fb11b17-1a6b-4b40-b08f-b84011a6ba01"
+          }
+        },
+        {
+          "id": "1e8928c4-ad86-4698-8762-9a06aea394ed",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "f395254c-6d25-45eb-9d29-b77165d7ade3",
+            "originatingMessageId": "39df32e3-639f-4466-a440-8d92312d3895",
+            "model": "gpt-4.1",
+            "content": "ACK 09606013-7b7c-4c8e-8190-c3d1b09c7597",
+            "toolRequests": [],
+            "interactionId": "2fb11b17-1a6b-4b40-b08f-b84011a6ba01",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "45874e27-615b-44d2-b6e7-a78c6fdbd4c4",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "81049e74-6f74-43e5-8b57-f159dbdbc1c5",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic lifecycle runtime-crash-save",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:25.033+08:00</current_datetime>\n\nSynthetic lifecycle runtime-crash-save",
+            "messageId": "53af33e7-48ab-4917-a290-ec356bbf305f",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "9be4704a-383a-452a-9ed8-a6a90806af95",
+            "turnId": "0",
+            "parentAgentTaskId": "99894e24-a390-43d3-a267-87a48c483bf4"
+          }
+        },
+        {
+          "id": "589d3309-bdd9-4ecc-8931-63d43af2fd58",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "9be4704a-383a-452a-9ed8-a6a90806af95"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "userMessagePreserved": true,
+      "answerCount": 0,
+      "recoverySendCalls": 0,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 25,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "send-cut-before-disconnect",
+      "sendCalls": 1,
+      "callerError": "TIMEOUT: lost receipt",
+      "oracle": {
+        "forkRequests": 1,
+        "suppressedResponses": 0
+      },
+      "sessionId": "8dfeaa6a-8421-43df-9215-95212ee43fb5",
+      "live": [],
+      "history": [
+        {
+          "id": "dc306e9e-d4a7-4a60-b677-e71942e6d1a6",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:29.061+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "68211a8e-5c70-4e27-a5b5-73814a2565a4",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "448c07ac-f7c6-4355-962a-33544efeda6f",
+            "turnId": "0",
+            "parentAgentTaskId": "4ca8c473-09ed-4393-8839-da8f466e62da"
+          }
+        },
+        {
+          "id": "428e4bef-a0d6-4f30-8d49-11bb44d2cdf1",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "448c07ac-f7c6-4355-962a-33544efeda6f"
+          }
+        },
+        {
+          "id": "9d0461f7-fa5f-4ada-baa7-c12f39313f33",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "9db5dc38-6012-400a-ab1d-6e4ec1a6d8d5",
+            "originatingMessageId": "68211a8e-5c70-4e27-a5b5-73814a2565a4",
+            "model": "gpt-4.1",
+            "content": "ACK 8dfeaa6a-8421-43df-9215-95212ee43fb5",
+            "toolRequests": [],
+            "interactionId": "448c07ac-f7c6-4355-962a-33544efeda6f",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "75e3c3e6-fd31-4d1a-984a-28ced3ecdd09",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "recoverySendCalls": 0,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 26,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "send-cut-before-exit",
+      "sendCalls": 1,
+      "callerError": "TIMEOUT: lost receipt",
+      "oracle": {
+        "forkRequests": 1,
+        "suppressedResponses": 0
+      },
+      "sessionId": "bf0cb6da-9d2c-40e0-b51b-28a00a003c04",
+      "live": [],
+      "history": [
+        {
+          "id": "1f46b86a-c8ee-4ab3-bbf3-211886c57bea",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:32.501+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "140ed655-b76c-400b-aefc-fcf89684f44a",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "91ba3239-ec9f-45fc-b39f-5f869e9d4094",
+            "turnId": "0",
+            "parentAgentTaskId": "6fca0258-1f26-49a8-aeb6-408c4eede8b6"
+          }
+        },
+        {
+          "id": "ce68cfd6-37c7-4e62-8e0e-908bcea1b679",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "91ba3239-ec9f-45fc-b39f-5f869e9d4094"
+          }
+        },
+        {
+          "id": "4105ac30-393e-4717-bac9-86826b5ac199",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "03057f0f-ba1d-4019-b33a-aee3bf275004",
+            "originatingMessageId": "140ed655-b76c-400b-aefc-fcf89684f44a",
+            "model": "gpt-4.1",
+            "content": "ACK bf0cb6da-9d2c-40e0-b51b-28a00a003c04",
+            "toolRequests": [],
+            "interactionId": "91ba3239-ec9f-45fc-b39f-5f869e9d4094",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "e462d931-d7a4-48f9-96b9-f053f4ff8086",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "recoverySendCalls": 0,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 27,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "send-cut-after-disconnect",
+      "sendCalls": 1,
+      "callerError": "TIMEOUT: lost receipt",
+      "oracle": {
+        "forkRequests": 1,
+        "suppressedResponses": 1,
+        "runtimeResult": {
+          "messageId": "f32375c2-eac0-43f8-84ad-9de47a42c1fa"
+        }
+      },
+      "sessionId": "f947aa7b-89b7-410b-b794-b05865239be1",
+      "live": [
+        {
+          "id": "342086f5-dff9-4e83-8784-aca1eeb78f39",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic lost acknowledgement",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:37.952+08:00</current_datetime>\n\nSynthetic lost acknowledgement",
+            "messageId": "f32375c2-eac0-43f8-84ad-9de47a42c1fa",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "d1df2024-16a5-4292-a57b-f8376fafd66e",
+            "turnId": "0",
+            "parentAgentTaskId": "5d2310ad-58bd-4d33-bad2-ad8737131721"
+          }
+        },
+        {
+          "id": "3a25528e-2579-4c4d-8095-a2d6d9778d5f",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "d1df2024-16a5-4292-a57b-f8376fafd66e"
+          }
+        }
+      ],
+      "history": [
+        {
+          "id": "4ffd3366-5988-43a4-8ded-e2f667c57879",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:37.822+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "2a66d3fc-edd9-49a0-ae39-841190952221",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "27d4b025-bc76-40e0-8df5-175fbc261dbf",
+            "turnId": "0",
+            "parentAgentTaskId": "a5128ef8-36a3-41ea-b4b4-d30f765f1555"
+          }
+        },
+        {
+          "id": "55cef8f0-178d-45e1-ba97-d10f3335ccad",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "27d4b025-bc76-40e0-8df5-175fbc261dbf"
+          }
+        },
+        {
+          "id": "e5bc7513-0cc1-40eb-8b2f-c6fef0d973fa",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "a988e68b-a6c1-49bb-a9b7-3a30245d0a65",
+            "originatingMessageId": "2a66d3fc-edd9-49a0-ae39-841190952221",
+            "model": "gpt-4.1",
+            "content": "ACK f947aa7b-89b7-410b-b794-b05865239be1",
+            "toolRequests": [],
+            "interactionId": "27d4b025-bc76-40e0-8df5-175fbc261dbf",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "26890942-d7ab-400b-9b78-b7a7b5dcde5e",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "342086f5-dff9-4e83-8784-aca1eeb78f39",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic lost acknowledgement",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:37.952+08:00</current_datetime>\n\nSynthetic lost acknowledgement",
+            "messageId": "f32375c2-eac0-43f8-84ad-9de47a42c1fa",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "d1df2024-16a5-4292-a57b-f8376fafd66e",
+            "turnId": "0",
+            "parentAgentTaskId": "5d2310ad-58bd-4d33-bad2-ad8737131721"
+          }
+        },
+        {
+          "id": "3a25528e-2579-4c4d-8095-a2d6d9778d5f",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "d1df2024-16a5-4292-a57b-f8376fafd66e"
+          }
+        }
+      ],
+      "processing": {
+        "processing": true
+      },
+      "activity": {
+        "abortable": true,
+        "hasActiveWork": true
+      },
+      "completedHistory": [
+        {
+          "id": "4ffd3366-5988-43a4-8ded-e2f667c57879",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:37.822+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "2a66d3fc-edd9-49a0-ae39-841190952221",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "27d4b025-bc76-40e0-8df5-175fbc261dbf",
+            "turnId": "0",
+            "parentAgentTaskId": "a5128ef8-36a3-41ea-b4b4-d30f765f1555"
+          }
+        },
+        {
+          "id": "55cef8f0-178d-45e1-ba97-d10f3335ccad",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "27d4b025-bc76-40e0-8df5-175fbc261dbf"
+          }
+        },
+        {
+          "id": "e5bc7513-0cc1-40eb-8b2f-c6fef0d973fa",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "a988e68b-a6c1-49bb-a9b7-3a30245d0a65",
+            "originatingMessageId": "2a66d3fc-edd9-49a0-ae39-841190952221",
+            "model": "gpt-4.1",
+            "content": "ACK f947aa7b-89b7-410b-b794-b05865239be1",
+            "toolRequests": [],
+            "interactionId": "27d4b025-bc76-40e0-8df5-175fbc261dbf",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "26890942-d7ab-400b-9b78-b7a7b5dcde5e",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "342086f5-dff9-4e83-8784-aca1eeb78f39",
+          "type": "user.message",
+          "data": {
+            "content": "Synthetic lost acknowledgement",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:37.952+08:00</current_datetime>\n\nSynthetic lost acknowledgement",
+            "messageId": "f32375c2-eac0-43f8-84ad-9de47a42c1fa",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "d1df2024-16a5-4292-a57b-f8376fafd66e",
+            "turnId": "0",
+            "parentAgentTaskId": "5d2310ad-58bd-4d33-bad2-ad8737131721"
+          }
+        },
+        {
+          "id": "3a25528e-2579-4c4d-8095-a2d6d9778d5f",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "d1df2024-16a5-4292-a57b-f8376fafd66e"
+          }
+        },
+        {
+          "id": "a8b046d5-d4a5-4a8e-9bbe-878a2e397377",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "52d97849-d16a-4847-8dcc-08dcfda8c565",
+            "originatingMessageId": "f32375c2-eac0-43f8-84ad-9de47a42c1fa",
+            "model": "gpt-4.1",
+            "content": "ACK f947aa7b-89b7-410b-b794-b05865239be1",
+            "toolRequests": [],
+            "interactionId": "d1df2024-16a5-4292-a57b-f8376fafd66e",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "a3bce14d-3905-43f3-b273-b0478a006763",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "recoverySendCalls": 0,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 29,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "send-cut-after-exit",
+      "sendCalls": 1,
+      "callerError": "TIMEOUT: lost receipt",
+      "oracle": {
+        "forkRequests": 1,
+        "suppressedResponses": 1,
+        "runtimeResult": {
+          "messageId": "e89e0f55-4e1a-49ad-ae25-e14fc2c45a9d"
+        }
+      },
+      "sessionId": "6f8590b1-4cae-40a4-a7e9-df7539cd37f4",
+      "live": [],
+      "history": [
+        {
+          "id": "459dac69-f541-4e72-a38f-5da96550152d",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:38:41.307+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "4932bbd2-3b7c-4121-84b1-de1250ce6ea6",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "b219e580-4c95-4b95-92dd-c7ff643bcab8",
+            "turnId": "0",
+            "parentAgentTaskId": "f7bba441-6ecb-4dca-9892-7f935a327979"
+          }
+        },
+        {
+          "id": "3d380bca-f445-41d2-9ec4-e496e4a62bd6",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "b219e580-4c95-4b95-92dd-c7ff643bcab8"
+          }
+        },
+        {
+          "id": "e6845c38-2be2-43ba-af10-48c44c42cb17",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "3915a9e9-2d5c-49c4-b843-aba66f6587e6",
+            "originatingMessageId": "4932bbd2-3b7c-4121-84b1-de1250ce6ea6",
+            "model": "gpt-4.1",
+            "content": "ACK 6f8590b1-4cae-40a4-a7e9-df7539cd37f4",
+            "toolRequests": [],
+            "interactionId": "b219e580-4c95-4b95-92dd-c7ff643bcab8",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "a2a78671-33b2-47a0-a440-883c2bbc1072",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "recoverySendCalls": 0,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 30,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "detach-negative-response-observable",
+      "errorObserved": "Failed to disconnect session e892d75c-2fa9-44f7-8045-fcf818a77a84: Synthetic detach failure",
+      "nativeDetachAttempts": 2,
+      "ownerStillReadable": true,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 30,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "new-fork-and-cold-branch-multiturn",
+      "children": [
+        {
+          "sessionId": "f414d731-f119-4522-8aa2-c832e8c1e0af",
+          "firstId": "c1cb2af7-3360-4341-add2-9346d442ef86",
+          "secondId": "ccc26e8e-cd5c-435b-9fca-90d644c64203",
+          "answers": [
+            {
+              "id": "dc400bee-14a9-424f-b721-dee5f171db00",
+              "type": "assistant.message",
+              "data": {
+                "messageId": "1798acb8-1a9b-4c58-a95e-687619d25af8",
+                "originatingMessageId": "c1cb2af7-3360-4341-add2-9346d442ef86",
+                "model": "gpt-4.1",
+                "content": "ACK f414d731-f119-4522-8aa2-c832e8c1e0af",
+                "toolRequests": [],
+                "interactionId": "94b2176a-d77a-4f13-adbe-1bc907fb04ba",
+                "turnId": "0",
+                "rte": false,
+                "apiCallId": "synthetic"
+              }
+            },
+            {
+              "id": "4716b8b7-390d-4e2e-8d4e-3d2e26da2a1a",
+              "type": "assistant.message",
+              "data": {
+                "messageId": "2fbfa090-c074-4c02-81b7-152d5b10320d",
+                "originatingMessageId": "ccc26e8e-cd5c-435b-9fca-90d644c64203",
+                "model": "gpt-4.1",
+                "content": "ACK f414d731-f119-4522-8aa2-c832e8c1e0af",
+                "toolRequests": [],
+                "interactionId": "fcbb032a-61d9-412c-b585-9ac4be0c224d",
+                "turnId": "0",
+                "rte": false,
+                "apiCallId": "synthetic"
+              }
+            }
+          ]
+        },
+        {
+          "sessionId": "1ada0f6c-ed7d-4de1-b3fb-79a9951f9fe8",
+          "firstId": "78c4de98-bfc4-4d15-b869-72f1e582561f",
+          "secondId": "bd85594b-bbea-48a2-adaf-4ff881cf7169",
+          "answers": [
+            {
+              "id": "838a9c3d-1af4-42a9-9d88-04b2f36d76ec",
+              "type": "assistant.message",
+              "data": {
+                "messageId": "96f736a9-5702-4da6-b5b2-38f42d1a632c",
+                "originatingMessageId": "78c4de98-bfc4-4d15-b869-72f1e582561f",
+                "model": "gpt-4.1",
+                "content": "ACK 1ada0f6c-ed7d-4de1-b3fb-79a9951f9fe8",
+                "toolRequests": [],
+                "interactionId": "4975cef9-93ba-486f-91fd-3173594fe092",
+                "turnId": "0",
+                "rte": false,
+                "apiCallId": "synthetic"
+              }
+            },
+            {
+              "id": "68cae52a-ff60-4fd5-9ddb-cd4956f60798",
+              "type": "assistant.message",
+              "data": {
+                "messageId": "c69e780b-a697-4c2a-9459-df2fa7bdc3c3",
+                "originatingMessageId": "bd85594b-bbea-48a2-adaf-4ff881cf7169",
+                "model": "gpt-4.1",
+                "content": "ACK 1ada0f6c-ed7d-4de1-b3fb-79a9951f9fe8",
+                "toolRequests": [],
+                "interactionId": "a3326abe-f59e-4580-b640-f9f94220d886",
+                "turnId": "0",
+                "rte": false,
+                "apiCallId": "synthetic"
+              }
+            }
+          ]
+        }
+      ],
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 35,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "external-occupancy-tcp",
+      "occupiedAfterCreate": true,
+      "occupiedAfterDisconnect": false,
+      "occupiedAfterWarmResume": false,
+      "ownerRespondsAfterWarmResume": true,
+      "occupiedAfterDelay": false,
+      "competingResumeWarning": false,
+      "ownerSeesCompetitor": false,
+      "occupiedAfterCompetitorRelease": false,
+      "sameRuntimeOtherOwner": false,
+      "concurrentSendCalls": 0,
+      "occupiedAfterFreshRuntimeResume": false,
+      "releasedAndAcquired": true,
+      "ownershipDetectionCounterexample": true,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 37,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "external-occupancy-stdio",
+      "occupiedAfterCreate": true,
+      "occupiedAfterDisconnect": false,
+      "occupiedAfterWarmResume": false,
+      "ownerRespondsAfterWarmResume": true,
+      "occupiedAfterDelay": false,
+      "competingResumeWarning": false,
+      "ownerSeesCompetitor": false,
+      "occupiedAfterCompetitorRelease": false,
+      "concurrentSendCalls": 0,
+      "occupiedAfterFreshRuntimeResume": false,
+      "releasedAndAcquired": true,
+      "ownershipDetectionCounterexample": true,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 39,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "definite-send-rejection",
+      "rejection": "Request session.send failed with message: Session not found for sessionId: e403a83f-ac0e-4eda-9b6a-3464a7950538",
+      "addedEvents": [],
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 40,
+        "unauthorizedMarkerExecutions": 0
+      }
+    },
+    {
+      "name": "drop-last-session-connection",
+      "messageId": "2de55a04-ef47-4190-b4fb-205ddc4d2654",
+      "activityOnReconnect": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "sessionId": "d008d8a8-8f90-492d-88fc-9cfa49747e23",
+      "live": [],
+      "history": [
+        {
+          "id": "32407bd2-9ea4-44bb-a3ff-cb5808a74905",
+          "type": "user.message",
+          "data": {
+            "content": "Completed synthetic setup turn",
+            "transformedContent": "<current_datetime>2026-10-01T11:39:06.854+08:00</current_datetime>\n\nCompleted synthetic setup turn",
+            "messageId": "e404117e-495b-4588-8f76-e0b2bb1eeba4",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "63bfb660-f53d-4760-ab82-07c1cb751082",
+            "turnId": "0",
+            "parentAgentTaskId": "cbe3ec21-24c2-4f82-a685-8aa6c75b3f70"
+          }
+        },
+        {
+          "id": "0ed29711-eb21-4013-b9bc-277e94c6348f",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "63bfb660-f53d-4760-ab82-07c1cb751082"
+          }
+        },
+        {
+          "id": "c1d38e9a-c1d8-4ab8-acad-5b4500ad5716",
+          "type": "assistant.message",
+          "data": {
+            "messageId": "08950d4b-f02a-4d5f-a5c4-fc944cbe434f",
+            "originatingMessageId": "e404117e-495b-4588-8f76-e0b2bb1eeba4",
+            "model": "gpt-4.1",
+            "content": "ACK d008d8a8-8f90-492d-88fc-9cfa49747e23",
+            "toolRequests": [],
+            "interactionId": "63bfb660-f53d-4760-ab82-07c1cb751082",
+            "turnId": "0",
+            "rte": false,
+            "apiCallId": "synthetic"
+          }
+        },
+        {
+          "id": "084de6c5-5168-4f2f-8580-4d920adfb566",
+          "type": "assistant.turn_end",
+          "data": {
+            "turnId": "0"
+          }
+        },
+        {
+          "id": "cda67ae9-8d07-4136-b47e-16a71d5878d6",
+          "type": "user.message",
+          "data": {
+            "content": "Lose the only session attachment",
+            "transformedContent": "<current_datetime>2026-10-01T11:39:07.053+08:00</current_datetime>\n\nLose the only session attachment",
+            "messageId": "2de55a04-ef47-4190-b4fb-205ddc4d2654",
+            "supportedNativeDocumentMimeTypes": [],
+            "delivery": "idle",
+            "interactionId": "91873ff1-8266-43e6-aef6-128c7d66a09c",
+            "turnId": "0",
+            "parentAgentTaskId": "eaa86552-7218-4363-ac43-68a4d006982c"
+          }
+        },
+        {
+          "id": "625f2810-9c12-4965-a8bf-56f5190684e3",
+          "type": "assistant.turn_start",
+          "data": {
+            "turnId": "0",
+            "interactionId": "91873ff1-8266-43e6-aef6-128c7d66a09c"
+          }
+        }
+      ],
+      "processing": {
+        "processing": false
+      },
+      "activity": {
+        "abortable": false,
+        "hasActiveWork": false
+      },
+      "reconnectSendCalls": 0,
+      "verdict": "evidence-assertions-passed",
+      "sensorTotals": {
+        "modelRequests": 42,
+        "unauthorizedMarkerExecutions": 0
+      }
+    }
+  ],
+  "errors": [],
+  "cleanup": [
+    {
+      "sessionId": "54490c57-ef8e-4fb5-8e3c-79148172e8a5",
+      "deleted": true
+    },
+    {
+      "sessionId": "6ef56071-9624-47e5-8dcd-eeded1d11923",
+      "deleted": true
+    },
+    {
+      "sessionId": "274c0a3e-d450-40a4-a8c6-9ae45294ad7a",
+      "deleted": true
+    },
+    {
+      "sessionId": "b75fbc5c-c869-49ed-a894-f35b9f4be2fd",
+      "deleted": true
+    },
+    {
+      "sessionId": "aa5bc79d-b15c-4dd5-8dad-f063ef4c4ae4",
+      "deleted": true
+    },
+    {
+      "sessionId": "98ae1cf9-cc97-4c18-8c3a-01324fe6e2b6",
+      "deleted": true
+    },
+    {
+      "sessionId": "83d4017a-1478-4cb5-8df6-d2efc9901cb3",
+      "deleted": true
+    },
+    {
+      "sessionId": "c5d8d396-a2d3-4000-99c9-b3db247550f4",
+      "deleted": true
+    },
+    {
+      "sessionId": "a7ef6063-18d7-4966-8276-24b553f9d937",
+      "deleted": true
+    },
+    {
+      "sessionId": "09622c7a-7709-4d14-aa27-9cadc0b4b927",
+      "deleted": true
+    },
+    {
+      "sessionId": "977992ca-af5b-4640-821f-7705c3fe0804",
+      "deleted": true
+    },
+    {
+      "sessionId": "9ba1fe85-a040-4cf8-a6f8-fc9117deaa27",
+      "deleted": true
+    },
+    {
+      "sessionId": "a547f589-4267-487a-8ba9-837f7f0904dc",
+      "deleted": true
+    },
+    {
+      "sessionId": "09606013-7b7c-4c8e-8190-c3d1b09c7597",
+      "deleted": true
+    },
+    {
+      "sessionId": "8dfeaa6a-8421-43df-9215-95212ee43fb5",
+      "deleted": true
+    },
+    {
+      "sessionId": "bf0cb6da-9d2c-40e0-b51b-28a00a003c04",
+      "deleted": true
+    },
+    {
+      "sessionId": "f947aa7b-89b7-410b-b794-b05865239be1",
+      "deleted": true
+    },
+    {
+      "sessionId": "6f8590b1-4cae-40a4-a7e9-df7539cd37f4",
+      "deleted": true
+    },
+    {
+      "sessionId": "e892d75c-2fa9-44f7-8045-fcf818a77a84",
+      "deleted": true
+    },
+    {
+      "sessionId": "fd566351-2592-43cc-a956-a3118ca3428c",
+      "deleted": true
+    },
+    {
+      "sessionId": "f414d731-f119-4522-8aa2-c832e8c1e0af",
+      "deleted": true
+    },
+    {
+      "sessionId": "1ada0f6c-ed7d-4de1-b3fb-79a9951f9fe8",
+      "deleted": true
+    },
+    {
+      "sessionId": "fcd11b85-a407-4bfe-8592-fc625c9481e9",
+      "deleted": true
+    },
+    {
+      "sessionId": "49f3bd06-45e6-4e9f-9662-e4f568b43ae3",
+      "deleted": true
+    },
+    {
+      "sessionId": "e403a83f-ac0e-4eda-9b6a-3464a7950538",
+      "deleted": true
+    },
+    {
+      "sessionId": "d008d8a8-8f90-492d-88fc-9cfa49747e23",
+      "deleted": true
+    }
+  ],
+  "fixtureReadAuthorized": true,
+  "runtime": {
+    "version": "1.0.90-0",
+    "protocolVersion": 3
+  },
+  "temporaryHomeRemoved": true,
+  "finishedAt": "2026-10-01T03:39:08.884Z",
+  "remainingHarnessResources": [
+    "FSReqCallback",
+    "PipeWrap",
+    "PipeWrap"
+  ]
+}
